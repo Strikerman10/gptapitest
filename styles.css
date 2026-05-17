@@ -427,7 +427,7 @@ main-content {
   padding: 10px 12px 12px;
   padding-top: 20px; /* smaller gap */
   border-radius: 12px;
-  background: var(--color-1);
+  background: var(--color-2);
   border: 1px solid var(--border);
   overflow-x: auto;
   white-space: pre;
