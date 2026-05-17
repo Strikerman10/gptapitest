@@ -403,52 +403,13 @@ main-content {
   Code Copy Button
    =========================== */
 
-.code-block-wrapper .token.comment,
-.code-block-wrapper .token.prolog,
-.code-block-wrapper .token.doctype,
-.code-block-wrapper .token.cdata {
-  color: #8a8a8a !important;
-}
-
-.code-block-wrapper .token.punctuation {
-  color: #fff !important;
-}
-
-.code-block-wrapper .token.property,
-.code-block-wrapper .token.tag,
-.code-block-wrapper .token.constant,
-.code-block-wrapper .token.symbol,
-.code-block-wrapper .token.deleted {
-  color: #ff7b72 !important;
-}
-
-.code-block-wrapper .token.boolean,
-.code-block-wrapper .token.number {
-  color: #d2a8ff !important;
-}
-
-.code-block-wrapper .token.selector,
-.code-block-wrapper .token.attr-name,
-.code-block-wrapper .token.string,
-.code-block-wrapper .token.char,
-.code-block-wrapper .token.builtin,
-.code-block-wrapper .token.inserted {
-  color: #a5d6ff !important;
-}
-
-.code-block-wrapper .token.operator,
-.code-block-wrapper .token.entity,
-.code-block-wrapper .token.url {
-  color: #fff !important;
-}
-
-.code-block-wrapper .token.keyword {
-  color: #ff9e64 !important;
-}
-
-.code-block-wrapper .token.function,
-.code-block-wrapper .token.class-name {
-  color: #79c0ff !important;
+.code-block-wrapper {
+  position: relative;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 12px;
+  overflow: hidden;
+  padding-top: 24px; /* space for the button */
 }
 
 .code-block-wrapper pre {
