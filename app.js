@@ -486,16 +486,10 @@ function renderMessages() {
       `;
     } else {
   if (msg.role === "assistant") {
-  textDiv.innerHTML = `
-    <div class="code-block-wrapper">
-      <button class="copy-code-btn">
-        <i class="fa-solid fa-copy"></i> Copy
-      </button>
-      ${renderMessageContent(msg.content)}
-    </div>
-  `;
-} else {
-  textDiv.textContent = msg.content;
+    textDiv.innerHTML = renderMessageContent(msg.content);
+  } else {
+    textDiv.textContent = msg.content;
+  }
 }
 
     const timeDiv = document.createElement("div");
