@@ -21,7 +21,7 @@ html, body {
   --color-4: #5a0000; /* dark neutral */
   --color-5: #1a0a0a; /* very dark base */
   --color-6: #008080; /* deep maroon (special actions) */
-  --color-7: #00f3f3; /*Hover over color*/
+  --color-7: #00f3f3; /* Hover over color */
 }
 
 /* ===========================
@@ -379,7 +379,7 @@ main-content {
   border-radius: 999px;
   border: 1px solid var(--color-3);
   background: var(--color-1);
-  color: var(--color-7);
+  color: var(--color-#fff);
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
