@@ -412,10 +412,10 @@ main-content {
   position: absolute;
   top: 4px;
   right: 6px;
-  padding: 6px 8px;
+  padding: 6px 7px;
   font-size: 12px;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   background: var(--color-1);
   color: var(--primary-contrast);
   cursor: pointer;
