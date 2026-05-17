@@ -405,54 +405,7 @@ main-content {
 
 .code-block-wrapper {
   position: relative;
-  background: #1e1e1e;
-  border: 1px solid #444;
-  border-radius: 12px;
-  overflow: hidden;
-  padding-top: 24px; /* space for the button */
-}
-
-.code-block-wrapper pre {
-  margin: 0;
-  padding: 16px;
-  background: transparent;
-  color: #fff !important;
-  overflow-x: auto;
-  tab-size: 2;
-  caret-color: #fff;
-}
-
-.code-block-wrapper pre code {
-  color: #fff !important;
-  background: transparent !important;
-}
-
-.code-block-wrapper pre code * {
-  color: #fff !important;
-}
-
-.code-block-wrapper ::selection {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-}
-
-/* Copy button */
-.copy-code-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  border: 1px solid #555;
-  border-radius: 12px;
-  background: #2a2a2a;
-  color: #fff;
-  font-size: 12px;
-  padding: 4px 8px;
-  cursor: pointer;
-  z-index: 2;
-}
-
-.copy-code-btn:hover {
-  background: #3a3a3a;
+  margin: 6px 0;
 }
 
 .copy-code-btn {
@@ -988,5 +941,4 @@ body.theme-amoled .btn {
   justify-content: center;
   padding-right: 0;
 }
-
 
