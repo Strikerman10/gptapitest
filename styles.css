@@ -422,10 +422,7 @@ main-content {
   z-index: 2;
 }
 
-.code-block-wrapper pre,
 .code-block-wrapper code {
-  color: #fff !important;
-}
   margin: 0;
   padding: 10px 12px 12px;
   padding-top: 20px; /* smaller gap */
