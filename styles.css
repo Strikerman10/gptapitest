@@ -410,26 +410,22 @@ main-content {
 
 .copy-code-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 4px 8px;
-  font-size: 11px;
+  top: 4px;
+  right: 6px;
+  padding: 2px 6px;
+  font-size: 10px;
   border: none;
   border-radius: 999px;
   background: var(--color-2);
-  color: #fff;
+  color: var(--primary-contrast);
   cursor: pointer;
   z-index: 2;
 }
 
-.copy-code-btn:hover {
-  background: var(--color-3);
-}
-
 .code-block-wrapper pre {
   margin: 0;
-  padding: 14px;
-  padding-top: 40px; /* space so text doesn't overlap button */
+  padding: 10px 12px 12px;
+  padding-top: 26px; /* smaller gap */
   border-radius: 12px;
   background: var(--color-1);
   border: 1px solid var(--border);
