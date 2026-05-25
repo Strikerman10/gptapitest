@@ -287,7 +287,7 @@ body.dark-mode {
   padding: 0.75rem 1rem;
   border-radius: 1.25rem;
   line-height: 1.4;
-  white-space: pre-wrap;
+  white-space: normal;
   word-break: break-word;
   overflow-wrap: anywhere;
   min-width: 0;
@@ -309,7 +309,7 @@ body.dark-mode {
   border-bottom-left-radius: 0.3rem;
   align-self: flex-start;
   position: relative;
-  padding-bottom: 0.75rem; /* or 1rem */
+  padding-bottom: 0.25rem; /* or 1rem */
   animation: fadeSlideInLeft 0.35s ease-out;
 }
 
@@ -431,7 +431,7 @@ body.dark-mode {
 
 .code-block-wrapper pre {
   margin: 0;
-  padding: 8px 12px 12px;
+  padding: 4px 12px 10px;
   border-radius: 12px;
   background: var(--color-1);
   border: 1px solid var(--border);
@@ -440,7 +440,7 @@ body.dark-mode {
 }
 
 .message p {
-  margin: 0 0 6px 0;
+  margin: 0;
 }
 
 .message p:last-child {
@@ -460,13 +460,6 @@ body.dark-mode {
   color: var(--text);
 }
 
-.code-language {
-  position: absolute;
-  top: 8px;
-  left: 10px;
-  font-size: 12px;
-  color: var(--color-3);
-}
 
 /* ===========================
    Input Area
