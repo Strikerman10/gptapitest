@@ -412,12 +412,12 @@ body.dark-mode {
    =========================== */
 .code-block-wrapper {
   position: relative;
-  margin: 2px 0;
+  margin-top: 8px;
+  margin-bottom: 2px 0;
 }
 
 .copy-code-btn {
   position: absolute;
-  padding-top: 1rem;
   top: 2px;
   right: 6px;
   padding: 6px 7px;
