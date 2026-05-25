@@ -275,7 +275,7 @@ body.dark-mode {
 .message-wrapper {
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
+  margin-bottom: 4px;
 }
 
 .message-wrapper.assistant {
@@ -309,7 +309,7 @@ body.dark-mode {
   border-bottom-left-radius: 0.3rem;
   align-self: flex-start;
   position: relative;
-  padding-bottom: 48px;
+  padding-bottom: 0.75rem; /* or 1rem */
   animation: fadeSlideInLeft 0.35s ease-out;
 }
 
@@ -412,7 +412,7 @@ body.dark-mode {
    =========================== */
 .code-block-wrapper {
   position: relative;
-  margin: 6px 0;
+  margin: 2px 0;
 }
 
 .copy-code-btn {
