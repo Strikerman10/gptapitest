@@ -139,7 +139,7 @@ body.dark-mode {
   background: var(--surface-2);
   border-left: 1px solid var(--border);
   transition: margin-left 0.3s ease;
-  margin-left: 260px;
+  margin-left: 0px;
 }
 
 /* desktop collapsed sidebar shift */
