@@ -145,7 +145,7 @@ body.dark-mode {
 /* desktop collapsed sidebar shift */
 .sidebar.collapsed ~ .main-content,
 .sidebar.collapsed ~ .chat-window {
-  margin-left: 60px;
+  margin-left: 0px;
 }
 
 .new-chat {
