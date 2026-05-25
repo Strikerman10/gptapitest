@@ -309,6 +309,7 @@ body.dark-mode {
   border-bottom-left-radius: 0.3rem;
   align-self: flex-start;
   position: relative;
+  padding-top: 1rem;
   padding-bottom: 0.25rem; /* or 1rem */
   animation: fadeSlideInLeft 0.35s ease-out;
 }
