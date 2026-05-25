@@ -5,7 +5,16 @@ const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
 // Temporary user ID: will be asked once then stored in localStorage
 let userId = localStorage.getItem("chat_user_id");
-
+if (!userId) {
+  userId = prompt("Enter a username to identify your chats:", "");
+  localStorage.setItem("chat_user_id", userId);
+  (async () => {
+    await loadChatsFromWorker();
+    loadChats();
+    renderChatList();
+    renderMessages();
+  })();
+}
 
 let chats = [];
 let currentIndex = null;
@@ -57,49 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
 
-function escapeHTML(str) {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function renderMessageContent(content) {
-  const parts = content.split(/```([\s\S]*?)```/g);
-  let html = "";
-
-  for (let i = 0; i < parts.length; i++) {
-    if (i % 2 === 0) {
-      // normal text
-      html += `<div class="msg-paragraph">${escapeHTML(parts[i]).replace(/\n/g, "<br>")}</div>`;
-    } else {
-      // code block
-      let code = parts[i].trim();
-
-      // remove optional language line like "js\n"
-      const firstLineBreak = code.indexOf("\n");
-      let language = "";
-      if (firstLineBreak !== -1) {
-        const possibleLang = code.slice(0, firstLineBreak).trim();
-        if (/^[a-zA-Z0-9_-]+$/.test(possibleLang)) {
-          language = possibleLang;
-          code = code.slice(firstLineBreak + 1);
-        }
-      }
-
-      html += `
-        <div class="code-block-wrapper" data-code="${encodeURIComponent(code)}">
-          <button class="copy-code-btn" type="button">Copy</button>
-          ${language ? `<div class="code-language">${language}</div>` : ""}
-          <pre><code>${escapeHTML(code)}</code></pre>
-        </div>
-      `;
-    }
-  }
-
-  return html;
-}
-  
   function openSidebar() {
     if (window.innerWidth <= 768) {
       sidebarEl.classList.add("open");
@@ -444,163 +410,82 @@ function renderMessageContent(content) {
     });
   }
 
-function renderMessages() {
-  messagesEl.innerHTML = "";
-  headerEl.textContent = "ChatGPT";
+  function renderMessages() {
+    messagesEl.innerHTML = "";
+    headerEl.textContent = "ChatGPT";
 
-  if (currentIndex === null || !chats[currentIndex]) {
-    messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
-    return;
-  }
-
-  const chat = chats[currentIndex];
-  if (!chat.messages || !chat.messages.length) {
-    messagesEl.innerHTML = `<p class="placeholder">This chat is empty.</p>`;
-    return;
-  }
-
-  chat.messages.forEach((msg, idx) => {
-    const wrapper = document.createElement("div");
-    wrapper.className = `message-wrapper ${msg.role}`;
-
-    const div = document.createElement("div");
-    div.className = `message ${msg.role}`;
-
-    const textDiv = document.createElement("div");
-    textDiv.className = "msg-text";
-
-    if (msg.content === "__TYPING__") {
-      textDiv.innerHTML = `
-        <div class="typing-indicator">
-          <span></span><span></span><span></span>
-        </div>
-      `;
-    } else {
-  if (msg.role === "assistant") {
-    textDiv.innerHTML = renderMessageContent(msg.content);
-  } else {
-    textDiv.textContent = msg.content;
-  }
-}
-
-    const timeDiv = document.createElement("div");
-    timeDiv.className = "msg-time";
-    timeDiv.textContent = msg.time || "";
-    textDiv.appendChild(timeDiv);
-
-    div.appendChild(textDiv);
-    wrapper.appendChild(div);
-
-    if (msg.role === "assistant" && msg.content !== "__TYPING__") {
-      let originalPrompt = "";
-      for (let j = idx - 1; j >= 0; j--) {
-        if (chat.messages[j].role === "user") {
-          originalPrompt = chat.messages[j].content;
-          break;
-        }
-      }
-
-      const refreshRow = document.createElement("div");
-      refreshRow.className = "refresh-row";
-
-      const refreshBtn = document.createElement("button");
-      refreshBtn.type = "button";
-      refreshBtn.className = "refresh-pill";
-      refreshBtn.title = "Retry this response";
-      refreshBtn.innerHTML = `
-        <svg viewBox="0 0 24 24" width="16" height="16"
-             fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="23 4 23 10 17 10"></polyline>
-          <polyline points="1 20 1 14 7 14"></polyline>
-          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-        </svg>
-        <span>Refresh</span>
-      `;
-
-      refreshBtn.addEventListener("click", async () => {
-        // Remove the current assistant response
-        chat.messages.splice(idx, 1);
-
-        // Re-add typing indicator
-        chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
-
-        saveChats();
-        saveChatsToWorker();
-        renderMessages();
-
-        try {
-          const cleanMessages = chat.messages
-            .filter(m => m.content !== "__TYPING__")
-            .slice(-10);
-
-          const res = await fetch(`${WORKER_URL}/chat`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model: currentModel,
-              messages: cleanMessages,
-            }),
-          });
-
-          if (!res.ok) {
-            const errText = await res.text();
-            throw new Error(`Worker returned ${res.status}: ${errText}`);
-          }
-
-          const data = await res.json();
-          const answer =
-            data?.output_text ||
-            (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
-            "No response";
-
-          chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: answer,
-            time: formatDateTime(),
-          };
-        } catch (e) {
-          chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: "Error: " + e.message,
-            time: formatDateTime(),
-          };
-        }
-
-        saveChats();
-        saveChatsToWorker();
-        renderMessages();
-        renderChatList();
-      });
-
-      refreshRow.appendChild(refreshBtn);
-      wrapper.appendChild(refreshRow);
+    if (currentIndex === null || !chats[currentIndex]) {
+      messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
+      return;
+    }
+    const chat = chats[currentIndex];
+    if (!chat.messages || !chat.messages.length) {
+      messagesEl.innerHTML = `<p class="placeholder">This chat is empty.</p>`;
+      return;
     }
 
-    messagesEl.appendChild(wrapper);
-  });
+    chat.messages.forEach((msg, idx) => {
+      const div = document.createElement("div");
+      div.className = `message ${msg.role}`;
+      const textDiv = document.createElement("div");
+      textDiv.className = "msg-text";
 
-    messagesEl.querySelectorAll(".copy-code-btn").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const wrapper = btn.closest(".code-block-wrapper");
-      const code = decodeURIComponent(wrapper.dataset.code);
-
-      try {
-        await navigator.clipboard.writeText(code);
-        const oldText = btn.textContent;
-        btn.textContent = "Copied!";
-        setTimeout(() => {
-          btn.textContent = oldText;
-        }, 1200);
-      } catch (err) {
-        console.warn("Copy failed:", err);
-        alert("Could not copy code.");
+      if (msg.content === "__TYPING__") {
+        textDiv.innerHTML = `
+          <div class="typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+        `;
+      } else {
+        textDiv.textContent = msg.content;
       }
+
+      const timeDiv = document.createElement("div");
+      timeDiv.className = "msg-time";
+      timeDiv.textContent = msg.time || "";
+      textDiv.appendChild(timeDiv);
+      div.appendChild(textDiv);
+
+      if (msg.role === "assistant" && msg.content !== "__TYPING__") {
+        const refreshBtn = document.createElement("button");
+        refreshBtn.title = "Retry this user prompt";
+        refreshBtn.className = "refresh-button";
+        refreshBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" width="16" height="16"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        `;
+
+        let originalPrompt = "";
+        for (let j = idx - 1; j >= 0; j--) {
+          if (chat.messages[j].role === "user") {
+            originalPrompt = chat.messages[j].content;
+            break;
+          }
+        }
+
+       refreshBtn.onclick = () => {
+  // Remove the assistant message only
+  chat.messages.splice(idx, 1);
+
+  // If the previous message is the matching user prompt, keep it
+  // and resend from the existing chat history
+  renderMessages();
+  sendMessageRetry();
+};
+
+        div.appendChild(refreshBtn);
+      }
+
+      messagesEl.appendChild(div);
     });
-  });
-  
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-}
+
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
 
   async function sendMessage() {
     const text = inputEl.value.trim();
