@@ -198,13 +198,23 @@ body.dark-mode {
 
 @media (max-width: 768px) {
   .new-chat-row {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .new-chat {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 10px;
+    font-size: 13px;
   }
 
   .model-selector {
-    width: 100%;
-    max-width: none;
+    width: 110px;
+    max-width: 40%;
+    padding: 8px 10px;
+    font-size: 13px;
   }
 
   .model-selector:focus {
