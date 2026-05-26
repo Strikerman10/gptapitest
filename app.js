@@ -235,15 +235,6 @@ function renderMessageContent(content) {
       "--border": "hsl(0 0% 30%)",
       "--text": "hsl(0 0% 92%)",
       "--text-muted": "hsl(0 0% 70%)"
-    },
-    amoled: {
-      "--bg": "#000000",
-      "--surface-1": "#000000",
-      "--surface-2": "#0a0a0a",
-      "--surface-hover": "#111111",
-      "--border": "#222222",
-      "--text": "#000000",
-      "--text-muted": "#333333"
     }
   };
 
