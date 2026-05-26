@@ -420,7 +420,7 @@ function renderMessageContent(content) {
 
 function renderMessages() {
   messagesEl.innerHTML = "";
-  headerEl.textContent = "ChatGPT";
+  headerEl.textContent = "Messages";
 
   if (currentIndex === null || !chats[currentIndex]) {
     messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
