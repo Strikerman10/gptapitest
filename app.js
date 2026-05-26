@@ -14,7 +14,7 @@ let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini";
 document.addEventListener("DOMContentLoaded", () => {
   const chatListEl = document.getElementById("chatList");
   const messagesEl = document.getElementById("messages");
-  const chatTitleEl = document.getElementById("chatTitle");
+  const headerEl = document.getElementById("chatHeader").querySelector("span");
   const inputEl = document.getElementById("input");
 
   function autoResize() {
@@ -420,14 +420,7 @@ function renderMessageContent(content) {
 
 function renderMessages() {
   messagesEl.innerHTML = "";
-
-  // Restore the header title + icon
-  chatTitleEl.innerHTML = `
-    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-      <path d="M4 4h16v11H7l-3 3V4zm2 2v6h12V6H6z"/>
-    </svg>
-    <span>Messages</span>
-  `;
+  headerEl.textContent = "Messages";
 
   if (currentIndex === null || !chats[currentIndex]) {
     messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
@@ -457,12 +450,12 @@ function renderMessages() {
         </div>
       `;
     } else {
-      if (msg.role === "assistant") {
-        textDiv.innerHTML = renderMessageContent(msg.content);
-      } else {
-        textDiv.textContent = msg.content;
-      }
-    }
+  if (msg.role === "assistant") {
+    textDiv.innerHTML = renderMessageContent(msg.content);
+  } else {
+    textDiv.textContent = msg.content;
+  }
+}
 
     const timeDiv = document.createElement("div");
     timeDiv.className = "msg-time";
@@ -473,6 +466,14 @@ function renderMessages() {
     wrapper.appendChild(div);
 
     if (msg.role === "assistant" && msg.content !== "__TYPING__") {
+      let originalPrompt = "";
+      for (let j = idx - 1; j >= 0; j--) {
+        if (chat.messages[j].role === "user") {
+          originalPrompt = chat.messages[j].content;
+          break;
+        }
+      }
+
       const refreshRow = document.createElement("div");
       refreshRow.className = "refresh-row";
 
@@ -492,15 +493,11 @@ function renderMessages() {
       `;
 
       refreshBtn.addEventListener("click", async () => {
-        // Remove this assistant response
+        // Remove the current assistant response
         chat.messages.splice(idx, 1);
 
-        // Add typing indicator
-        chat.messages.push({
-          role: "assistant",
-          content: "__TYPING__",
-          time: formatDateTime()
-        });
+        // Re-add typing indicator
+        chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
 
         saveChats();
         saveChatsToWorker();
@@ -557,7 +554,7 @@ function renderMessages() {
     messagesEl.appendChild(wrapper);
   });
 
-  messagesEl.querySelectorAll(".copy-code-btn").forEach(btn => {
+    messagesEl.querySelectorAll(".copy-code-btn").forEach(btn => {
     btn.addEventListener("click", async () => {
       const wrapper = btn.closest(".code-block-wrapper");
       const code = decodeURIComponent(wrapper.dataset.code);
@@ -575,7 +572,7 @@ function renderMessages() {
       }
     });
   });
-
+  
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
