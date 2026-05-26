@@ -420,7 +420,13 @@ function renderMessageContent(content) {
 
 function renderMessages() {
   messagesEl.innerHTML = "";
-  headerEl.textContent = "Messages";
+  document.getElementById("chatTitle").innerHTML = `
+    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+      <path d="M4 4h16v11H7l-3 3V4zm2 2v6h12V6H6z"/>
+    </svg>
+    <span>Messages</span>
+  `;
+}
 
   if (currentIndex === null || !chats[currentIndex]) {
     messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
