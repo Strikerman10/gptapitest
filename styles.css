@@ -158,8 +158,8 @@ body.dark-mode {
 }
 
 .new-chat {
-  flex: 0 0 85px;
-  min-width: 0;
+  flex: 0 0 95px;
+  min-width: 95px;
   margin: 0;
   padding: 10px 12px;
   background-color: var(--color-6);
@@ -176,6 +176,7 @@ body.dark-mode {
 .model-selector {
   flex: 1 1 auto;
   min-width: 0;
+  width: 100%;
   margin: 0;
   padding: 10px 12px;
   background-color: var(--color-6) !important;
@@ -221,7 +222,7 @@ body.dark-mode {
 
   .new-chat {
     flex: 0 0 75px;
-    min-width: 0;
+    min-width: 75px;
     padding: 8px 10px;
     font-size: 13px;
   }
@@ -231,8 +232,6 @@ body.dark-mode {
     min-width: 0;
     padding: 8px 10px;
     font-size: 13px;
-    text-align: center;
-    text-align-last: center;
   }
 }
    
