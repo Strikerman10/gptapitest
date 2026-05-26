@@ -188,6 +188,7 @@ body.dark-mode {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  background-image: none;
   outline: none;
 }
 
@@ -205,7 +206,7 @@ body.dark-mode {
 @media (hover: hover) and (pointer: fine) {
   .new-chat:hover,
   .model-selector:hover {
-    background-color: var(--color-7);
+    background-color: var(--color-7) !important;
     transform: translateY(-2px);
   }
 }
