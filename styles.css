@@ -458,7 +458,7 @@ body.dark-mode {
 .code-block-wrapper {
   position: relative;
   margin-top: 8px;
-  margin-bottom: 2px 0;
+  margin-bottom: 2px;
 }
 
 .copy-code-btn {
