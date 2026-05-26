@@ -218,11 +218,13 @@ body.dark-mode {
     font-size: 13px;
   }
 
-  .model-selector {
+.model-selector {
     width: 110px;
     max-width: 40%;
     padding: 8px 10px;
     font-size: 13px;
+    text-align: center;
+    text-align-last: center;
   }
 }
    
