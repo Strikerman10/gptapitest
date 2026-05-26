@@ -411,6 +411,7 @@ function renderMessageContent(content) {
 
 function renderMessages() {
   messagesEl.innerHTML = "";
+  chatTitleEl.textContent = "Messages";
 
 chatTitleEl.textContent = "Messages";
 
