@@ -159,7 +159,7 @@ body.dark-mode {
 
 .new-chat {
   flex: 0 0 110px;
-  min-width: 95px;
+  min-width: 110px;
   margin: 0;
   padding: 10px 12px;
   background-color: var(--color-6);
@@ -222,7 +222,7 @@ body.dark-mode {
 
   .new-chat {
     flex: 0 0 90px;
-    min-width: 75px;
+    min-width: 90px;
     padding: 8px 10px;
     font-size: 13px;
   }
