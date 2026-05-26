@@ -197,21 +197,21 @@ body.dark-mode {
 }
 
 @media (max-width: 768px) {
-
-.model-selector:focus {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-.new-chat-row {
+  .new-chat-row {
     flex-direction: column;
     align-items: stretch;
   }
 
-.model-selector {
+  .model-selector {
     width: 100%;
     max-width: none;
   }
+
+  .model-selector:focus {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
    
 .chat-list {
   overflow-y: auto;
