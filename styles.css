@@ -157,7 +157,7 @@ body.dark-mode {
 }
 
 .new-chat {
-  flex: 0.6;
+  flex: 0.7;
   min-width: 0;
   margin: 0;
   padding: 10px 12px;
@@ -165,7 +165,7 @@ body.dark-mode {
   color: var(--primary-contrast);
   border: none;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
@@ -173,7 +173,7 @@ body.dark-mode {
 }
 
 .model-selector {
-  flex: 1.4;
+  flex: 1.3;
   min-width: 0;
   margin: 0;
   padding: 10px 12px;
@@ -181,45 +181,33 @@ body.dark-mode {
   color: var(--primary-contrast) !important;
   border: none;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   text-align: center;
   text-align-last: center;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  outline: none;
 }
-.new-chat:active {
-  background: var(--color-7);
+
+.model-selector:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.new-chat:active,
+.model-selector:active {
+  background-color: var(--color-7);
   transform: translateY(-2px);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .new-chat:hover,
   .model-selector:hover {
-    background: var(--color-7);
+    background-color: var(--color-7);
     transform: translateY(-2px);
   }
-}
-
-.model-selector {
-  width: 140px;
-  max-width: 45%;
-  padding: 10px 12px;
-  border: none;
-  border-radius: 8px;
-  background-color: var(--color-6) !important;
-  color: var(--primary-contrast) !important;
-  font-size: 14px;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-.model-selector:focus {
-  outline: none;
-  box-shadow: none;
 }
 
 @media (max-width: 768px) {
@@ -230,15 +218,15 @@ body.dark-mode {
   }
 
   .new-chat {
-    flex: 1;
+    flex: 0.6;
     min-width: 0;
     padding: 8px 10px;
     font-size: 13px;
   }
 
-.model-selector {
-    width: 110px;
-    max-width: 40%;
+  .model-selector {
+    flex: 1.4;
+    min-width: 0;
     padding: 8px 10px;
     font-size: 13px;
     text-align: center;
