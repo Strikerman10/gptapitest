@@ -190,8 +190,8 @@ body.dark-mode {
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--surface-1);
-  color: var(--text);
+  background-color: var(--color-6);
+  color: var(--primary-contrast);
   font-size: 14px;
   cursor: pointer;
 }
