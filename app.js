@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeToggleBtn    = document.getElementById("toggleThemeBtn");
   const sidebarEl         = document.querySelector(".sidebar");
   const toggleSidebarBtn  = document.getElementById("toggleSidebarBtn");
+  const modelSelector     = document.getElementById("modelSelector");
 
   const backdropEl = document.createElement("div");
   backdropEl.className = "sidebar-backdrop";
@@ -705,12 +706,18 @@ function renderMessages() {
       sendMessage();
     }
   });
+modelSelector.value = currentModel;
 
-  paletteSelector.value = currentPalette;
-  const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
-  const lightIcon = themeToggleBtn.querySelector(".light-icon");
-  darkIcon.classList.toggle("hidden", currentMode === "dark");
-  lightIcon.classList.toggle("hidden", currentMode === "light");
+modelSelector.addEventListener("change", (e) => {
+  currentModel = e.target.value;
+  localStorage.setItem("chat_model", currentModel);
+});
+
+paletteSelector.value = currentPalette;
+const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
+const lightIcon = themeToggleBtn.querySelector(".light-icon");
+darkIcon.classList.toggle("hidden", currentMode === "dark");
+lightIcon.classList.toggle("hidden", currentMode === "light");
 
   themeToggleBtn.addEventListener("click", () => {
     currentMode = currentMode === "light" ? "dark" : "light";
