@@ -151,13 +151,14 @@ body.dark-mode {
 
 .new-chat-row {
   display: flex;
+  width: 100%;
   gap: 8px;
   align-items: center;
   padding: 8px;
 }
 
 .new-chat {
-  flex: 0 0 110px;
+  flex: 0 0 85px;
   min-width: 0;
   margin: 0;
   padding: 10px 12px;
@@ -219,14 +220,14 @@ body.dark-mode {
   }
 
   .new-chat {
-    flex: 0.5;
+    flex: 0 0 75px;
     min-width: 0;
     padding: 8px 10px;
     font-size: 13px;
   }
 
   .model-selector {
-    flex: 1.5;
+    flex: 1 1 auto;
     min-width: 0;
     padding: 8px 10px;
     font-size: 13px;
