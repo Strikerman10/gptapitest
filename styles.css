@@ -157,7 +157,7 @@ body.dark-mode {
 }
 
 .new-chat {
-  flex: 1;
+  flex: 0.8;
   min-width: 0;
   margin: 0;
   padding: 10px 12px;
@@ -172,6 +172,23 @@ body.dark-mode {
   text-overflow: ellipsis;
 }
 
+.model-selector {
+  flex: 1.2;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px;
+  background-color: var(--color-6) !important;
+  color: var(--primary-contrast) !important;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-align-last: center;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
 .new-chat:active {
   background: var(--color-7);
   transform: translateY(-2px);
@@ -193,6 +210,7 @@ body.dark-mode {
   background-color: var(--color-6) !important;
   color: var(--primary-contrast) !important;
   font-size: 14px;
+  font-weight: bold;
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
