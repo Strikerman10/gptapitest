@@ -244,7 +244,7 @@ function renderMessageContent(content) {
   function applyTheme() {
     const root = document.documentElement;
     const palette = palettes[currentPalette];
-    const neutralSet = currentPalette === "Amoled" ? neutrals.amoled : neutrals[currentMode];
+   const neutralSet = neutrals[currentMode];
 
     for (const [key, value] of Object.entries(palette)) {
       root.style.setProperty(key, value);
@@ -412,12 +412,7 @@ function renderMessageContent(content) {
 function renderMessages() {
   messagesEl.innerHTML = "";
 
-  chatTitleEl.innerHTML = `
-    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-      <path d="M4 4h16v11H7l-3 3V4zm2 2v6h12V6H6z"/>
-    </svg>
-    <span>Messages</span>
-  `;
+chatTitleEl.textContent = "Messages";
 
   if (currentIndex === null || !chats[currentIndex]) {
     messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
