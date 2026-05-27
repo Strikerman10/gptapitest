@@ -413,8 +413,6 @@ function renderMessages() {
   messagesEl.innerHTML = "";
   chatTitleEl.textContent = "Messages";
 
-chatTitleEl.textContent = "Messages";
-
   if (currentIndex === null || !chats[currentIndex]) {
     messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
     return;
