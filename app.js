@@ -4,8 +4,19 @@
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
 // Temporary user ID: will be asked once then stored in localStorage
-let userId = localStorage.getItem("chat_user_id");
 
+let isLoggedIn = false;
+
+async function login(username, password) {
+  const res = await fetch(`${WORKER_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ username, password })
+  });
+  if (!res.ok) throw new Error(await res.text());
+  isLoggedIn = true;
+}
 
 let chats = [];
 let currentIndex = null;
@@ -262,7 +273,9 @@ function renderMessageContent(content) {
 
   async function loadChats() {
     try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+      const res = await fetch(`${WORKER_URL}/load`, {
+  credentials: "include"
+});
       if (res.ok) {
         const workerChats = await res.json();
         if (Array.isArray(workerChats) && workerChats.length) {
@@ -301,19 +314,20 @@ function renderMessageContent(content) {
     saveChatsToWorker();
   }
 
-  async function saveChatsToWorker() {
-    if (!userId) return;
-    try {
-      const res = await fetch(`${WORKER_URL}/save`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, chats }),
-      });
-      if (!res.ok) console.warn("Worker save failed:", await res.text());
-    } catch (e) {
-      console.warn("Could not reach worker:", e);
-    }
+ async function saveChatsToWorker() {
+  if (!isLoggedIn) return;
+  try {
+    const res = await fetch(`${WORKER_URL}/save`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ chats }),
+    });
+    if (!res.ok) console.warn("Worker save failed:", await res.text());
+  } catch (e) {
+    console.warn("Could not reach worker:", e);
   }
+}
 
   function formatDateTime(date = new Date()) {
     const day = String(date.getDate()).padStart(2, "0");
@@ -326,7 +340,9 @@ function renderMessageContent(content) {
 
   async function loadChatsFromWorker() {
     try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+      const res = await fetch(`${WORKER_URL}/load`, {
+  credentials: "include"
+});
       if (!res.ok) return;
       const workerChats = await res.json();
       if (Array.isArray(workerChats) && workerChats.length) {
@@ -486,14 +502,12 @@ function renderMessages() {
             .filter(m => m.content !== "__TYPING__")
             .slice(-10);
 
-          const res = await fetch(`${WORKER_URL}/chat`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model: currentModel,
-              messages: cleanMessages,
-            }),
-          });
+       const res = await fetch(`${WORKER_URL}/chat`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  credentials: "include",
+  body: JSON.stringify({ model: currentModel, messages: cleanMessages }),
+});
 
           if (!res.ok) {
             const errText = await res.text();
@@ -581,13 +595,11 @@ function renderMessages() {
         .slice(-10);
 
       const res = await fetch(`${WORKER_URL}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: currentModel,
-          messages: cleanMessages
-        }),
-      });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  credentials: "include",
+  body: JSON.stringify({ model: currentModel, messages: cleanMessages }),
+});
 
       if (!res.ok) {
         const errText = await res.text();
@@ -635,13 +647,11 @@ function renderMessages() {
       .slice(-10);
 
     const res = await fetch(`${WORKER_URL}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: currentModel,
-        messages: cleanMessages,
-      }),
-    });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  credentials: "include",
+  body: JSON.stringify({ model: currentModel, messages: cleanMessages }),
+});
 
     if (!res.ok) {
       const errText = await res.text();
@@ -720,18 +730,11 @@ lightIcon.classList.toggle("hidden", currentMode === "light");
   (async () => {
     applyTheme();
 
-    if (!userId) {
-      userId = prompt("Enter a username to identify your chats:", "");
-      if (!userId) {
-        alert("You must enter a username to continue");
-        return;
-      }
-      localStorage.setItem("chat_user_id", userId);
-    }
-
     let gotFromWorker = false;
     try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+      const res = await fetch(`${WORKER_URL}/load`, {
+  credentials: "include"
+});
       if (res.ok) {
         const workerChats = await res.json();
         if (Array.isArray(workerChats) && workerChats.length) {
