@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatTitleEl = document.getElementById("chatTitle");
   const inputEl = document.getElementById("input");
 
+  // ---- Auto-resize textarea ----
   function autoResize() {
     inputEl.style.height = "auto";
     inputEl.style.height = Math.min(inputEl.scrollHeight, 200) + "px";
@@ -33,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   inputEl.addEventListener("input", autoResize);
   autoResize();
 
+  // ---- Expand / Collapse input area ----
   const inputArea = document.querySelector(".input-area");
   const expandInputBtn = document.getElementById("expandInputBtn");
   const messagesPane = document.querySelector(".messages") || messagesEl;
@@ -43,28 +45,42 @@ document.addEventListener("DOMContentLoaded", () => {
     inputExpanded = expanded;
     inputArea.classList.toggle("expanded", expanded);
 
+    // hide chat messages when expanded
     if (messagesPane) messagesPane.style.display = expanded ? "none" : "";
+
+    // lock page scroll in expanded mode
     document.body.style.overflow = expanded ? "hidden" : "";
 
-    expandInputBtn.setAttribute("aria-label", expanded ? "Collapse input" : "Expand input");
+    // update button accessibility text
+    expandInputBtn.setAttribute(
+      "aria-label",
+      expanded ? "Collapse input" : "Expand input"
+    );
     expandInputBtn.title = expanded ? "Collapse input" : "Expand input";
 
     if (expanded) {
       inputEl.focus();
     } else {
-      autoResize(); // restore normal textarea height behavior
+      autoResize();
     }
   }
 
-  expandInputBtn.addEventListener("click", () => {
-    setInputExpanded(!inputExpanded);
-  });
+  if (expandInputBtn && inputArea && inputEl) {
+    expandInputBtn.addEventListener("click", () => {
+      setInputExpanded(!inputExpanded);
+    });
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && inputExpanded) {
-      setInputExpanded(false);
-    }
-  });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && inputExpanded) {
+        setInputExpanded(false);
+      }
+    });
+  } else {
+    console.warn("Expand input setup missing elements:", {
+      inputArea,
+      inputEl,
+      expandInputBtn
+    });
   
   const paletteSelector   = document.getElementById("paletteSelector");
   const themeToggleBtn    = document.getElementById("toggleThemeBtn");
