@@ -560,77 +560,63 @@ body.dark-mode {
   font-size: 14px;
 }
 
-/* NEW: expand button */
-.expand-input-btn {
-  flex-shrink: 0;
-  align-self: flex-end;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+/* leave room for right-side arrow buttons */
+.input-area textarea {
+  padding-right: 52px; /* add this line */
+}
+
+.input-arrow-btn {
+  position: absolute;
+  right: 10px;
+  width: 30px;
+  height: 30px;
   border: 1px solid var(--border);
+  border-radius: 999px;
   background: var(--surface-2);
   color: var(--text);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease-in-out;
-}
-
-.expand-input-btn:hover,
-.expand-input-btn:active {
-  background: var(--surface-hover);
-  transform: translateY(-1px);
-}
-
-.expand-icon {
-  display: inline-block;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1;
-  transform: rotate(90deg); /* <> rotated */
-  user-select: none;
-}
-
-.send-btn {
-  flex-shrink: 0;
-  align-self: flex-end;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-6);
-  color: var(--primary-contrast);
   cursor: pointer;
-  transition: background 0.25s ease, transform 0.1s ease-in-out;
-  border: none;
-  outline: none;
+  z-index: 5;
+  transition: background .15s ease, transform .05s ease;
 }
 
-.send-btn:hover,
-.send-btn:active {
-  background: var(--color-7);
-  transform: translateY(-2px);
+.input-arrow-btn:hover {
+  background: var(--surface-hover);
 }
 
-/* Expanded mode */
-.input-area.expanded {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: var(--bg);
-  border-top: none;
-  padding: 12px;
+.input-arrow-btn:active {
+  transform: scale(0.97);
 }
 
-.input-area.expanded textarea {
-  max-height: none !important;
-  height: calc(100dvh - 90px) !important; /* leaves room for button row */
+.input-arrow-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.input-area.expanded .expand-icon {
-  transform: rotate(-90deg);
+/* right side, centered vertically as a pair */
+#expandInputBtn {
+  top: calc(50% - 18px);
+  transform: translateY(-50%);
+}
+
+#collapseInputBtn {
+  top: calc(50% + 18px);
+  transform: translateY(-50%);
+}
+
+/* show only one at a time */
+.input-area:not(.expanded) #collapseInputBtn {
+  display: none;
+}
+.input-area.expanded #expandInputBtn {
+  display: none;
 }
 
 @supports not (height: 100dvh) {
