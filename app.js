@@ -330,8 +330,8 @@ const res = await fetch(
 );
 if (!res.ok) return;
 const data = await res.json();
-if (Array.isArray(data.messages)) {
-chat.messages = data.messages;
+if (Array.isArray(data.messages) && data.messages.length > 0) {
+  chat.messages = data.messages;
 }
 } catch (e) {
 console.warn("Could not load chat messages:", e);
@@ -637,6 +637,9 @@ lightIcon.classList.toggle("hidden", currentMode === "light");
     }
 
     renderChatList();
+    console.log("currentIndex:", currentIndex);
+console.log("current chat:", chats[currentIndex]);
+console.log("messages:", chats[currentIndex]?.messages);
     renderMessages();
   })();
 });
