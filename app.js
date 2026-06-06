@@ -75,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
       setInputExpanded(false);
     }
   });
-});
     
   const paletteSelector   = document.getElementById("paletteSelector");
   const themeToggleBtn    = document.getElementById("toggleThemeBtn");
