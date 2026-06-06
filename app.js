@@ -90,7 +90,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const scrollTopBtn = document.getElementById("scrollTopBtn");
  const composerArea = document.querySelector(".input-area");
-const textarea     = composerArea.querySelector("textarea");
+const textarea = composerArea?.querySelector("textarea");
+textarea?.addEventListener("input", updateScrollBtnPosition);
 
 function updateScrollBtnPosition() {
   const inputHeight = composerArea.offsetHeight;
