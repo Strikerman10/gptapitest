@@ -33,6 +33,39 @@ document.addEventListener("DOMContentLoaded", () => {
   inputEl.addEventListener("input", autoResize);
   autoResize();
 
+  const inputArea = document.querySelector(".input-area");
+  const expandInputBtn = document.getElementById("expandInputBtn");
+  const messagesPane = document.querySelector(".messages") || messagesEl;
+
+  let inputExpanded = false;
+
+  function setInputExpanded(expanded) {
+    inputExpanded = expanded;
+    inputArea.classList.toggle("expanded", expanded);
+
+    if (messagesPane) messagesPane.style.display = expanded ? "none" : "";
+    document.body.style.overflow = expanded ? "hidden" : "";
+
+    expandInputBtn.setAttribute("aria-label", expanded ? "Collapse input" : "Expand input");
+    expandInputBtn.title = expanded ? "Collapse input" : "Expand input";
+
+    if (expanded) {
+      inputEl.focus();
+    } else {
+      autoResize(); // restore normal textarea height behavior
+    }
+  }
+
+  expandInputBtn.addEventListener("click", () => {
+    setInputExpanded(!inputExpanded);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && inputExpanded) {
+      setInputExpanded(false);
+    }
+  });
+  
   const paletteSelector   = document.getElementById("paletteSelector");
   const themeToggleBtn    = document.getElementById("toggleThemeBtn");
   const sidebarEl         = document.querySelector(".sidebar");
