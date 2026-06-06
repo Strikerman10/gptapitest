@@ -81,7 +81,8 @@ document.addEventListener("DOMContentLoaded", () => {
       inputEl,
       expandInputBtn
     });
-  
+  }
+    
   const paletteSelector   = document.getElementById("paletteSelector");
   const themeToggleBtn    = document.getElementById("toggleThemeBtn");
   const sidebarEl         = document.querySelector(".sidebar");
