@@ -544,6 +544,7 @@ body.dark-mode {
   padding: 12px;
   border-top: 1px solid var(--border);
   background: var(--surface-1);
+  position: relative;
 }
 
 .input-area textarea {
@@ -557,6 +558,37 @@ body.dark-mode {
   resize: none;
   overflow-y: auto;
   font-size: 14px;
+}
+
+/* NEW: expand button */
+.expand-input-btn {
+  flex-shrink: 0;
+  align-self: flex-end;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease-in-out;
+}
+
+.expand-input-btn:hover,
+.expand-input-btn:active {
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+.expand-icon {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  transform: rotate(90deg); /* <> rotated */
+  user-select: none;
 }
 
 .send-btn {
@@ -580,6 +612,31 @@ body.dark-mode {
 .send-btn:active {
   background: var(--color-7);
   transform: translateY(-2px);
+}
+
+/* Expanded mode */
+.input-area.expanded {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg);
+  border-top: none;
+  padding: 12px;
+}
+
+.input-area.expanded textarea {
+  max-height: none !important;
+  height: calc(100dvh - 90px) !important; /* leaves room for button row */
+}
+
+.input-area.expanded .expand-icon {
+  transform: rotate(-90deg);
+}
+
+@supports not (height: 100dvh) {
+  .input-area.expanded textarea {
+    height: calc(100vh - 90px) !important;
+  }
 }
 
 /* ===========================
