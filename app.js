@@ -21,26 +21,28 @@ let currentIndex = null;
 let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini-2026-03-17";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const chatListEl = document.getElementById("chatList");
   const messagesEl = document.getElementById("messages");
-  const chatTitleEl = document.getElementById("chatTitle");
   const inputEl = document.getElementById("input");
-
-  // ---- Auto-resize textarea ----
-  function autoResize() {
-    inputEl.style.height = "auto";
-    inputEl.style.height = Math.min(inputEl.scrollHeight, 200) + "px";
-  }
-  inputEl.addEventListener("input", autoResize);
-  autoResize();
-
-  // ---- Expand / Collapse input area ----
   const inputArea = document.querySelector(".input-area");
+
   const expandInputBtn = document.getElementById("expandInputBtn");
+  const collapseInputBtn = document.getElementById("collapseInputBtn");
+
   const messagesPane = document.querySelector(".messages") || messagesEl;
 
   let inputExpanded = false;
 
+  // ---- Auto-resize textarea ----
+  function autoResize() {
+    inputEl.style.height = "auto";
+    const max = inputExpanded ? inputEl.scrollHeight : 200; // no cap when expanded
+    inputEl.style.height = Math.min(inputEl.scrollHeight, max) + "px";
+  }
+
+  inputEl.addEventListener("input", autoResize);
+  autoResize();
+
+  // ---- Expand / Collapse input area ----
   function setInputExpanded(expanded) {
     inputExpanded = expanded;
     inputArea.classList.toggle("expanded", expanded);
@@ -51,37 +53,29 @@ document.addEventListener("DOMContentLoaded", () => {
     // lock page scroll in expanded mode
     document.body.style.overflow = expanded ? "hidden" : "";
 
-    // update button accessibility text
-    expandInputBtn.setAttribute(
-      "aria-label",
-      expanded ? "Collapse input" : "Expand input"
-    );
-    expandInputBtn.title = expanded ? "Collapse input" : "Expand input";
-
     if (expanded) {
+      // let CSS expanded height take over
+      inputEl.style.height = "";
       inputEl.focus();
     } else {
       autoResize();
     }
   }
 
-  if (expandInputBtn && inputArea && inputEl) {
-    expandInputBtn.addEventListener("click", () => {
-      setInputExpanded(!inputExpanded);
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && inputExpanded) {
-        setInputExpanded(false);
-      }
-    });
-  } else {
-    console.warn("Expand input setup missing elements:", {
-      inputArea,
-      inputEl,
-      expandInputBtn
-    });
+  if (expandInputBtn) {
+    expandInputBtn.addEventListener("click", () => setInputExpanded(true));
   }
+
+  if (collapseInputBtn) {
+    collapseInputBtn.addEventListener("click", () => setInputExpanded(false));
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && inputExpanded) {
+      setInputExpanded(false);
+    }
+  });
+});
     
   const paletteSelector   = document.getElementById("paletteSelector");
   const themeToggleBtn    = document.getElementById("toggleThemeBtn");
