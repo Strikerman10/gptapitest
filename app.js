@@ -96,13 +96,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const paletteBtn = document.getElementById("themeBtn");
 
   const scrollTopBtn = document.getElementById("scrollTopBtn");
-  const inputArea    = document.querySelector(".input-area");
-  const textarea     = inputArea.querySelector("textarea");
+ const composerArea = document.querySelector(".input-area");
+const textarea     = composerArea.querySelector("textarea");
 
-  function updateScrollBtnPosition() {
-    const inputHeight = inputArea.offsetHeight;
-    scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
-  }
+function updateScrollBtnPosition() {
+  const inputHeight = composerArea.offsetHeight;
+  scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
+}
   updateScrollBtnPosition();
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
