@@ -25,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const inputEl = document.getElementById("input");
   const inputArea = document.querySelector(".input-area");
 
+  const chatListEl = document.getElementById("chatList");
+const chatTitleEl = document.getElementById("chatHistory");
+
   const expandInputBtn = document.getElementById("expandInputBtn");
   const collapseInputBtn = document.getElementById("collapseInputBtn");
 
@@ -88,25 +91,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const paletteBtn = document.getElementById("themeBtn");
 
-  const scrollTopBtn = document.getElementById("scrollTopBtn");
- const composerArea = document.querySelector(".input-area");
+ const scrollTopBtn = document.getElementById("scrollTopBtn");
+const composerArea = document.querySelector(".input-area");
 const textarea = composerArea?.querySelector("textarea");
-textarea?.addEventListener("input", updateScrollBtnPosition);
 
 function updateScrollBtnPosition() {
+  if (!composerArea || !scrollTopBtn) return; // <-- guard
   const inputHeight = composerArea.offsetHeight;
   scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
 }
-  updateScrollBtnPosition();
-  textarea.addEventListener("input", updateScrollBtnPosition);
-  window.addEventListener("resize", updateScrollBtnPosition);
 
+updateScrollBtnPosition();
+textarea?.addEventListener("input", updateScrollBtnPosition); // keep only this one
+window.addEventListener("resize", updateScrollBtnPosition);
+
+ if (messagesEl && scrollTopBtn) {
   messagesEl.addEventListener("scroll", () => {
     scrollTopBtn.style.display = messagesEl.scrollTop > 200 ? "flex" : "none";
   });
+
   scrollTopBtn.addEventListener("click", () => {
     messagesEl.scrollTo({ top: 0, behavior: "smooth" });
   });
+}
 
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
