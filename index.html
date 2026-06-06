@@ -149,9 +149,17 @@
   <div class="input-area">
     <textarea id="input" placeholder="Type your message..."></textarea>
   
-    <button id="expandInputBtn" class="expand-input-btn" type="button" aria-label="Expand input" title="Expand input">
-      <span class="expand-icon" aria-hidden="true">&lt;&gt;</span>
-    </button>
+  <button id="expandInputBtn" class="input-arrow-btn" aria-label="Expand input" title="Expand input" type="button">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <polyline points="6 14 12 8 18 14"></polyline>
+  </svg>
+</button>
+
+<button id="collapseInputBtn" class="input-arrow-btn" aria-label="Collapse input" title="Collapse input" type="button">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <polyline points="6 10 12 16 18 10"></polyline>
+  </svg>
+</button>
   
     <button class="send-btn" id="sendBtn" type="submit">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"
