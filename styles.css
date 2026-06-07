@@ -691,8 +691,8 @@ body.dark-mode {
   height: 40px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: var(--surface-1);
-  color: var(--text);
+  background: var(--color-6);   /* accent-driven */
+  color: var(--color-1);        /* readable on color-6 */
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -730,7 +730,9 @@ body.dark-mode {
   right: 0;
   bottom: 0;
   z-index: 1300;
-  background: var(--surface-1);
+
+  /* darker white + transparency */
+  background: rgba(245, 245, 245, 0.88);
   color: var(--text);
   border: 1px solid var(--border);
   border-top-left-radius: 18px;
@@ -741,6 +743,9 @@ body.dark-mode {
   transition: transform 0.25s ease;
   max-height: 80vh;
   overflow: auto;
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .palette-sheet.show {
@@ -751,7 +756,7 @@ body.dark-mode {
   width: 42px;
   height: 5px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--text) 30%, transparent);
+  background: color-mix(in srgb, var(--color-6) 45%, transparent); /* accent */
   margin: 2px auto 10px;
 }
 
@@ -778,7 +783,7 @@ body.dark-mode {
 }
 
 .sheet-close:hover {
-  background: color-mix(in srgb, var(--text) 10%, transparent);
+  background: color-mix(in srgb, var(--color-6) 16%, transparent); /* accent hover */
 }
 
 .sheet-grid {
@@ -789,7 +794,7 @@ body.dark-mode {
 
 .sheet-option {
   border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface-1) 92%, var(--text) 8%);
+  background: color-mix(in srgb, var(--color-6) 14%, rgba(255, 255, 255, 0.86));
   color: var(--text);
   border-radius: 12px;
   padding: 12px;
@@ -801,7 +806,7 @@ body.dark-mode {
 }
 
 .sheet-option:hover {
-  background: color-mix(in srgb, var(--surface-1) 84%, var(--text) 16%);
+  background: color-mix(in srgb, var(--color-6) 24%, rgba(255, 255, 255, 0.9));
 }
 
 .swatch {
