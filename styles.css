@@ -1055,3 +1055,11 @@ body.dark-mode {
   border-radius: 0 !important;
   box-shadow: none !important;
 }
+
+#paletteSheet .sheet-option .theme-label::before,
+#paletteSheet .sheet-option .theme-label::after,
+#paletteSheet .sheet-option span:not(.swatch)::before,
+#paletteSheet .sheet-option span:not(.swatch)::after {
+  content: none !important;
+  display: none !important;
+}
