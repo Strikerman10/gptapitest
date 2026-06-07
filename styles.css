@@ -731,9 +731,8 @@ body.dark-mode {
   bottom: 0;
   z-index: 1300;
 
-  /* darker white + transparency */
-  background: rgba(245, 245, 245, 0.88);
-  color: var(--text);
+  background: var(--color-2); /* was pink/white */
+  color: var(--primary-contrast);
   border: 1px solid var(--border);
   border-top-left-radius: 18px;
   border-top-right-radius: 18px;
@@ -746,6 +745,11 @@ body.dark-mode {
 
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+}
+
+.sheet-header h3,
+.sheet-close {
+  color: var(--primary-contrast);
 }
 
 .palette-sheet.show {
@@ -1054,7 +1058,7 @@ body.dark-mode {
 }
 
 #paletteSheet .sheet-option:hover {
-  background: color-mix(in srgb, var(--color-6) 24%, rgba(255,255,255,0.9));
+  background: color-mix(in srgb, var(--color-6) 12%, rgba(255,255,255,0.9));
 }
 
 #paletteSheet .sheet-option .theme-label,
