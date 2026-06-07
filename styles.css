@@ -677,7 +677,7 @@ body.dark-mode {
 }
 
 /* ===========================
-   Palette Dropdown
+   Palette Dropdown (Custom)
    =========================== */
 .theme-dropdown {
   position: relative;
@@ -686,23 +686,59 @@ body.dark-mode {
   flex-shrink: 0;
 }
 
-#paletteSelector {
+.palette-menu {
   position: absolute;
-  top: 110%;
+  top: auto;
+  bottom: calc(100% + 10px); /* opens above button */
   right: 0;
   z-index: 1000;
-  background: var(--surface-1);
-  color: var(--text);
+  min-width: 170px;
+  padding: 8px;
+  border-radius: 12px;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.25rem 0.5rem;
-  font-size: 14px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: color-mix(in srgb, var(--surface-1) 92%, black 8%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
 }
 
-#paletteSelector.hidden {
+.palette-menu.hidden {
   display: none;
 }
+
+.palette-option {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  border-radius: 8px;
+  padding: 9px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+}
+
+.palette-option:hover,
+.palette-option:focus-visible {
+  background: color-mix(in srgb, var(--surface-1) 80%, white 20%);
+  outline: none;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.75);
+  flex: 0 0 14px;
+}
+
+.swatch.green  { background: #51cf66; }
+.swatch.blue   { background: #4dabf7; }
+.swatch.purple { background: #845ef7; }
+.swatch.red    { background: #ff6b6b; }
+.swatch.teal   { background: #2ec4b6; }
 
 /* ===========================
    Scroll to Top
