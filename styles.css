@@ -731,7 +731,7 @@ body.dark-mode {
   bottom: 0;
   z-index: 1300;
 
-  background: var(--color-2); /* was pink/white */
+  background: var(--color-6); /* was pink/white */
   color: var(--primary-contrast);
   border: 1px solid var(--border);
   border-top-left-radius: 18px;
