@@ -235,7 +235,7 @@ body.dark-mode {
   .model-selector {
     flex: 1 1 auto;
     min-width: 0;
-    padding: 8px 10px;
+    padding: 8px 8px;
     font-size: 13px;
   }
 }
