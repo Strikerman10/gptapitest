@@ -1031,6 +1031,15 @@ body.dark-mode {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px;
-  min-width: 0;
+}
+
+.sheet-option .theme-name {
+  display: inline-flex;
+  width: max-content;
+  padding: 2px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  background: var(--color-6);
+  color: var(--primary-contrast);
+  line-height: 1.2;
 }
