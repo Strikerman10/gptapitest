@@ -741,6 +741,44 @@ body.dark-mode {
 }
 
 /* ===========================
+   Scroll to Bottom
+   =========================== */
+.scroll-bottom-btn {
+  position: absolute;
+  bottom: 95px;
+  right: 20px;
+  z-index: 50;
+  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: var(--color-6);
+  color: var(--primary-contrast);
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.scroll-bottom-btn:active {
+  background: var(--color-7);
+  transform: translateY(-2px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .scroll-bottom-btn:hover {
+    background: var(--color-7);
+    transform: translateY(-2px);
+  }
+}
+
+.scroll-bottom-btn svg {
+  stroke: #fff;
+}
+
+/* ===========================
    Responsive / Mobile
    =========================== */
 .sidebar-backdrop {
