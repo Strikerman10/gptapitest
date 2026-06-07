@@ -730,6 +730,12 @@ paletteMenu.addEventListener("click", (e) => {
   paletteMenu.classList.add("hidden");
 });
 
+  function updatePaletteActive() {
+  document.querySelectorAll(".palette-option").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.value === currentPalette);
+  });
+}
+
 // close when clicking outside
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".theme-dropdown")) {
