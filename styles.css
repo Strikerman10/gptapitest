@@ -1063,3 +1063,40 @@ body.dark-mode {
   content: none !important;
   display: none !important;
 }
+
+/* Keep header icon buttons styled */
+.chat-header button,
+.header-controls button,
+#themeBtn,
+#toggleThemeBtn,
+#toggleSidebarBtn {
+  background: var(--color-6);
+  color: var(--primary-contrast);
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+/* Explicitly reset palette option buttons */
+#paletteSheet .sheet-option {
+  width: 100% !important;
+  height: auto !important;
+  justify-content: flex-start !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+  background: color-mix(in srgb, var(--color-6) 14%, rgba(255,255,255,0.86)) !important;
+  color: var(--text) !important;
+}
+
+#paletteSheet .sheet-option .theme-label,
+#paletteSheet .sheet-option span:not(.swatch) {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
