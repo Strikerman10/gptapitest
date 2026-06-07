@@ -1026,3 +1026,21 @@ body.dark-mode {
     display: none !important;
   }
 }
+
+.sheet-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.sheet-option .theme-label {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: visible;
+  background: color-mix(in srgb, var(--color-6) 24%, rgba(255,255,255,0.92));
+}
