@@ -544,7 +544,6 @@ body.dark-mode {
   padding: 12px;
   border-top: 1px solid var(--border);
   background: var(--surface-1);
-  position: relative;
 }
 
 .input-area textarea {
@@ -560,69 +559,27 @@ body.dark-mode {
   font-size: 14px;
 }
 
-/* leave room for right-side arrow buttons */
-.input-area textarea {
-  padding-right: 52px; /* add this line */
-}
-
-.input-arrow-btn {
-  position: absolute;
-  right: 10px;
-  width: 30px;
-  height: 30px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--text);
+.send-btn {
+  flex-shrink: 0;
+  align-self: flex-end;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--color-6);
+  color: var(--primary-contrast);
   cursor: pointer;
-  z-index: 5;
-  transition: background .15s ease, transform .05s ease;
+  transition: background 0.25s ease, transform 0.1s ease-in-out;
+  border: none;
+  outline: none;
 }
 
-.input-arrow-btn:hover {
-  background: var(--surface-hover);
-}
-
-.input-arrow-btn:active {
-  transform: scale(0.97);
-}
-
-.input-arrow-btn svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.25;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* right side, centered vertically as a pair */
-#expandInputBtn {
-  top: calc(50% - 18px);
-  transform: translateY(-50%);
-}
-
-#collapseInputBtn {
-  top: calc(50% + 18px);
-  transform: translateY(-50%);
-}
-
-/* show only one at a time */
-.input-area:not(.expanded) #collapseInputBtn {
-  display: none;
-}
-.input-area.expanded #expandInputBtn {
-  display: none;
-}
-
-@supports not (height: 100dvh) {
-  .input-area.expanded textarea {
-    height: calc(100vh - 90px) !important;
-  }
+.send-btn:hover,
+.send-btn:active {
+  background: var(--color-7);
+  transform: translateY(-2px);
 }
 
 /* ===========================
