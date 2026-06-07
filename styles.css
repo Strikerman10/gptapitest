@@ -688,16 +688,16 @@ body.dark-mode {
 
 .palette-menu {
   position: absolute;
-  top: auto;
-  bottom: calc(100% + 10px); /* opens above button */
   right: 0;
-  z-index: 1000;
+  top: calc(100% + 10px);   /* below button */
+  bottom: auto;             /* reset */
+  z-index: 9999;
   min-width: 170px;
   padding: 8px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface-1) 92%, black 8%);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  background: var(--surface-1);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
   backdrop-filter: blur(8px);
 }
 
