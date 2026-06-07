@@ -232,14 +232,14 @@ function renderMessageContent(content) {
       "--color-6": "#666699",
       "--color-7": "#9494b8"
     },
-    Orange: {
-      "--color-1": "#F6C7A1",
-      "--color-2": "#D89A72",
-      "--color-3": "#6C4191",
-      "--color-4": "#305B98",
-      "--color-5": "#3B322C",
-      "--color-6": "#800000",
-      "--color-7": "#F30000"
+   Orange: {
+  "--color-1": "#FFD9B3",
+  "--color-2": "#FFB870",
+  "--color-3": "#F28C28",
+  "--color-4": "#C96A1B",
+  "--color-5": "#8A4513",
+  "--color-6": "#800000",
+  "--color-7": "#F30000"
 },
   };
 
