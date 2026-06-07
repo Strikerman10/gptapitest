@@ -83,17 +83,25 @@
  <!-- Palette Selector -->
 <div class="theme-dropdown">
   <button id="themeBtn" class="theme-btn" aria-label="Change Theme" aria-expanded="false" aria-controls="paletteSheet">
-    <svg xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 24 24"
-         width="22" height="22"
-         fill="currentColor" aria-hidden="true">
-      <path d="M12 2C6.48 2 2 6.04 2 11c0 3.74 2.55 6.84 6 7.87V22l4.03-2.41c.63.09
-               1.28.14 1.97.14 5.52 0 10-4.04 10-9s-4.48-9-10-9zM6.5 13c-.83 0-1.5-.67-1.5-1.5S5.67 10
-               6.5 10s1.5.67 1.5 1.5S7.33 13 6.5 13zm3-4C8.67 9 8 8.33 8 7.5S8.67 6
-               9.5 6s1.5.67 1.5 1.5S10.33 9 9.5 9zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 6
-               14.5 6s1.5.67 1.5 1.5S15.33 9 14.5 9zm2 4c-.83 0-1.5-.67-1.5-1.5S15.67 10
-               16.5 10s1.5.67 1.5 1.5S17.33 13 16.5 13z"/>
-    </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+  <defs>
+    <clipPath id="wheelClip">
+      <circle cx="12" cy="12" r="10"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#wheelClip)">
+    <path d="M12 12 L12 2 A10 10 0 0 1 20.09 6.12 Z" fill="#5e8c61"/>
+    <path d="M12 12 L20.09 6.12 A10 10 0 0 1 20.09 17.88 Z" fill="#2c4f80"/>
+    <path d="M12 12 L20.09 17.88 A10 10 0 0 1 12 22 Z" fill="#9467bd"/>
+    <path d="M12 12 L12 22 A10 10 0 0 1 3.91 17.88 Z" fill="#8b0000"/>
+    <path d="M12 12 L3.91 17.88 A10 10 0 0 1 3.91 6.12 Z" fill="#006d65"/>
+    <path d="M12 12 L3.91 6.12 A10 10 0 0 1 12 2 Z" fill="#5e8c61"/>
+  </g>
+
+  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="12" cy="12" r="2.2" fill="currentColor" opacity="0.14"/>
+</svg>
   </button>
 </div>
 
