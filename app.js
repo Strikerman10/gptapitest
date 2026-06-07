@@ -236,7 +236,7 @@ function renderMessageContent(content) {
       "--color-1": "#F6C7A1",
       "--color-2": "#D89A72",
       "--color-3": "#6C4191",
-      "--color-4": "#5A4A5F",
+      "--color-4": "#305B98",
       "--color-5": "#3B322C",
       "--color-6": "#800000",
       "--color-7": "#F30000"
