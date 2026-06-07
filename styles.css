@@ -1119,21 +1119,3 @@ body.dark-mode .message p {
 #toggleThemeBtn .light-icon {
   transform: scale(0.94);
 }
-
-#ThemeBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#ThemeBtn .icon {
-  width: 18px;
-  height: 18px;
-  display: block;
-  transform-origin: center;
-}
-
-#ThemeBtn .dark-icon,
-#ThemeBtn .light-icon {
-  transform: scale(0.70);
-}
