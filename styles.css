@@ -690,15 +690,16 @@ body.dark-mode {
   position: absolute;
   right: 0;
   top: calc(100% + 10px);   /* below button */
-  bottom: auto;             /* reset */
+  bottom: auto;
   z-index: 9999;
-  min-width: 170px;
+  width: 190px;             /* better than only min-width */
   padding: 8px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--surface-1);
   box-shadow: 0 10px 24px rgba(0,0,0,0.25);
   backdrop-filter: blur(8px);
+  box-sizing: border-box;
 }
 
 .palette-menu.hidden {
@@ -707,31 +708,44 @@ body.dark-mode {
 
 .palette-option {
   width: 100%;
+  box-sizing: border-box;
   border: 0;
   background: transparent;
   color: var(--text);
   border-radius: 8px;
-  padding: 9px 10px;
+  padding: 10px 12px;
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
   text-align: left;
   font-size: 14px;
+  line-height: 1.2;
 }
 
-.palette-option:hover,
-.palette-option:focus-visible {
-  background: color-mix(in srgb, var(--surface-1) 80%, white 20%);
-  outline: none;
+.palette-option:hover {
+  background: var(--surface-hover);
 }
 
+/* selected option = full-width color row */
+.palette-option.active {
+  color: #fff;
+}
+.palette-option[data-value="Green"].active  { background: #2f9e44; }
+.palette-option[data-value="Blue"].active   { background: #1971c2; }
+.palette-option[data-value="Purple"].active { background: #6741d9; }
+.palette-option[data-value="Red"].active    { background: #c92a2a; }
+.palette-option[data-value="Teal"].active   { background: #0f766e; }
+
+/* color swatch */
 .swatch {
   width: 14px;
   height: 14px;
+  min-width: 14px;
   border-radius: 50%;
+  display: inline-block;
   border: 1px solid rgba(255,255,255,0.75);
-  flex: 0 0 14px;
 }
 
 .swatch.green  { background: #51cf66; }
