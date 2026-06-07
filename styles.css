@@ -1102,7 +1102,20 @@ body.dark-mode .message p {
   box-shadow: 0 0 0 2px transparent; /* keeps focus from drawing a ring */
 }
 
-.icon-btn svg {
-  width: 8px !important;
-  height: 8px !important;
+#toggleThemeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#toggleThemeBtn .icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  transform-origin: center;
+}
+
+#toggleThemeBtn .dark-icon,
+#toggleThemeBtn .light-icon {
+  transform: scale(0.82);
 }
