@@ -938,4 +938,25 @@ body.dark-mode {
   padding-right: 0;
 }
 
+/* ===== FORCE palette sizing (put at very end) ===== */
+.theme-dropdown .palette-menu {
+  width: 240px !important;      /* white dropdown width */
+  padding: 12px !important;
+}
 
+.theme-dropdown .palette-menu .palette-option {
+  min-height: 46px !important;  /* each row height */
+  padding: 12px 14px !important;
+  gap: 12px !important;
+  border-radius: 10px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+.theme-dropdown .palette-menu .palette-option .swatch {
+  width: 20px !important;       /* color circle size */
+  height: 20px !important;
+  min-width: 20px !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+}
