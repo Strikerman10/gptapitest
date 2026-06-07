@@ -1101,3 +1101,8 @@ body.dark-mode .message p {
   outline: none !important;
   box-shadow: 0 0 0 2px transparent; /* keeps focus from drawing a ring */
 }
+
+.icon-btn svg {
+  width: 8px;
+  height: 8px;
+}
