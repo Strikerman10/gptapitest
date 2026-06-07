@@ -394,12 +394,12 @@ body.dark-mode {
   to { opacity: 1; transform: translateX(0); }
 }
 
-.refresh-row {
+.reload-row {
   margin-top: 6px;
   padding-left: 8px;
 }
 
-.refresh-pill {
+.reload-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -415,16 +415,16 @@ body.dark-mode {
   transform: translateX(-8px);
 }
 
-.refresh-pill:hover {
+.reload-pill:hover {
   background: var(--color-7);
   border-color: var(--color-4);
 }
 
-.refresh-pill:active {
+.reload-pill:active {
   transform: scale(0.98);
 }
 
-.refresh-pill svg {
+.reload-pill svg {
   flex-shrink: 0;
 }
 
@@ -745,7 +745,7 @@ body.dark-mode {
    =========================== */
 .scroll-bottom-btn {
   position: absolute;
-  top: 80px;
+  top: 70px;
   right: 20px;
   z-index: 50;
   display: none;
