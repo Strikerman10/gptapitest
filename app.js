@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const paletteBtn = document.getElementById("themeBtn");
 
   const scrollTopBtn = document.getElementById("scrollTopBtn");
+  const scrollBottomBtn = document.getElementById("scrollBottomBtn");
   const inputArea    = document.querySelector(".input-area");
   const textarea     = inputArea.querySelector("textarea");
 
@@ -48,12 +49,23 @@ document.addEventListener("DOMContentLoaded", () => {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
-  messagesEl.addEventListener("scroll", () => {
-    scrollTopBtn.style.display = messagesEl.scrollTop > 200 ? "flex" : "none";
-  });
-  scrollTopBtn.addEventListener("click", () => {
-    messagesEl.scrollTo({ top: 0, behavior: "smooth" });
-  });
+ messagesEl.addEventListener("scroll", () => {
+  const threshold = 200;
+
+  // Show top button only after scrolling down
+  scrollTopBtn.style.display = messagesEl.scrollTop > threshold ? "flex" : "none";
+
+  // Show bottom button only when near top
+  scrollBottomBtn.style.display = messagesEl.scrollTop <= threshold ? "flex" : "none";
+});
+
+scrollTopBtn.addEventListener("click", () => {
+  messagesEl.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+scrollBottomBtn.addEventListener("click", () => {
+  messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
+});
 
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
