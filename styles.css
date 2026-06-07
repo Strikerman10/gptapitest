@@ -574,6 +574,8 @@ body.dark-mode {
   transition: background 0.25s ease, transform 0.1s ease-in-out;
   border: none;
   outline: none;
+  position: relative;
+  bottom: 20px; /* moves it up */
 }
 
 .send-btn:hover,
