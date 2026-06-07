@@ -677,7 +677,7 @@ body.dark-mode {
 }
 
 /* ===========================
-   Palette Dropdown (Custom)
+   Palette Dropdown
    =========================== */
 .theme-dropdown {
   position: relative;
@@ -686,73 +686,23 @@ body.dark-mode {
   flex-shrink: 0;
 }
 
-.palette-menu {
+#paletteSelector {
   position: absolute;
+  top: 110%;
   right: 0;
-  top: calc(100% + 10px);   /* below button */
-  bottom: auto;
-  z-index: 9999;
-  width: 190px;             /* better than only min-width */
-  padding: 8px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
+  z-index: 1000;
   background: var(--surface-1);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
-  backdrop-filter: blur(8px);
-  box-sizing: border-box;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 14px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.palette-menu.hidden {
+#paletteSelector.hidden {
   display: none;
 }
-
-.palette-option {
-  width: 100%;
-  box-sizing: border-box;
-  border: 0;
-  background: transparent;
-  color: var(--text);
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  text-align: left;
-  font-size: 14px;
-  line-height: 1.2;
-}
-
-.palette-option:hover {
-  background: var(--surface-hover);
-}
-
-/* selected option = full-width color row */
-.palette-option.active {
-  color: #fff;
-}
-.palette-option[data-value="Green"].active  { background: #2f9e44; }
-.palette-option[data-value="Blue"].active   { background: #1971c2; }
-.palette-option[data-value="Purple"].active { background: #6741d9; }
-.palette-option[data-value="Red"].active    { background: #c92a2a; }
-.palette-option[data-value="Teal"].active   { background: #0f766e; }
-
-/* color swatch */
-.swatch {
-  width: 14px;
-  height: 14px;
-  min-width: 14px;
-  border-radius: 50%;
-  display: inline-block;
-  border: 1px solid rgba(255,255,255,0.75);
-}
-
-.swatch.green  { background: #51cf66; }
-.swatch.blue   { background: #4dabf7; }
-.swatch.purple { background: #845ef7; }
-.swatch.red    { background: #ff6b6b; }
-.swatch.teal   { background: #2ec4b6; }
 
 /* ===========================
    Scroll to Top
@@ -936,27 +886,4 @@ body.dark-mode {
 .sidebar.collapsed .chat-item {
   justify-content: center;
   padding-right: 0;
-}
-
-/* ===== FORCE palette sizing (put at very end) ===== */
-.theme-dropdown .palette-menu {
-  width: 240px !important;      /* white dropdown width */
-  padding: 12px !important;
-}
-
-.theme-dropdown .palette-menu .palette-option {
-  min-height: 46px !important;  /* each row height */
-  padding: 12px 14px !important;
-  gap: 12px !important;
-  border-radius: 10px !important;
-  appearance: none !important;
-  -webkit-appearance: none !important;
-}
-
-.theme-dropdown .palette-menu .palette-option .swatch {
-  width: 20px !important;       /* color circle size */
-  height: 20px !important;
-  min-width: 20px !important;
-  border-radius: 50% !important;
-  display: inline-block !important;
 }
