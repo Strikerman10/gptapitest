@@ -764,12 +764,6 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-  paletteSelector.addEventListener("change", e => {
-    currentPalette = e.target.value;
-    applyTheme();
-    paletteSelector.classList.add("hidden");
-  });
-
   (async () => {
     applyTheme();
 
