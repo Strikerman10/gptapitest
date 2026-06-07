@@ -731,7 +731,8 @@ body.dark-mode {
   bottom: 0;
   z-index: 1300;
 
-  background: var(--color-2); /* was pink/white */
+  background: var(--color-2);   /* exact color */
+  opacity: 1;                   /* ensure no fade */
   color: var(--primary-contrast);
   border: 1px solid var(--border);
   border-top-left-radius: 18px;
@@ -743,8 +744,8 @@ body.dark-mode {
   max-height: 80vh;
   overflow: auto;
 
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: none;        /* remove washout */
+  -webkit-backdrop-filter: none;
 }
 
 .sheet-header h3,
