@@ -6,36 +6,45 @@
   <title>ChatGPT</title>
   <link rel="stylesheet" href="styles.css">
   <style>
+    .icon {
+      width: 20px;
+      height: 20px;
+    }
+    .hidden {
+      display: none;
+    }
 
-   .palette-menu {
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 10px);
-    z-index: 9999;
-    min-width: 170px;
-    padding: 8px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: var(--surface-1);
-    box-shadow: 0 10px 24px rgba(0,0,0,0.25);
-  }
-  .palette-menu.hidden { display: none; }
-  
-  .palette-option {
-    width: 100%;
-    border: 0;
-    background: transparent;
-    color: var(--text);
-    border-radius: 8px;
-    padding: 9px 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    text-align: left;
-  }
-  .palette-option:hover { background: var(--surface-hover); }
-      
+    /* Ensure icons follow button color */
+    #toggleThemeBtn {
+      border: none;
+      cursor: pointer;
+    }
+
+    /* 🎨 Palette dropdown positioning */
+    .theme-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+   
+    #themeBtn svg {
+      width: 22px;
+      height: 22px;
+      fill: #fff; /* force white so it doesn’t disappear */
+    }
+    #paletteSelector {
+      position: absolute;
+      top: 110%;
+      right: 0;
+      z-index: 1000;
+      font-size: 14px;
+      border: 1px solid var(--border, #ccc);
+      border-radius: 6px;
+      padding: 0.25rem 0.5rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    #paletteSelector.hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -112,13 +121,13 @@
         </svg>
       </button>
 
-          <div id="paletteMenu" class="palette-menu hidden">
-        <button class="palette-option" data-value="Green"><span class="swatch green"></span>Green</button>
-        <button class="palette-option" data-value="Blue"><span class="swatch blue"></span>Blue</button>
-        <button class="palette-option" data-value="Purple"><span class="swatch purple"></span>Purple</button>
-        <button class="palette-option" data-value="Red"><span class="swatch red"></span>Red</button>
-        <button class="palette-option" data-value="Teal"><span class="swatch teal"></span>Teal</button>
-      </div>
+      <select id="paletteSelector" aria-label="Select color palette" class="hidden">
+        <option value="Green">Green</option>
+        <option value="Blue">Blue</option>
+        <option value="Purple">Purple</option>
+        <option value="Red">Red</option>
+        <option value="Teal">Teal</option>
+      </select>
     </div>
   </div>
 </div>
