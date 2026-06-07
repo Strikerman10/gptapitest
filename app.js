@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   inputEl.addEventListener("input", autoResize);
   autoResize();
 
-  const paletteMenu       = document.getElementById("paletteMenu");
+  const paletteSelector   = document.getElementById("paletteSelector");
   const themeToggleBtn    = document.getElementById("toggleThemeBtn");
   const sidebarEl         = document.querySelector(".sidebar");
   const toggleSidebarBtn  = document.getElementById("toggleSidebarBtn");
@@ -705,6 +705,7 @@ modelSelector.addEventListener("change", (e) => {
   localStorage.setItem("chat_model", currentModel);
 });
 
+paletteSelector.value = currentPalette;
 const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
 const lightIcon = themeToggleBtn.querySelector(".light-icon");
 darkIcon.classList.toggle("hidden", currentMode === "dark");
@@ -717,31 +718,18 @@ lightIcon.classList.toggle("hidden", currentMode === "light");
     applyTheme();
   });
 
-paletteBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  paletteMenu.classList.toggle("hidden");
-});
-
-paletteMenu.addEventListener("click", (e) => {
-  const option = e.target.closest(".palette-option");
-  if (!option) return;
-  currentPalette = option.dataset.value;
-  applyTheme();
-  paletteMenu.classList.add("hidden");
-});
-
-  function updatePaletteActive() {
-  document.querySelectorAll(".palette-option").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.value === currentPalette);
+  paletteBtn.addEventListener("click", () => {
+    paletteSelector.classList.toggle("hidden");
+    if (!paletteSelector.classList.contains("hidden")) {
+      paletteSelector.focus();
+    }
   });
-}
 
-// close when clicking outside
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".theme-dropdown")) {
-    paletteMenu.classList.add("hidden");
-  }
-});
+  paletteSelector.addEventListener("change", e => {
+    currentPalette = e.target.value;
+    applyTheme();
+    paletteSelector.classList.add("hidden");
+  });
 
   (async () => {
     applyTheme();
