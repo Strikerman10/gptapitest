@@ -731,7 +731,7 @@ body.dark-mode {
   bottom: 0;
   z-index: 1300;
 
-  background: var(--color-2);   /* exact color */
+  background: var(--color-3);   /* exact color */
   opacity: 1;                   /* ensure no fade */
   color: var(--primary-contrast);
   border: 1px solid var(--border);
