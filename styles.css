@@ -731,7 +731,7 @@ body.dark-mode {
   bottom: 0;
   z-index: 1300;
 
-  background: var(--color-6); /* was pink/white */
+  background: var(--color-2); /* was pink/white */
   color: var(--primary-contrast);
   border: 1px solid var(--border);
   border-top-left-radius: 18px;
@@ -1053,7 +1053,7 @@ body.dark-mode {
   gap: 10px;
   font-size: 14px;
   cursor: pointer;
-  background: color-mix(in srgb, var(--color-6) 14%, rgba(255,255,255,0.86));
+  background: color-mix(in srgb, var(--color-6) 0%, rgba(255,255,255,0.86));
   color: var(--text);
 }
 
