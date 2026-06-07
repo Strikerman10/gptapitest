@@ -3,82 +3,27 @@
 // ==========================
 const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
-let isLoggedIn = false;
+// Temporary user ID: will be asked once then stored in localStorage
+let userId = localStorage.getItem("chat_user_id");
 
-async function login(email, password) {
-  const res = await fetch(`${WORKER_URL}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ email, password })
-  });
-  if (!res.ok) throw new Error(await res.text());
-  isLoggedIn = true;
-}
 
 let chats = [];
 let currentIndex = null;
 let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini-2026-03-17";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const messagesEl = document.getElementById("messages");
-  const inputEl = document.getElementById("input");
-  const inputArea = document.querySelector(".input-area");
-
   const chatListEl = document.getElementById("chatList");
-const chatTitleEl = document.getElementById("chatHistory");
+  const messagesEl = document.getElementById("messages");
+  const chatTitleEl = document.getElementById("chatTitle");
+  const inputEl = document.getElementById("input");
 
-  const expandInputBtn = document.getElementById("expandInputBtn");
-  const collapseInputBtn = document.getElementById("collapseInputBtn");
-
-  const messagesPane = document.querySelector(".messages") || messagesEl;
-
-  let inputExpanded = false;
-
-  // ---- Auto-resize textarea ----
   function autoResize() {
     inputEl.style.height = "auto";
-    const max = inputExpanded ? inputEl.scrollHeight : 200; // no cap when expanded
-    inputEl.style.height = Math.min(inputEl.scrollHeight, max) + "px";
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 200) + "px";
   }
-
   inputEl.addEventListener("input", autoResize);
   autoResize();
 
-  // ---- Expand / Collapse input area ----
-  function setInputExpanded(expanded) {
-    inputExpanded = expanded;
-    inputArea.classList.toggle("expanded", expanded);
-
-    // hide chat messages when expanded
-    if (messagesPane) messagesPane.style.display = expanded ? "none" : "";
-
-    // lock page scroll in expanded mode
-    document.body.style.overflow = expanded ? "hidden" : "";
-
-    if (expanded) {
-      // let CSS expanded height take over
-      inputEl.style.height = "";
-      inputEl.focus();
-    } else {
-      autoResize();
-    }
-  }
-
-  if (expandInputBtn) {
-    expandInputBtn.addEventListener("click", () => setInputExpanded(true));
-  }
-
-  if (collapseInputBtn) {
-    collapseInputBtn.addEventListener("click", () => setInputExpanded(false));
-  }
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && inputExpanded) {
-      setInputExpanded(false);
-    }
-  });
-    
   const paletteSelector   = document.getElementById("paletteSelector");
   const themeToggleBtn    = document.getElementById("toggleThemeBtn");
   const sidebarEl         = document.querySelector(".sidebar");
@@ -91,511 +36,659 @@ const chatTitleEl = document.getElementById("chatHistory");
 
   const paletteBtn = document.getElementById("themeBtn");
 
- const scrollTopBtn = document.getElementById("scrollTopBtn");
-const composerArea = document.querySelector(".input-area");
-const textarea = composerArea?.querySelector("textarea");
+  const scrollTopBtn = document.getElementById("scrollTopBtn");
+  const inputArea    = document.querySelector(".input-area");
+  const textarea     = inputArea.querySelector("textarea");
 
-function updateScrollBtnPosition() {
-  if (!composerArea || !scrollTopBtn) return; // <-- guard
-  const inputHeight = composerArea.offsetHeight;
-  scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
-}
+  function updateScrollBtnPosition() {
+    const inputHeight = inputArea.offsetHeight;
+    scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
+  }
+  updateScrollBtnPosition();
+  textarea.addEventListener("input", updateScrollBtnPosition);
+  window.addEventListener("resize", updateScrollBtnPosition);
 
-updateScrollBtnPosition();
-textarea?.addEventListener("input", updateScrollBtnPosition); // keep only this one
-window.addEventListener("resize", updateScrollBtnPosition);
-
- if (messagesEl && scrollTopBtn) {
   messagesEl.addEventListener("scroll", () => {
     scrollTopBtn.style.display = messagesEl.scrollTop > 200 ? "flex" : "none";
   });
-
   scrollTopBtn.addEventListener("click", () => {
     messagesEl.scrollTo({ top: 0, behavior: "smooth" });
   });
-}
 
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
 
-  function escapeHTML(str) {
-    return str
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+function escapeHTML(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function renderMessageContent(content) {
+  const parts = content.split(/```([\s\S]*?)```/g);
+  let html = "";
+
+  for (let i = 0; i < parts.length; i++) {
+    if (i % 2 === 0) {
+      // normal text
+      html += `<div class="msg-paragraph">${escapeHTML(parts[i]).replace(/\n/g, "<br>")}</div>`;
+    } else {
+      // code block
+      let code = parts[i].trim();
+
+      // remove optional language line like "js\n"
+      const firstLineBreak = code.indexOf("\n");
+      let language = "";
+      if (firstLineBreak !== -1) {
+        const possibleLang = code.slice(0, firstLineBreak).trim();
+        if (/^[a-zA-Z0-9_-]+$/.test(possibleLang)) {
+          language = possibleLang;
+          code = code.slice(firstLineBreak + 1);
+        }
+      }
+
+      html += `
+        <div class="code-block-wrapper" data-code="${encodeURIComponent(code)}">
+          <button class="copy-code-btn" type="button">Copy</button>
+          ${language ? `<div class="code-language">${language}</div>` : ""}
+          <pre><code>${escapeHTML(code)}</code></pre>
+        </div>
+      `;
+    }
   }
 
-  function renderMessageContent(content) {
-    const parts = content.split(/```([\s\S]*?)```/g);
-let html = "";
-
-for (let i = 0; i < parts.length; i++) {
-if (i % 2 === 0) {
-html += `<div class="msg-paragraph">${escapeHTML(parts[i]).replace(/\n/g, "<br>")}</div>`;
-} else {
-let code = parts[i].trim();
-const firstLineBreak = code.indexOf("\n");
-let language = "";
-if (firstLineBreak !== -1) {
-const possibleLang = code.slice(0, firstLineBreak).trim();
-if (/^[a-zA-Z0-9_-]+$/.test(possibleLang)) {
-language = possibleLang;
-code = code.slice(firstLineBreak + 1);
+  return html;
 }
-}
+  
+  function openSidebar() {
+    if (window.innerWidth <= 768) {
+      sidebarEl.classList.add("open");
+      backdropEl.classList.add("visible");
+    } else {
+      sidebarEl.classList.remove("collapsed");
+    }
+    hamburgerIcon.classList.add("hidden");
+    chevronIcon.classList.remove("hidden");
+  }
 
-html += `
-<div class="code-block-wrapper" data-code="${encodeURIComponent(code)}">
-<button class="copy-code-btn" type="button">Copy</button>
-${language ? `<div class="code-language">${language}</div>` : ""}
-<pre><code>${escapeHTML(code)}</code></pre>
-</div>
-`;
-}
-}
+  function closeSidebar() {
+    if (window.innerWidth <= 768) {
+      sidebarEl.classList.remove("open");
+      backdropEl.classList.remove("visible");
+    } else {
+      sidebarEl.classList.add("collapsed");
+    }
+    hamburgerIcon.classList.remove("hidden");
+    chevronIcon.classList.add("hidden");
+  }
 
-return html;
-}
+  function setInitialState() {
+    if (window.innerWidth <= 768) {
+      closeSidebar();
+    } else {
+      openSidebar();
+      backdropEl.classList.remove("visible");
+    }
+  }
+  setInitialState();
 
-function openSidebar() {
-if (window.innerWidth <= 768) {
-sidebarEl.classList.add("open");
-backdropEl.classList.add("visible");
-} else {
-sidebarEl.classList.remove("collapsed");
-}
-hamburgerIcon.classList.add("hidden");
-chevronIcon.classList.remove("hidden");
-}
+  toggleSidebarBtn.addEventListener("click", () => {
+    if (window.innerWidth <= 768) {
+      if (sidebarEl.classList.contains("open")) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    } else {
+      if (sidebarEl.classList.contains("collapsed")) {
+        openSidebar();
+      } else {
+        closeSidebar();
+      }
+    }
+  });
 
-function closeSidebar() {
-if (window.innerWidth <= 768) {
-sidebarEl.classList.remove("open");
-backdropEl.classList.remove("visible");
-} else {
-sidebarEl.classList.add("collapsed");
-}
-hamburgerIcon.classList.remove("hidden");
-chevronIcon.classList.add("hidden");
-}
+  backdropEl.addEventListener("click", closeSidebar);
 
-function setInitialState() {
-if (window.innerWidth <= 768) {
-closeSidebar();
-} else {
-openSidebar();
-backdropEl.classList.remove("visible");
-}
-}
-setInitialState();
+  let touchStartX = 0;
+  document.addEventListener("touchstart", e => {
+    if (window.innerWidth > 768) return;
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  document.addEventListener("touchend", e => {
+    if (window.innerWidth > 768) return;
+    const touchEndX = e.changedTouches[0].screenX;
+    const deltaX = touchEndX - touchStartX;
 
-toggleSidebarBtn.addEventListener("click", () => {
-if (window.innerWidth <= 768) {
-if (sidebarEl.classList.contains("open")) closeSidebar();
-else openSidebar();
-} else {
-if (sidebarEl.classList.contains("collapsed")) openSidebar();
-else closeSidebar();
-}
-});
+    if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) {
+      openSidebar();
+    }
+    if (deltaX < -60 && sidebarEl.classList.contains("open")) {
+      closeSidebar();
+    }
+  });
 
-backdropEl.addEventListener("click", closeSidebar);
+  const palettes = {
+    Green: {
+      "--color-1": "#94e8b4",
+      "--color-2": "#72bda3",
+      "--color-3": "#5e8c61",
+      "--color-4": "#4e6151",
+      "--color-5": "#3b322c",
+      "--color-6": "#800000",
+      "--color-7": "#f30000"
+    },
+    Blue: {
+      "--color-1": "#6da5f8",
+      "--color-2": "#3f5fa3",
+      "--color-3": "#2c4f80",
+      "--color-4": "#1e3759",
+      "--color-5": "#0d1628",
+      "--color-6": "#4e1818",
+      "--color-7": "#ac3535"
+    },
+    Purple: {
+      "--color-1": "#e3c6ff",
+      "--color-2": "#c19df0",
+      "--color-3": "#9467bd",
+      "--color-4": "#6a4c93",
+      "--color-5": "#3e2c41",
+      "--color-6": "#007373",
+      "--color-7": "#00e9e9"
+    },
+    Red: {
+      "--color-1": "#e07b7b",
+      "--color-2": "#b94c4c",
+      "--color-3": "#8b0000",
+      "--color-4": "#5a0000",
+      "--color-5": "#1a0a0a",
+      "--color-6": "#008080",
+      "--color-7": "#00f3f3"
+    },
+    Teal: {
+      "--color-1": "#7fd7d0",
+      "--color-2": "#40a8a0",
+      "--color-3": "#006d65",
+      "--color-4": "#004944",
+      "--color-5": "#0a1c1b",
+      "--color-6": "#666699",
+      "--color-7": "#9494b8"
+    },
+  };
 
-let touchStartX = 0;
-document.addEventListener("touchstart", e => {
-if (window.innerWidth > 768) return;
-touchStartX = e.changedTouches[0].screenX;
-});
-document.addEventListener("touchend", e => {
-if (window.innerWidth > 768) return;
-const touchEndX = e.changedTouches[0].screenX;
-const deltaX = touchEndX - touchStartX;
+  const neutrals = {
+    light: {
+      "--bg": "hsl(0 0% 99%)",
+      "--surface-1": "hsl(0 0% 98%)",
+      "--surface-2": "hsl(0 0% 96%)",
+      "--surface-hover": "hsl(0 0% 94%)",
+      "--border": "hsl(0 0% 85%)",
+      "--text": "hsl(0 0% 10%)",
+      "--text-muted": "hsl(0 0% 45%)"
+    },
+    dark: {
+      "--bg": "hsl(0 0% 8%)",
+      "--surface-1": "hsl(0 0% 12%)",
+      "--surface-2": "hsl(0 0% 16%)",
+      "--surface-hover": "hsl(0 0% 20%)",
+      "--border": "hsl(0 0% 30%)",
+      "--text": "hsl(0 0% 92%)",
+      "--text-muted": "hsl(0 0% 70%)"
+    }
+  };
 
-if (touchStartX < 50 && deltaX > 60 && !sidebarEl.classList.contains("open")) openSidebar();
-if (deltaX < -60 && sidebarEl.classList.contains("open")) closeSidebar();
-});
+  let currentPalette = localStorage.getItem("palette") || "Red";
+  let currentMode = localStorage.getItem("mode") || "light";
 
-const palettes = {
-Green: { "--color-1": "#94e8b4","--color-2": "#72bda3","--color-3": "#5e8c61","--color-4": "#4e6151","--color-5": "#3b322c","--color-6": "#800000","--color-7": "#f30000" },
-Blue: { "--color-1": "#6da5f8","--color-2": "#3f5fa3","--color-3": "#2c4f80","--color-4": "#1e3759","--color-5": "#0d1628","--color-6": "#4e1818","--color-7": "#ac3535" },
-Purple: { "--color-1": "#e3c6ff","--color-2": "#c19df0","--color-3": "#9467bd","--color-4": "#6a4c93","--color-5": "#3e2c41","--color-6": "#007373","--color-7": "#00e9e9" },
-Red: { "--color-1": "#e07b7b","--color-2": "#b94c4c","--color-3": "#8b0000","--color-4": "#5a0000","--color-5": "#1a0a0a","--color-6": "#008080","--color-7": "#00f3f3" },
-Teal: { "--color-1": "#7fd7d0","--color-2": "#40a8a0","--color-3": "#006d65","--color-4": "#004944","--color-5": "#0a1c1b","--color-6": "#666699","--color-7": "#9494b8" },
-};
+  function applyTheme() {
+    const root = document.documentElement;
+    const palette = palettes[currentPalette];
+   const neutralSet = neutrals[currentMode];
 
-const neutrals = {
-light: {
-"--bg": "hsl(0 0% 99%)",
-"--surface-1": "hsl(0 0% 98%)",
-"--surface-2": "hsl(0 0% 96%)",
-"--surface-hover": "hsl(0 0% 94%)",
-"--border": "hsl(0 0% 85%)",
-"--text": "hsl(0 0% 10%)",
-"--text-muted": "hsl(0 0% 45%)"
-},
-dark: {
-"--bg": "hsl(0 0% 8%)",
-"--surface-1": "hsl(0 0% 12%)",
-"--surface-2": "hsl(0 0% 16%)",
-"--surface-hover": "hsl(0 0% 20%)",
-"--border": "hsl(0 0% 30%)",
-"--text": "hsl(0 0% 92%)",
-"--text-muted": "hsl(0 0% 70%)"
-}
-};
+    for (const [key, value] of Object.entries(palette)) {
+      root.style.setProperty(key, value);
+    }
+    for (const [key, value] of Object.entries(neutralSet)) {
+      root.style.setProperty(key, value);
+    }
 
-let currentPalette = localStorage.getItem("palette") || "Red";
-let currentMode = localStorage.getItem("mode") || "light";
+    document.body.classList.toggle("dark-mode", currentMode === "dark" || currentPalette === "Amoled");
+    document.body.classList.toggle("amoled-mode", currentPalette === "Amoled");
 
-function applyTheme() {
-const root = document.documentElement;
-const palette = palettes[currentPalette];
-const neutralSet = neutrals[currentMode];
+    localStorage.setItem("palette", currentPalette);
+    localStorage.setItem("mode", currentMode);
+  }
 
-for (const [key, value] of Object.entries(palette)) root.style.setProperty(key, value);
-for (const [key, value] of Object.entries(neutralSet)) root.style.setProperty(key, value);
+  async function loadChats() {
+    try {
+      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+      if (res.ok) {
+        const workerChats = await res.json();
+        if (Array.isArray(workerChats) && workerChats.length) {
+          chats = workerChats;
+          currentIndex = 0;
+          localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
+          localStorage.setItem("secure_chat_index", String(currentIndex));
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("Worker load failed, falling back to local:", err);
+    }
 
-document.body.classList.toggle("dark-mode", currentMode === "dark" || currentPalette === "Amoled");
-document.body.classList.toggle("amoled-mode", currentPalette === "Amoled");
+    const raw = localStorage.getItem("secure_chat_chats");
+    const idx = localStorage.getItem("secure_chat_index");
+    if (raw) {
+      try {
+        chats = JSON.parse(raw);
+        currentIndex = idx !== null ? Number(idx) : chats.length ? 0 : null;
+        await saveChatsToWorker();
+      } catch (e) {
+        console.warn("Error parsing local chats:", e);
+        chats = [];
+        createNewChat();
+      }
+    } else {
+      chats = [];
+      createNewChat();
+    }
+  }
 
-localStorage.setItem("palette", currentPalette);
-localStorage.setItem("mode", currentMode);
-}
+  function saveChats() {
+    localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
+    localStorage.setItem("secure_chat_index", String(currentIndex));
+    saveChatsToWorker();
+  }
 
-async function checkAuth() {
-try {
-const res = await fetch(`${WORKER_URL}/me`, { credentials: "include" });
-if (!res.ok) return false;
-const data = await res.json();
-isLoggedIn = !!data.authenticated;
-return isLoggedIn;
-} catch {
-isLoggedIn = false;
-return false;
-}
-}
+  async function saveChatsToWorker() {
+    if (!userId) return;
+    try {
+      const res = await fetch(`${WORKER_URL}/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, chats }),
+      });
+      if (!res.ok) console.warn("Worker save failed:", await res.text());
+    } catch (e) {
+      console.warn("Could not reach worker:", e);
+    }
+  }
 
-async function loadChats() {
-const raw = localStorage.getItem("secure_chat_chats");
-const idx = localStorage.getItem("secure_chat_index");
+  function formatDateTime(date = new Date()) {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${hours}:${minutes}\n${day}/${month}/${year}`;
+  }
 
-if (raw) {
-try {
-chats = JSON.parse(raw);
-currentIndex = idx !== null ? Number(idx) : chats.length ? 0 : null;
-} catch (e) {
-console.warn("Error parsing local chats:", e);
-chats = [];
-createNewChat();
-}
-} else {
-chats = [];
-createNewChat();
-}
-}
+  async function loadChatsFromWorker() {
+    try {
+      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+      if (!res.ok) return;
+      const workerChats = await res.json();
+      if (Array.isArray(workerChats) && workerChats.length) {
+        chats = workerChats;
+        currentIndex = 0;
+        renderChatList();
+        renderMessages();
+      }
+    } catch (e) {
+      console.warn("Could not load chats from worker:", e);
+    }
+  }
 
-function saveChats() {
-localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
-localStorage.setItem("secure_chat_index", String(currentIndex));
-saveChatsToWorker();
-}
+  function createNewChat() {
+    const newChat = { id: Date.now().toString(), title: "New Chat", messages: [] };
+    chats.unshift(newChat);
+    currentIndex = 0;
+    saveChats();
+    renderChatList();
+    renderMessages();
+    saveChatsToWorker();
+  }
 
-async function saveChatsToWorker() {
-if (!isLoggedIn) return;
-try {
-await Promise.all(
-chats.map(chat =>
-fetch(`${WORKER_URL}/save`, {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-credentials: "include",
-body: JSON.stringify({
-sessionId: chat.id,
-messages: chat.messages || []
-}),
-})
-)
-);
-} catch (e) {
-console.warn("Could not reach worker:", e);
-}
-}
+  function deleteChat(index) {
+    if (index < 0 || index >= chats.length) return;
+    chats.splice(index, 1);
+    currentIndex = chats.length === 0 ? null : 0;
+    saveChats();
+    saveChatsToWorker();
+    renderChatList();
+    renderMessages();
+  }
 
-async function loadMessagesForChat(chat) {
-if (!isLoggedIn) return;
-try {
-const res = await fetch(
-`${WORKER_URL}/load?sessionId=${encodeURIComponent(chat.id)}`,
-{ credentials: "include" }
-);
-if (!res.ok) return;
-const data = await res.json();
-if (Array.isArray(data.messages) && data.messages.length > 0) {
-  chat.messages = data.messages;
-}
-} catch (e) {
-console.warn("Could not load chat messages:", e);
-}
-}
+  function renderChatList() {
+    chatListEl.innerHTML = "";
+    chats.forEach((chat, i) => {
+      const item = document.createElement("div");
+      item.className = "chat-item" + (i === currentIndex ? " selected" : "");
 
-function formatDateTime(date = new Date()) {
-const day = String(date.getDate()).padStart(2, "0");
-const month = String(date.getMonth() + 1).padStart(2, "0");
-const year = date.getFullYear();
-const hours = String(date.getHours()).padStart(2, "0");
-const minutes = String(date.getMinutes()).padStart(2, "0");
-return `${hours}:${minutes}\n${day}/${month}/${year}`;
-}
+      function truncate(str, n) {
+        return str.length > n ? str.slice(0, n) + "…" : str;
+      }
 
-function createNewChat() {
-const newChat = { id: Date.now().toString(), title: "New Chat", messages: [] };
-chats.unshift(newChat);
-currentIndex = 0;
-saveChats();
-renderChatList();
-renderMessages();
-saveChatsToWorker();
-}
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      const titleLimit = isMobile ? 45 : 70;
+      const subtitleLimit = isMobile ? 40 : 60;
 
-function deleteChat(index) {
-if (index < 0 || index >= chats.length) return;
-chats.splice(index, 1);
-currentIndex = chats.length === 0 ? null : 0;
-saveChats();
-saveChatsToWorker();
-renderChatList();
-renderMessages();
-}
+      const preview = document.createElement("div");
+      preview.className = "chat-preview";
 
-function renderChatList() {
-chatListEl.innerHTML = "";
-chats.forEach((chat, i) => {
-const item = document.createElement("div");
-item.className = "chat-item" + (i === currentIndex ? " selected" : "");
+      const title = truncate(chat.title || "New Chat", titleLimit);
+      const subtitle = (chat.messages && chat.messages.length > 0)
+        ? truncate(chat.messages[chat.messages.length - 1].content, subtitleLimit)
+        : "";
 
-function truncate(str, n) {
-return str.length > n ? str.slice(0, n) + "…" : str;
-}
+      preview.innerHTML = `
+        <div class="chat-title">${title}</div>
+        <div class="chat-subtitle">${subtitle}</div>
+      `;
 
-const isMobile = window.matchMedia("(max-width: 768px)").matches;
-const titleLimit = isMobile ? 45 : 70;
-const subtitleLimit = isMobile ? 40 : 60;
+      const delBtn = document.createElement("button");
+      delBtn.className = "delete-btn";
+      delBtn.setAttribute("aria-label", "Delete chat");
+      delBtn.textContent = "×";
+      delBtn.addEventListener("click", (e) => { e.stopPropagation(); deleteChat(i); });
 
-const preview = document.createElement("div");
-preview.className = "chat-preview";
+      item.addEventListener("click", () => {
+        const [chat] = chats.splice(i, 1);
+        chats.unshift(chat);
+        currentIndex = 0;
+        saveChats();
+        renderChatList();
+        renderMessages();
+        if (window.innerWidth <= 768) closeSidebar();
+      });
 
-const title = truncate(chat.title || "New Chat", titleLimit);
-const subtitle = (chat.messages && chat.messages.length > 0)
-? truncate(chat.messages[chat.messages.length - 1].content, subtitleLimit)
-: "";
-
-preview.innerHTML = `
-<div class="chat-title">${title}</div>
-<div class="chat-subtitle">${subtitle}</div>
-`;
-
-const delBtn = document.createElement("button");
-delBtn.className = "delete-btn";
-delBtn.setAttribute("aria-label", "Delete chat");
-delBtn.textContent = "×";
-delBtn.addEventListener("click", (e) => { e.stopPropagation(); deleteChat(i); });
-
-item.addEventListener("click", async () => {
-const [selected] = chats.splice(i, 1);
-chats.unshift(selected);
-currentIndex = 0;
-
-await loadMessagesForChat(chats[0]);
-
-saveChats();
-renderChatList();
-renderMessages();
-if (window.innerWidth <= 768) closeSidebar();
-});
-
-item.appendChild(preview);
-item.appendChild(delBtn);
-chatListEl.appendChild(item);
-});
-}
+      item.appendChild(preview);
+      item.appendChild(delBtn);
+      chatListEl.appendChild(item);
+    });
+  }
 
 function renderMessages() {
-messagesEl.innerHTML = "";
-chatTitleEl.textContent = "Messages";
+  messagesEl.innerHTML = "";
+  chatTitleEl.textContent = "Messages";
 
-if (currentIndex === null || !chats[currentIndex]) {
-messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
-return;
+  if (currentIndex === null || !chats[currentIndex]) {
+    messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
+    return;
+  }
+
+  const chat = chats[currentIndex];
+  if (!chat.messages || !chat.messages.length) {
+    messagesEl.innerHTML = `<p class="placeholder">This chat is empty.</p>`;
+    return;
+  }
+
+  chat.messages.forEach((msg, idx) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = `message-wrapper ${msg.role}`;
+
+    const div = document.createElement("div");
+    div.className = `message ${msg.role}`;
+
+    const textDiv = document.createElement("div");
+    textDiv.className = "msg-text";
+
+    if (msg.content === "__TYPING__") {
+      textDiv.innerHTML = `
+        <div class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      `;
+    } else if (msg.role === "assistant") {
+      textDiv.innerHTML = renderMessageContent(msg.content);
+    } else {
+      textDiv.textContent = msg.content;
+    }
+
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "msg-time";
+    timeDiv.textContent = msg.time || "";
+    textDiv.appendChild(timeDiv);
+
+    div.appendChild(textDiv);
+    wrapper.appendChild(div);
+
+    if (msg.role === "assistant" && msg.content !== "__TYPING__") {
+      const refreshRow = document.createElement("div");
+      refreshRow.className = "refresh-row";
+
+      const refreshBtn = document.createElement("button");
+      refreshBtn.type = "button";
+      refreshBtn.className = "refresh-pill";
+      refreshBtn.title = "Retry this response";
+      refreshBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" width="16" height="16"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        <span>Refresh</span>
+      `;
+
+      refreshBtn.addEventListener("click", async () => {
+        chat.messages.splice(idx, 1);
+        chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
+
+        saveChats();
+        saveChatsToWorker();
+        renderMessages();
+
+        try {
+          const cleanMessages = chat.messages
+            .filter(m => m.content !== "__TYPING__")
+            .slice(-10);
+
+          const res = await fetch(`${WORKER_URL}/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: currentModel,
+              messages: cleanMessages,
+            }),
+          });
+
+          if (!res.ok) {
+            const errText = await res.text();
+            throw new Error(`Worker returned ${res.status}: ${errText}`);
+          }
+
+          const data = await res.json();
+          const answer =
+            data?.output_text ||
+            (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
+            "No response";
+
+          chat.messages[chat.messages.length - 1] = {
+            role: "assistant",
+            content: answer,
+            time: formatDateTime(),
+          };
+        } catch (e) {
+          chat.messages[chat.messages.length - 1] = {
+            role: "assistant",
+            content: "Error: " + e.message,
+            time: formatDateTime(),
+          };
+        }
+
+        saveChats();
+        saveChatsToWorker();
+        renderMessages();
+        renderChatList();
+      });
+
+      refreshRow.appendChild(refreshBtn);
+      wrapper.appendChild(refreshRow);
+    }
+
+    messagesEl.appendChild(wrapper);
+  });
+
+  messagesEl.querySelectorAll(".copy-code-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const wrapper = btn.closest(".code-block-wrapper");
+      const code = decodeURIComponent(wrapper.dataset.code);
+
+      try {
+        await navigator.clipboard.writeText(code);
+        const oldText = btn.textContent;
+        btn.textContent = "Copied!";
+        setTimeout(() => {
+          btn.textContent = oldText;
+        }, 1200);
+      } catch (err) {
+        console.warn("Copy failed:", err);
+        alert("Could not copy code.");
+      }
+    });
+  });
+
+  messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-const chat = chats[currentIndex];
-if (!chat.messages || !chat.messages.length) {
-messagesEl.innerHTML = `<p class="placeholder">This chat is empty.</p>`;
-return;
+  async function sendMessage() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+    if (currentIndex === null) createNewChat();
+    const chat = chats[currentIndex];
+
+    const userMessage = { role: "user", content: text, time: formatDateTime() };
+    chat.messages.push(userMessage);
+
+    if (chat.title === "New Chat" || !chat.title) {
+      const firstLine = text.split(/\r?\n/)[0];
+      chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
+    }
+
+    chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
+    renderMessages();
+    inputEl.value = "";
+    autoResize();
+    saveChats();
+    saveChatsToWorker();
+
+    try {
+      const cleanMessages = chat.messages
+        .filter(m => m.content !== "__TYPING__")
+        .slice(-10);
+
+      const res = await fetch(`${WORKER_URL}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: currentModel,
+          messages: cleanMessages
+        }),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Worker returned ${res.status}: ${errText}`);
+      }
+
+      const data = await res.json();
+      const answer =
+  data?.output_text ||
+  (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
+  "No response";
+
+      chat.messages[chat.messages.length - 1] = {
+        role: "assistant",
+        content: answer,
+        time: formatDateTime()
+      };
+    } catch (e) {
+      chat.messages[chat.messages.length - 1] = {
+        role: "assistant",
+        content: "Error: " + e.message,
+        time: formatDateTime()
+      };
+    }
+
+    saveChats();
+    saveChatsToWorker();
+    renderMessages();
+    renderChatList();
+  }
+
+ async function sendMessageRetry() {
+  if (currentIndex === null) createNewChat();
+  const chat = chats[currentIndex];
+
+  // Add typing indicator only
+  chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
+  renderMessages();
+  saveChats();
+  saveChatsToWorker();
+
+  try {
+    const cleanMessages = chat.messages
+      .filter(m => m.content !== "__TYPING__")
+      .slice(-10);
+
+    const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: currentModel,
+        messages: cleanMessages,
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Worker returned ${res.status}: ${errText}`);
+    }
+
+    const data = await res.json();
+    const answer =
+      data?.output_text ||
+      (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
+      "No response";
+
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: answer,
+      time: formatDateTime(),
+    };
+  } catch (e) {
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: "Error: " + e.message,
+      time: formatDateTime(),
+    };
+  }
+
+  saveChats();
+  saveChatsToWorker();
+  renderMessages();
+  renderChatList();
 }
 
-chat.messages.forEach((msg, idx) => {
-const wrapper = document.createElement("div");
-wrapper.className = `message-wrapper ${msg.role}`;
-
-const div = document.createElement("div");
-div.className = `message ${msg.role}`;
-
-const textDiv = document.createElement("div");
-textDiv.className = "msg-text";
-
-if (msg.content === "__TYPING__") {
-textDiv.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
-} else if (msg.role === "assistant") {
-textDiv.innerHTML = renderMessageContent(msg.content);
-} else {
-textDiv.textContent = msg.content;
-}
-
-const timeDiv = document.createElement("div");
-timeDiv.className = "msg-time";
-timeDiv.textContent = msg.time || "";
-textDiv.appendChild(timeDiv);
-
-div.appendChild(textDiv);
-wrapper.appendChild(div);
-
-if (msg.role === "assistant" && msg.content !== "__TYPING__") {
-const refreshRow = document.createElement("div");
-refreshRow.className = "refresh-row";
-
-const refreshBtn = document.createElement("button");
-refreshBtn.type = "button";
-refreshBtn.className = "refresh-pill";
-refreshBtn.title = "Retry this response";
-refreshBtn.innerHTML = `
-<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<polyline points="23 4 23 10 17 10"></polyline>
-<polyline points="1 20 1 14 7 14"></polyline>
-<path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-</svg>
-<span>Refresh</span>
-`;
-
-refreshBtn.addEventListener("click", async () => {
-chat.messages.splice(idx, 1);
-chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
-
-saveChats();
-saveChatsToWorker();
-renderMessages();
-
-try {
-const cleanMessages = chat.messages.filter(m => m.content !== "__TYPING__").slice(-10);
-const res = await fetch(`${WORKER_URL}/chat`, {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-credentials: "include",
-body: JSON.stringify({ model: currentModel, messages: cleanMessages }),
-});
-
-if (!res.ok) throw new Error(`Worker returned ${res.status}: ${await res.text()}`);
-const data = await res.json();
-const answer = data?.reply?.content || "No response";
-
-chat.messages[chat.messages.length - 1] = { role: "assistant", content: answer, time: formatDateTime() };
-} catch (e) {
-chat.messages[chat.messages.length - 1] = { role: "assistant", content: "Error: " + e.message, time: formatDateTime() };
-}
-
-saveChats();
-saveChatsToWorker();
-renderMessages();
-renderChatList();
-});
-
-refreshRow.appendChild(refreshBtn);
-wrapper.appendChild(refreshRow);
-}
-
-messagesEl.appendChild(wrapper);
-});
-
-messagesEl.querySelectorAll(".copy-code-btn").forEach(btn => {
-btn.addEventListener("click", async () => {
-const wrapper = btn.closest(".code-block-wrapper");
-const code = decodeURIComponent(wrapper.dataset.code);
-try {
-await navigator.clipboard.writeText(code);
-const oldText = btn.textContent;
-btn.textContent = "Copied!";
-setTimeout(() => { btn.textContent = oldText; }, 1200);
-} catch (err) {
-console.warn("Copy failed:", err);
-alert("Could not copy code.");
-}
-});
-});
-
-messagesEl.scrollTop = messagesEl.scrollHeight;
-}
-
-async function sendMessage() {
-const text = inputEl.value.trim();
-if (!text) return;
-if (currentIndex === null) createNewChat();
-const chat = chats[currentIndex];
-
-const userMessage = { role: "user", content: text, time: formatDateTime() };
-chat.messages.push(userMessage);
-
-if (chat.title === "New Chat" || !chat.title) {
-const firstLine = text.split(/\r?\n/)[0];
-chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
-}
-
-chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
-renderMessages();
-inputEl.value = "";
-autoResize();
-saveChats();
-saveChatsToWorker();
-
-try {
-const cleanMessages = chat.messages.filter(m => m.content !== "__TYPING__").slice(-10);
-const res = await fetch(`${WORKER_URL}/chat`, {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-credentials: "include",
-body: JSON.stringify({ model: currentModel, messages: cleanMessages }),
-});
-
-if (!res.ok) throw new Error(`Worker returned ${res.status}: ${await res.text()}`);
-const data = await res.json();
-const answer = data?.reply?.content || "No response";
-
-chat.messages[chat.messages.length - 1] = { role: "assistant", content: answer, time: formatDateTime() };
-} catch (e) {
-chat.messages[chat.messages.length - 1] = { role: "assistant", content: "Error: " + e.message, time: formatDateTime() };
-}
-
-saveChats();
-saveChatsToWorker();
-renderMessages();
-renderChatList();
-}
-
-document.getElementById("newChatBtn").addEventListener("click", () => {
-createNewChat();
-if (window.innerWidth <= 768) closeSidebar();
-});
-document.getElementById("sendBtn").addEventListener("click", sendMessage);
-inputEl.addEventListener("keydown", e => {
-if (e.key === "Enter" && !e.shiftKey) {
-e.preventDefault();
-sendMessage();
-}
-});
-
+  document.getElementById("newChatBtn").addEventListener("click", () => {
+    createNewChat();
+    if (window.innerWidth <= 768) closeSidebar();
+  });
+  document.getElementById("sendBtn").addEventListener("click", sendMessage);
+  inputEl.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
 modelSelector.value = currentModel;
+
 modelSelector.addEventListener("change", (e) => {
-currentModel = e.target.value;
-localStorage.setItem("chat_model", currentModel);
+  currentModel = e.target.value;
+  localStorage.setItem("chat_model", currentModel);
 });
 
 paletteSelector.value = currentPalette;
@@ -626,20 +719,44 @@ lightIcon.classList.toggle("hidden", currentMode === "light");
 
   (async () => {
     applyTheme();
-    await checkAuth();
-    await loadChats();
 
-    if (isLoggedIn) {
-      for (const chat of chats) {
-        await loadMessagesForChat(chat);
+    if (!userId) {
+      userId = prompt("Enter a username to identify your chats:", "");
+      if (!userId) {
+        alert("You must enter a username to continue");
+        return;
       }
-      saveChats();
+      localStorage.setItem("chat_user_id", userId);
+    }
+
+    let gotFromWorker = false;
+    try {
+      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+      if (res.ok) {
+        const workerChats = await res.json();
+        if (Array.isArray(workerChats) && workerChats.length) {
+          chats = workerChats;
+          const savedIndex = Number(localStorage.getItem("secure_chat_index"));
+          if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < chats.length) {
+            const [activeChat] = chats.splice(savedIndex, 1);
+            chats.unshift(activeChat);
+            currentIndex = 0;
+          } else {
+            currentIndex = 0;
+          }
+          saveChats();
+          gotFromWorker = true;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not load from worker:", e);
+    }
+
+    if (!gotFromWorker) {
+      loadChats();
     }
 
     renderChatList();
-    console.log("currentIndex:", currentIndex);
-console.log("current chat:", chats[currentIndex]);
-console.log("messages:", chats[currentIndex]?.messages);
     renderMessages();
   })();
 });
