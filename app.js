@@ -469,14 +469,14 @@ function renderMessages() {
     wrapper.appendChild(div);
 
     if (msg.role === "assistant" && msg.content !== "__TYPING__") {
-      const refreshRow = document.createElement("div");
-      refreshRow.className = "refresh-row";
+      const reloadRow = document.createElement("div");
+      reloadRow.className = "reload-row";
 
-      const refreshBtn = document.createElement("button");
-      refreshBtn.type = "button";
-      refreshBtn.className = "refresh-pill";
-      refreshBtn.title = "Retry this response";
-      refreshBtn.innerHTML = `
+      const reloadBtn = document.createElement("button");
+      reloadBtn.type = "button";
+      reloadBtn.className = "reload-pill";
+      reloadBtn.title = "Retry this response";
+      reloadBtn.innerHTML = `
         <svg viewBox="0 0 24 24" width="16" height="16"
              fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round">
@@ -487,7 +487,7 @@ function renderMessages() {
         <span>Reload</span>
       `;
 
-      refreshBtn.addEventListener("click", async () => {
+      reloadBtn.addEventListener("click", async () => {
         chat.messages.splice(idx, 1);
         chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
 
@@ -539,8 +539,8 @@ function renderMessages() {
         renderChatList();
       });
 
-      refreshRow.appendChild(refreshBtn);
-      wrapper.appendChild(refreshRow);
+      reloadRow.appendChild(reloadBtn);
+      wrapper.appendChild(reloadRow);
     }
 
     messagesEl.appendChild(wrapper);
