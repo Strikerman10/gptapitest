@@ -745,7 +745,7 @@ body.dark-mode {
    =========================== */
 .scroll-bottom-btn {
   position: absolute;
-  top: 20px;
+  top: 120px;
   right: 20px;
   z-index: 50;
   display: none;
