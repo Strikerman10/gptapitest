@@ -1033,13 +1033,8 @@ body.dark-mode {
   gap: 10px;
 }
 
-.sheet-option .theme-name {
-  display: inline-flex;
-  width: max-content;
-  padding: 2px 10px;
-  border-radius: 8px;
-  white-space: nowrap;
-  background: var(--color-6);
-  color: var(--primary-contrast);
-  line-height: 1.2;
+.sheet-option .theme-label{
+  display: inline-block;
+  background: transparent !important; /* prevent 2nd short background */
+  padding: 0 !important;
 }
