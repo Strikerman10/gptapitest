@@ -9,6 +9,7 @@ let userId = localStorage.getItem("chat_user_id");
 
 let chats = [];
 let currentIndex = null;
+let currentProvider = localStorage.getItem("chat_provider") || "openai";
 let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini-2026-03-17";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -516,8 +517,9 @@ function renderMessages() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              provider: currentProvider,
               model: currentModel,
-              messages: cleanMessages,
+              messages: cleanMessages
             }),
           });
 
@@ -527,10 +529,7 @@ function renderMessages() {
           }
 
           const data = await res.json();
-          const answer =
-            data?.output_text ||
-            (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
-            "No response";
+         const answer = data?.output_text || "No response";
 
           chat.messages[chat.messages.length - 1] = {
             role: "assistant",
@@ -610,8 +609,9 @@ function renderMessages() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          provider: currentProvider,
           model: currentModel,
-          messages: cleanMessages
+          messages: cleanMessages,
         }),
       });
 
@@ -621,10 +621,7 @@ function renderMessages() {
       }
 
       const data = await res.json();
-      const answer =
-  data?.output_text ||
-  (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
-  "No response";
+      const answer = data?.output_text || "No response";
 
       chat.messages[chat.messages.length - 1] = {
         role: "assistant",
@@ -664,8 +661,9 @@ function renderMessages() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        provider: currentProvider,
         model: currentModel,
-        messages: cleanMessages,
+        messages: cleanMessages
       }),
     });
 
@@ -675,10 +673,7 @@ function renderMessages() {
     }
 
     const data = await res.json();
-    const answer =
-      data?.output_text ||
-      (data?.output && data.output[0]?.content && data.output[0].content[0]?.text) ||
-      "No response";
+    const answer = data?.output_text || "No response";
 
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
@@ -710,10 +705,14 @@ function renderMessages() {
       sendMessage();
     }
   });
-modelSelector.value = currentModel;
+modelSelector.value = `${currentProvider}|${currentModel}`;
 
 modelSelector.addEventListener("change", (e) => {
-  currentModel = e.target.value;
+  const [provider, model] = e.target.value.split("|");
+  currentProvider = provider || "openai";
+  currentModel = model || "gpt-5.4-mini-2026-03-17";
+
+  localStorage.setItem("chat_provider", currentProvider);
   localStorage.setItem("chat_model", currentModel);
 });
 
