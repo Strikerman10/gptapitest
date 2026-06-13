@@ -83,6 +83,17 @@ function escapeHTML(str) {
     .replace(/>/g, "&gt;");
 }
 
+function extractAnswer(data) {
+  return (
+    data?.output_text ||
+    data?.output?.[0]?.content?.[0]?.text ||
+    data?.content?.[0]?.text ||
+    data?.detail ||
+    data?.error ||
+    "No response"
+  );
+}
+  
 function renderMessageContent(content) {
   const parts = content.split(/```([\s\S]*?)```/g);
   let html = "";
@@ -529,7 +540,7 @@ function renderMessages() {
           }
 
           const data = await res.json();
-         const answer = data?.output_text || "No response";
+         const answer = extractAnswer(data);
 
           chat.messages[chat.messages.length - 1] = {
             role: "assistant",
@@ -638,9 +649,7 @@ async function sendMessage() {
       throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
     }
 
-    const answer = data.output_text?.trim()
-      ? data.output_text
-      : (data.detail || data.error || "No response");
+    const answer = extractAnswer(data);
 
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
@@ -709,9 +718,7 @@ async function sendMessage() {
       throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
     }
 
-    const answer = data.output_text?.trim()
-      ? data.output_text
-      : (data.detail || data.error || "No response");
+    const answer = extractAnswer(data);
 
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
