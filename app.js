@@ -708,12 +708,24 @@ function renderMessages() {
 modelSelector.value = `${currentProvider}|${currentModel}`;
 
 modelSelector.addEventListener("change", (e) => {
-  const [provider, model] = e.target.value.split("|");
-  currentProvider = provider || "openai";
-  currentModel = model || "gpt-5.4-mini-2026-03-17";
+  const value = e.target.value || "";
+  const parts = value.split("|");
+
+  if (parts.length === 2) {
+    currentProvider = parts[0];
+    currentModel = parts[1];
+  } else {
+    currentProvider = "openai";
+    currentModel = value || "gpt-5.4-mini-2026-03-17";
+  }
 
   localStorage.setItem("chat_provider", currentProvider);
   localStorage.setItem("chat_model", currentModel);
+
+  console.log("Model selection changed:", {
+    currentProvider,
+    currentModel
+  });
 });
 
 const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
