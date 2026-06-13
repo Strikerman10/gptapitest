@@ -579,74 +579,94 @@ function renderMessages() {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-  async function sendMessage() {
-    const text = inputEl.value.trim();
-    if (!text) return;
-    if (currentIndex === null) createNewChat();
-    const chat = chats[currentIndex];
+async function sendMessage() {
+  const text = inputEl.value.trim();
+  if (!text) return;
 
-    const userMessage = { role: "user", content: text, time: formatDateTime() };
-    chat.messages.push(userMessage);
+  if (currentIndex === null) createNewChat();
+  const chat = chats[currentIndex];
 
-    if (chat.title === "New Chat" || !chat.title) {
-      const firstLine = text.split(/\r?\n/)[0];
-      chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
-    }
+  const userMessage = { role: "user", content: text, time: formatDateTime() };
+  chat.messages.push(userMessage);
 
-    chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
-    renderMessages();
-    inputEl.value = "";
-    autoResize();
-    saveChats();
-    saveChatsToWorker();
-
-    try {
-      const cleanMessages = chat.messages
-        .filter(m => m.content !== "__TYPING__")
-        .slice(-10);
-
-      const res = await fetch(`${WORKER_URL}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          provider: currentProvider,
-          model: currentModel,
-          messages: cleanMessages,
-        }),
-      });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`Worker returned ${res.status}: ${errText}`);
-      }
-
-      const data = await res.json();
-      const answer = data?.output_text || "No response";
-
-      chat.messages[chat.messages.length - 1] = {
-        role: "assistant",
-        content: answer,
-        time: formatDateTime()
-      };
-    } catch (e) {
-      chat.messages[chat.messages.length - 1] = {
-        role: "assistant",
-        content: "Error: " + e.message,
-        time: formatDateTime()
-      };
-    }
-
-    saveChats();
-    saveChatsToWorker();
-    renderMessages();
-    renderChatList();
+  if (chat.title === "New Chat" || !chat.title) {
+    const firstLine = text.split(/\r?\n/)[0];
+    chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
   }
+
+  chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
+  renderMessages();
+  inputEl.value = "";
+  autoResize();
+  saveChats();
+  saveChatsToWorker();
+
+  try {
+    const cleanMessages = chat.messages
+      .filter(m => m.content !== "__TYPING__")
+      .slice(-10);
+
+    console.log("About to send:", {
+      provider: currentProvider,
+      model: currentModel,
+      messages: cleanMessages
+    });
+
+    const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        provider: currentProvider,
+        model: currentModel,
+        messages: cleanMessages,
+      }),
+    });
+
+    console.log("HTTP status:", res.status);
+
+    const rawText = await res.text();
+    console.log("Worker raw response:", rawText);
+
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (jsonErr) {
+      throw new Error(`Invalid JSON from worker: ${rawText}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
+    }
+
+    const answer = data.output_text?.trim()
+      ? data.output_text
+      : (data.detail || data.error || "No response");
+
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: answer,
+      time: formatDateTime()
+    };
+  } catch (e) {
+    console.error("sendMessage failed:", e);
+
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: "Error: " + e.message,
+      time: formatDateTime()
+    };
+  }
+
+  saveChats();
+  saveChatsToWorker();
+  renderMessages();
+  renderChatList();
+}
 
  async function sendMessageRetry() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  // Add typing indicator only
   chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
   saveChats();
@@ -656,6 +676,12 @@ function renderMessages() {
     const cleanMessages = chat.messages
       .filter(m => m.content !== "__TYPING__")
       .slice(-10);
+
+    console.log("Retry send:", {
+      provider: currentProvider,
+      model: currentModel,
+      messages: cleanMessages
+    });
 
     const res = await fetch(`${WORKER_URL}/chat`, {
       method: "POST",
@@ -667,13 +693,25 @@ function renderMessages() {
       }),
     });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Worker returned ${res.status}: ${errText}`);
+    console.log("Retry status:", res.status);
+
+    const rawText = await res.text();
+    console.log("Retry raw response:", rawText);
+
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch {
+      throw new Error(`Invalid JSON from worker: ${rawText}`);
     }
 
-    const data = await res.json();
-    const answer = data?.output_text || "No response";
+    if (!res.ok) {
+      throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
+    }
+
+    const answer = data.output_text?.trim()
+      ? data.output_text
+      : (data.detail || data.error || "No response");
 
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
@@ -681,6 +719,8 @@ function renderMessages() {
       time: formatDateTime(),
     };
   } catch (e) {
+    console.error("sendMessageRetry failed:", e);
+
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: "Error: " + e.message,
@@ -693,7 +733,6 @@ function renderMessages() {
   renderMessages();
   renderChatList();
 }
-
   document.getElementById("newChatBtn").addEventListener("click", () => {
     createNewChat();
     if (window.innerWidth <= 768) closeSidebar();
