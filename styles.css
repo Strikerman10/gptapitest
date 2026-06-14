@@ -441,6 +441,8 @@ body.dark-mode {
   font-size: 0.75rem;
   color: var(--primary-contrast);
   opacity: 0.8;
+  white-space: pre-line;    /* 👈 matches msg-time */
+  font-style: normal;       /* 👈 removes italic so it matches msg-time */
 }
 
 .msg-meta {
