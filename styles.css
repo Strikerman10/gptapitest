@@ -1306,9 +1306,8 @@ body.dark-mode .message p {
      color: white;
    }
 
-   .model-selector optgroup {
-  color: white !important;
-  background-color: var(--color-6);
+ .model-selector optgroup {
+  color: white;
 }
    
 } /* end @media (max-width: 768px) */
