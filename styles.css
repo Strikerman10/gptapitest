@@ -1304,4 +1304,8 @@ body.dark-mode .message p {
     display: block;
   }
 
+   #modelSheet .sheet-close {
+     color: white;
+   }
+   
 } /* end @media (max-width: 768px) */
