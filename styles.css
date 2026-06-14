@@ -1306,8 +1306,8 @@ body.dark-mode .message p {
      color: white;
    }
 
-   .model-selector option:disabled {
-     color: white;
-   }
+ .model-group-label {
+  color: white;
+}
    
 } /* end @media (max-width: 768px) */
