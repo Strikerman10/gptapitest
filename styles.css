@@ -432,10 +432,24 @@ body.dark-mode {
   display: block;
   text-align: right;
   font-size: 0.75rem;
-  margin-top: 4px;
   color: var(--primary-contrast);
   opacity: 0.8;
   white-space: pre-line;
+}
+
+.msg-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;   /* keeps everything pushed to the right like before */
+  gap: 8px;
+  margin-top: 4px;             /* this replaces the margin-top that was on msg-time */
+}
+
+.msg-model {
+  font-size: 0.75rem;          /* matches your existing msg-time size */
+  color: var(--primary-contrast);  /* matches your existing msg-time colour */
+  opacity: 0.8;
+  font-style: italic;
 }
 
 .typing-indicator {
