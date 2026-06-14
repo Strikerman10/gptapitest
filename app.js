@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const modelSheetBackdrop = document.getElementById('modelSheetBackdrop');
   const closeModelSheetBtn = document.getElementById('closeModelSheetBtn');
   const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
-  const mobileModelTrigger = document.getElementById('mobileModelTrigger');
   // ───────────────────────────────────────────────────────
 
   function autoResize() {
@@ -869,7 +868,12 @@ function openModelSheet() {
     });
     }
     
-    mobileModelTrigger?.addEventListener('click', openModelSheet);
+   modelSelector.addEventListener('mousedown', (e) => {
+  if (window.innerWidth <= 768) {
+    e.preventDefault();
+    openModelSheet();
+  }
+});
     closeModelSheetBtn?.addEventListener('click', closeModelSheet);
     modelSheetBackdrop?.addEventListener('click', closeModelSheet);
     
