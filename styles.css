@@ -441,7 +441,6 @@ body.dark-mode {
   font-size: 0.75rem;
   color: var(--primary-contrast);
   opacity: 0.8;
-  font-style: italic;
 }
 
 .msg-meta {
