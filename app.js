@@ -541,7 +541,7 @@ function renderMessages() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               provider: currentProvider,
-              model: modelSelector.options[modelSelector.selectedIndex].text,
+              model: currentModel,
               messages: cleanMessages
             }),
           });
@@ -642,7 +642,7 @@ async function sendMessage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         provider: currentProvider,
-        model: modelSelector.options[modelSelector.selectedIndex].text,
+        model: currentModel,
         messages: cleanMessages,
       }),
     });
@@ -704,7 +704,7 @@ async function sendMessage() {
 
     console.log("Retry send:", {
       provider: currentProvider,
-      model: modelSelector.options[modelSelector.selectedIndex].text,
+      model: currentModel,
       messages: cleanMessages
     });
 
@@ -713,7 +713,7 @@ async function sendMessage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         provider: currentProvider,
-        model: modelSelector.options[modelSelector.selectedIndex].text,
+        model: currentModel,
         messages: cleanMessages
       }),
     });
