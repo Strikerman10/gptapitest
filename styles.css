@@ -887,8 +887,8 @@ body.dark-mode {
   right: 12px;
   z-index: 50;
   display: none;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
