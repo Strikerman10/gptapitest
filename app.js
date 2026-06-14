@@ -611,7 +611,7 @@ async function sendMessage() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  const userMessage = { role: "user", content: text, time: formatDateTime(), model: currentModel };
+  const userMessage = { role: "user", content: text, time: formatDateTime(), model: modelSelector.options[modelSelector.selectedIndex].text };
   chat.messages.push(userMessage);
 
   if (chat.title === "New Chat" || !chat.title) {
