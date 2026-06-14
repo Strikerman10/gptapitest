@@ -445,11 +445,12 @@ body.dark-mode {
   margin-top: 4px;             /* this replaces the margin-top that was on msg-time */
 }
 
-.msg-model {
-  font-size: 0.75rem;          /* matches your existing msg-time size */
-  color: var(--primary-contrast);  /* matches your existing msg-time colour */
-  opacity: 0.8;
-  font-style: italic;
+.msg-meta {
+  display: flex;
+  flex-direction: column;   /* 👈 stacks time and model vertically */
+  align-items: flex-end;    /* 👈 keeps both right-aligned */
+  gap: 2px;                 /* 👈 small gap between time and model */
+  margin-top: 4px;
 }
 
 .typing-indicator {
