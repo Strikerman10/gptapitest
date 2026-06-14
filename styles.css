@@ -197,7 +197,8 @@ body.dark-mode {
   outline: none;
   overflow: visible;
   text-overflow: clip;
-  font-style: normal;        /* 👈 this is likely the real cause */
+  font-style: normal;
+  box-sizing: content-box;
 }
 
 .model-selector:focus {
