@@ -195,6 +195,8 @@ body.dark-mode {
   -moz-appearance: none;
   background-image: none;
   outline: none;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .model-selector:focus {
@@ -235,7 +237,7 @@ body.dark-mode {
   .model-selector {
     flex: 1 1 auto;
     min-width: 0;
-    padding: 8px 8px;
+    padding: 8px 28px 8px 8px;
     font-size: 12px;
   }
 }
