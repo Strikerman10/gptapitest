@@ -484,10 +484,22 @@ function renderMessages() {
       textDiv.textContent = msg.content;
     }
 
+      const metaDiv = document.createElement("div");
+    metaDiv.className = "msg-meta";
+
     const timeDiv = document.createElement("div");
     timeDiv.className = "msg-time";
     timeDiv.textContent = msg.time || "";
-    textDiv.appendChild(timeDiv);
+    metaDiv.appendChild(timeDiv);
+
+    if (msg.model && msg.content !== "__TYPING__") {
+      const modelDiv = document.createElement("div");
+      modelDiv.className = "msg-model";
+      modelDiv.textContent = msg.model;
+      metaDiv.appendChild(modelDiv);
+    }
+
+    textDiv.appendChild(metaDiv);
 
     div.appendChild(textDiv);
     wrapper.appendChild(div);
@@ -542,16 +554,18 @@ function renderMessages() {
           const data = await res.json();
          const answer = extractAnswer(data);
 
-          chat.messages[chat.messages.length - 1] = {
+        chat.messages[chat.messages.length - 1] = {
             role: "assistant",
             content: answer,
             time: formatDateTime(),
+            model: currentModel
           };
         } catch (e) {
           chat.messages[chat.messages.length - 1] = {
             role: "assistant",
             content: "Error: " + e.message,
             time: formatDateTime(),
+            model: currentModel
           };
         }
 
@@ -597,7 +611,7 @@ async function sendMessage() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  const userMessage = { role: "user", content: text, time: formatDateTime() };
+  const userMessage = { role: "user", content: text, time: formatDateTime(), model: currentModel };
   chat.messages.push(userMessage);
 
   if (chat.title === "New Chat" || !chat.title) {
@@ -651,10 +665,11 @@ async function sendMessage() {
 
     const answer = extractAnswer(data);
 
-    chat.messages[chat.messages.length - 1] = {
+      chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
-      time: formatDateTime()
+      time: formatDateTime(),
+      model: currentModel
     };
   } catch (e) {
     console.error("sendMessage failed:", e);
@@ -662,7 +677,8 @@ async function sendMessage() {
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: "Error: " + e.message,
-      time: formatDateTime()
+      time: formatDateTime(),
+      model: currentModel
     };
   }
 
@@ -720,10 +736,11 @@ async function sendMessage() {
 
     const answer = extractAnswer(data);
 
-    chat.messages[chat.messages.length - 1] = {
+        chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
+      model: currentModel
     };
   } catch (e) {
     console.error("sendMessageRetry failed:", e);
@@ -732,6 +749,7 @@ async function sendMessage() {
       role: "assistant",
       content: "Error: " + e.message,
       time: formatDateTime(),
+      model: currentModel
     };
   }
 
