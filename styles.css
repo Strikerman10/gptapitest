@@ -1305,9 +1305,5 @@ body.dark-mode .message p {
    #modelSheet .sheet-close {
      color: white;
    }
-
- .model-selector optgroup {
-  color: white;
-}
    
 } /* end @media (max-width: 768px) */
