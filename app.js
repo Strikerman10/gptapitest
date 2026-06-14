@@ -633,7 +633,7 @@ async function sendMessage() {
 
     console.log("About to send:", {
       provider: currentProvider,
-      model: currentModel,
+      model: modelSelector.options[modelSelector.selectedIndex].text,
       messages: cleanMessages
     });
 
