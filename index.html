@@ -71,6 +71,16 @@
   <div class="chat-header" id="chatHeader">
   <span class="chat-title" id="chatTitle">Messages</span>
 
+<!-- NEW: Mobile model picker trigger (hidden on desktop via CSS) -->
+  <button id="mobileModelTrigger" aria-label="Select model" class="mobile-model-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"
+         fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
+    </svg>
+  </button>
+    
   <div class="header-controls">
      <!-- Sidebar Toggle -->
     <button id="toggleSidebarBtn" aria-label="Toggle Sidebar">
@@ -152,141 +162,7 @@
   </div>
   </div>
 
-<!-- Model Sheet Backdrop -->
-<div id="modelSheetBackdrop" class="sheet-backdrop hidden"></div>
 
-<section id="modelSheet" class="palette-sheet hidden" role="dialog" aria-modal="true" aria-labelledby="modelTitle">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <h3 id="modelTitle">Choose model</h3>
-    <button id="closeModelSheetBtn" class="sheet-close" aria-label="Close model picker">✕</button>
-  </div>
-
-  <div class="model-sheet-list">
-
-    <!-- OpenAI -->
-    <p class="model-group-label">OpenAI</p>
-
-    <button class="model-sheet-option" data-model="gpt-5.5-2026-04-23">
-      <span class="model-icon">
-        <img src="openai-icon.svg" alt="OpenAI" class="provider-icon" />
-      </span>
-      <span class="model-info">
-        <span class="model-name">GPT-5.5</span>
-        <span class="model-desc">gpt-5.5-2026-04-23</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="gpt-5.4-2026-03-05">
-      <span class="model-icon">
-        <img src="openai-icon.svg" alt="OpenAI" class="provider-icon" />
-      </span>
-      <span class="model-info">
-        <span class="model-name">GPT-5.4</span>
-        <span class="model-desc">gpt-5.4-2026-03-05</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="gpt-5.3-codex">
-      <span class="model-icon">
-        <img src="openai-icon.svg" alt="OpenAI" class="provider-icon" />
-      </span>
-      <span class="model-info">
-        <span class="model-name">GPT-5.3 Codex</span>
-        <span class="model-desc">gpt-5.3-codex</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="gpt-5.4-mini-2026-03-17">
-      <span class="model-icon">
-        <img src="openai-icon.svg" alt="OpenAI" class="provider-icon" />
-      </span>
-      <span class="model-info">
-        <span class="model-name">GPT-5.4 Mini</span>
-        <span class="model-desc">gpt-5.4-mini-2026-03-17</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <!-- Anthropic -->
-    <p class="model-group-label">Anthropic</p>
-
-    <button class="model-sheet-option" data-model="claude-opus-4-8">
-      <span class="model-icon">
-        <img src="anthropic-icon.svg" alt="Anthropic" class="provider-icon" />
-      </span>
-      <span class="model-info">
-        <span class="model-name">Claude Opus 4.8</span>
-        <span class="model-desc">claude-opus-4-8</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="claude-sonnet-4-6">
-      <span class="model-icon">
-        <img src="anthropic-icon.svg" alt="Anthropic" class="provider-icon" />
-      </span>
-      <span class="model-info">
-        <span class="model-name">Claude Sonnet 4.6</span>
-        <span class="model-desc">claude-sonnet-4-6</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="claude-haiku-4-5-20251001">
-      <span class="model-icon">
-        <img src="anthropic-icon.svg" alt="Anthropic" class="provider-icon" />
-      </span>
-      <span class="model-info">
-        <span class="model-name">Claude Haiku 4.5</span>
-        <span class="model-desc">claude-haiku-4-5-20251001</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <!-- Google -->
-    <p class="model-group-label">Google</p>
-
-    <button class="model-sheet-option" data-model="gemini-3.5-flash">
-      <span class="model-icon">
-        <img src="google-icon.svg" alt="Google" class="provider-icon" />
-      </span>
-      <span class="model-info">
-        <span class="model-name">Gemini 3.5 Flash</span>
-        <span class="model-desc">gemini-3.5-flash</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="gemini-2.5-flash">
-      <span class="model-icon">
-        <img src="google-icon.svg" alt="Google" class="provider-icon" />
-      </span>
-      <span class="model-info">
-        <span class="model-name">Gemini 2.5 Flash</span>
-        <span class="model-desc">gemini-2.5-flash</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option" data-model="gemini-3.1-flash-lite">
-      <span class="model-icon">
-        <img src="google-icon.svg" alt="Google" class="provider-icon" />
-      </span>
-      <span class="model-info">
-        <span class="model-name">Gemini 3.1 Flash Lite</span>
-        <span class="model-desc">gemini-3.1-flash-lite</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-  </div>
-</section>
-  
-  
   <!-- Messages -->
   <div class="messages" id="messages" aria-live="polite"></div>
 
@@ -310,7 +186,7 @@
   </svg>
 </button>
 
-  <!-- Input -->
+    <!-- Input -->
   <div class="input-area">
     <textarea id="input" placeholder="Type your message..."></textarea>
     <button class="send-btn" id="sendBtn" type="submit">
@@ -323,6 +199,114 @@
 </div>
 </div>
 </div>
+
+  <!-- Model Sheet Backdrop -->
+  <div id="modelSheetBackdrop" class="sheet-backdrop hidden"></div>
+
+  <section id="modelSheet" class="palette-sheet hidden" role="dialog" aria-modal="true" aria-labelledby="modelTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3 id="modelTitle">Choose model</h3>
+      <button id="closeModelSheetBtn" class="sheet-close" aria-label="Close model picker">✕</button>
+    </div>
+    <div class="model-sheet-list">
+
+      <p class="model-group-label">OpenAI</p>
+      <button class="model-sheet-option" data-model="openai|gpt-5.5-2026-04-23">
+        <span class="model-icon"><img src="openai-icon.svg" alt="OpenAI" class="provider-icon" /></span>
+        <span class="model-info">
+          <span class="model-name">GPT-5.5</span>
+          <span class="model-desc">gpt-5.5-2026-04-23</span>
+        </span>
+        <span class="model-check">✓</span>
+      </button>
+
+      <button class="model-sheet-option" data-model="openai|gpt-5.4-2026-03-05">
+        <span class="model-icon"><img src="openai-icon.svg" alt="OpenAI" class="provider-icon" /></span>
+        <span class="model-info">
+          <span class="model-name">GPT-5.4</span>
+          <span class="model-desc">gpt-5.4-2026-03-05</span>
+        </span>
+        <span class="model-check">✓</span>
+      </button>
+
+      <button class="model-sheet-option" data-model="openai|gpt-5.3-codex">
+        <span class="model-icon"><img src="openai-icon.svg" alt="OpenAI" class="provider-icon" /></span>
+        <span class="model-info">
+          <span class="model-name">GPT-5.3 Codex</span>
+          <span class="model-desc">gpt-5.3-codex</span>
+        </span>
+        <span class="model-check">✓</span>
+      </button>
+
+      <button class="model-sheet-option" data-model="openai|gpt-5.4-mini-2026-03-17">
+        <span class="model-icon"><img src="openai-icon.svg" alt="OpenAI" class="provider-icon" /></span>
+        <span class="model-info">
+          <span class="model-name">GPT-5.4 Mini</span>
+          <span class="model-desc">gpt-5.4-mini-2026-03-17</span>
+        </span>
+        <span class="model-check">✓</span>
+      </button>
+
+      <p class="model-group-label">Anthropic</p>
+      <button class="model-sheet-option" data-model="anthropic|claude-opus-4-8">
+        <span class="model-icon"><img src="anthropic-icon.svg" alt="Anthropic" class="provider-icon" /></span>
+        <span class="model-info">
+          <span class="model-name">Claude Opus 4.8</span>
+          <span class="model-desc">claude-opus-4-8</span>
+        </span>
+        <span class="model-check">✓</span>
+      </button>
+
+      <button class="model-sheet-option" data-model="anthropic|claude-sonnet-4-6">
+        <span class="model-icon"><img src="anthropic-icon.svg" alt="Anthropic" class="provider-icon" /></span>
+        <span class="model-info">
+          <span class="model-name">Claude Sonnet 4.6</span>
+          <span class="model-desc">claude-sonnet-4-6</span>
+        </span>
+        <span class="model-check">✓</span>
+      </button>
+
+      <button class="model-sheet-option" data-model="anthropic|claude-haiku-4-5-20251001">
+        <span class="model-icon"><img src="anthropic-icon.svg" alt="Anthropic" class="provider-icon" /></span>
+        <span class="model-info">
+          <span class="model-name">Claude Haiku 4.5</span>
+          <span class="model-desc">claude-haiku-4-5-20251001</span>
+        </span>
+        <span class="model-check">✓</span>
+      </button>
+
+      <p class="model-group-label">Google</p>
+      <button class="model-sheet-option" data-model="gemini|gemini-3.5-flash">
+        <span class="model-icon"><img src="google-icon.svg" alt="Google" class="provider-icon" /></span>
+        <span class="model-info">
+          <span class="model-name">Gemini 3.5 Flash</span>
+          <span class="model-desc">gemini-3.5-flash</span>
+        </span>
+        <span class="model-check">✓</span>
+      </button>
+
+      <button class="model-sheet-option" data-model="gemini|gemini-2.5-flash">
+        <span class="model-icon"><img src="google-icon.svg" alt="Google" class="provider-icon" /></span>
+        <span class="model-info">
+          <span class="model-name">Gemini 2.5 Flash</span>
+          <span class="model-desc">gemini-2.5-flash</span>
+        </span>
+        <span class="model-check">✓</span>
+      </button>
+
+      <button class="model-sheet-option" data-model="gemini|gemini-3.1-flash-lite">
+        <span class="model-icon"><img src="google-icon.svg" alt="Google" class="provider-icon" /></span>
+        <span class="model-info">
+          <span class="model-name">Gemini 3.1 Flash Lite</span>
+          <span class="model-desc">gemini-3.1-flash-lite</span>
+        </span>
+        <span class="model-check">✓</span>
+      </button>
+
+    </div>
+  </section>
+
   <script src="app.js" defer></script>
 </body>
 </html>
