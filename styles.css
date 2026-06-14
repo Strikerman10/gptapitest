@@ -188,8 +188,8 @@ body.dark-mode {
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
-  text-align: center;
-  text-align-last: center;
+  text-align: left;
+  text-align-last: left;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
