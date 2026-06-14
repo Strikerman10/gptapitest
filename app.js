@@ -3,9 +3,7 @@
 // ==========================
 const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
 
-// Temporary user ID: will be asked once then stored in localStorage
 let userId = localStorage.getItem("chat_user_id");
-
 
 let chats = [];
 let currentIndex = null;
@@ -13,10 +11,22 @@ let currentProvider = localStorage.getItem("chat_provider") || "openai";
 let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini-2026-03-17";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const chatListEl = document.getElementById("chatList");
-  const messagesEl = document.getElementById("messages");
-  const chatTitleEl = document.getElementById("chatTitle");
-  const inputEl = document.getElementById("input");
+  const chatListEl    = document.getElementById("chatList");
+  const messagesEl    = document.getElementById("messages");
+  const chatTitleEl   = document.getElementById("chatTitle");
+  const inputEl       = document.getElementById("input");
+  const themeToggleBtn   = document.getElementById("toggleThemeBtn");
+  const sidebarEl        = document.querySelector(".sidebar");
+  const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
+  const modelSelector    = document.getElementById("modelSelector");
+
+  // ── NEW: Model Sheet elements ──────────────────────────
+  const modelSheet         = document.getElementById('modelSheet');
+  const modelSheetBackdrop = document.getElementById('modelSheetBackdrop');
+  const closeModelSheetBtn = document.getElementById('closeModelSheetBtn');
+  const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
+  const mobileModelTrigger = document.getElementById('mobileModelTrigger');
+  // ───────────────────────────────────────────────────────
 
   function autoResize() {
     inputEl.style.height = "auto";
@@ -25,19 +35,14 @@ document.addEventListener("DOMContentLoaded", () => {
   inputEl.addEventListener("input", autoResize);
   autoResize();
 
-  const themeToggleBtn    = document.getElementById("toggleThemeBtn");
-  const sidebarEl         = document.querySelector(".sidebar");
-  const toggleSidebarBtn  = document.getElementById("toggleSidebarBtn");
-  const modelSelector     = document.getElementById("modelSelector");
-
   const backdropEl = document.createElement("div");
   backdropEl.className = "sidebar-backdrop";
   document.body.appendChild(backdropEl);
 
-  const paletteBtn = document.getElementById("themeBtn");
-  const paletteSheet = document.getElementById("paletteSheet");
-  const sheetBackdrop = document.getElementById("sheetBackdrop");
-  const closeSheetBtn = document.getElementById("closeSheetBtn");
+  const paletteBtn     = document.getElementById("themeBtn");
+  const paletteSheet   = document.getElementById("paletteSheet");
+  const sheetBackdrop  = document.getElementById("sheetBackdrop");
+  const closeSheetBtn  = document.getElementById("closeSheetBtn");
   const paletteOptions = document.querySelectorAll(".sheet-option");
 
   const scrollTopBtn = document.getElementById("scrollTopBtn");
@@ -53,46 +58,41 @@ document.addEventListener("DOMContentLoaded", () => {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
- messagesEl.addEventListener("scroll", () => {
-  const threshold = 200;
+  messagesEl.addEventListener("scroll", () => {
+    const threshold = 200;
+    scrollTopBtn.style.display    = messagesEl.scrollTop > threshold ? "flex" : "none";
+    scrollBottomBtn.style.display = messagesEl.scrollTop <= threshold ? "flex" : "none";
+  });
 
-  // Show top button only after scrolling down
-  scrollTopBtn.style.display = messagesEl.scrollTop > threshold ? "flex" : "none";
-
-  // Show bottom button only when near top
-  scrollBottomBtn.style.display = messagesEl.scrollTop <= threshold ? "flex" : "none";
-});
-
-scrollTopBtn.addEventListener("click", () => {
-  messagesEl.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-scrollBottomBtn.addEventListener("click", () => {
-  messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
-});
+  scrollTopBtn.addEventListener("click", () => {
+    messagesEl.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  scrollBottomBtn.addEventListener("click", () => {
+    messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
+  });
 
   messagesEl.dispatchEvent(new Event("scroll"));
 
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
 
-function escapeHTML(str) {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
+  function escapeHTML(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
 
-function extractAnswer(data) {
-  return (
-    data?.output_text ||
-    data?.output?.[0]?.content?.[0]?.text ||
-    data?.content?.[0]?.text ||
-    data?.detail ||
-    data?.error ||
-    "No response"
-  );
-}
+  function extractAnswer(data) {
+    return (
+      data?.output_text ||
+      data?.output?.[0]?.content?.[0]?.text ||
+      data?.content?.[0]?.text ||
+      data?.detail ||
+      data?.error ||
+      "No response"
+    );
+  }
   
 function renderMessageContent(content) {
   const parts = content.split(/```([\s\S]*?)```/g);
@@ -790,6 +790,7 @@ modelSelector.addEventListener("change", (e) => {
     currentProvider,
     currentModel
   });
+  syncActiveModel(e.target.value);
 });
 
 const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
@@ -842,15 +843,68 @@ paletteOptions.forEach(btn => {
   });
 });
 
+function openModelSheet() {
+    modelSheet.classList.remove('hidden');
+    modelSheetBackdrop.classList.remove('hidden');
+    requestAnimationFrame(() => {
+    modelSheet.classList.add('show');
+    modelSheetBackdrop.classList.add('show');
+    });
+    document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModelSheet() {
+    modelSheet.classList.remove('show');
+    modelSheetBackdrop.classList.remove('show');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+    modelSheet.classList.add('hidden');
+    modelSheetBackdrop.classList.add('hidden');
+    }, 220);
+    }
+    
+    function syncActiveModel(currentVal) {
+    modelSheetOptions.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.model === currentVal);
+    });
+    }
+    
+    mobileModelTrigger?.addEventListener('click', openModelSheet);
+    closeModelSheetBtn?.addEventListener('click', closeModelSheet);
+    modelSheetBackdrop?.addEventListener('click', closeModelSheet);
+    
+    modelSheetOptions.forEach(btn => {
+    btn.addEventListener('click', () => {
+    const value = btn.dataset.model;
+    const parts = value.split('|');
+    if (parts.length === 2) {
+    currentProvider = parts[0];
+    currentModel = parts[1];
+    } else {
+    currentProvider = 'openai';
+    currentModel = value;
+    }
+    localStorage.setItem('chat_provider', currentProvider);
+    localStorage.setItem('chat_model', currentModel);
+    modelSelector.value = value;
+    modelSheetOptions.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    console.log('Mobile model selected:', { currentProvider, currentModel });
+    setTimeout(closeModelSheet, 180);
+    });
+    });
+  
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && paletteSheet.classList.contains("show")) {
     closePaletteSheet();
+  if (modelSheet && !modelSheet.classList.contains("hidden")) closeModelSheet();
   }
 });
 
   (async () => {
     applyTheme();
-
+    syncActiveModel(`${currentProvider}|${currentModel}`);
+    
     if (!userId) {
       userId = prompt("Enter a username to identify your chats:", "");
       if (!userId) {
