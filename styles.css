@@ -158,9 +158,6 @@ body.dark-mode {
 }
 
 .new-chat {
-  width: 130px !important;
-  min-width: 130px !important;
-  max-width: 130px !important;
   flex: 0 0 130px !important;
   box-sizing: border-box;
   margin: 0;
@@ -198,7 +195,6 @@ body.dark-mode {
   overflow: visible;
   text-overflow: clip;
   font-style: normal;
-  box-sizing: content-box;
 }
 
 .model-selector:focus {
