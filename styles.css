@@ -1303,7 +1303,7 @@ body.dark-mode .message p {
   }
 
    #modelSheet .sheet-close {
-     color: white;
+     color: white !important;
    }
 
  .model-group-label {
