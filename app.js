@@ -244,15 +244,15 @@ function renderMessageContent(content) {
       "--color-6": "#666699",
       "--color-7": "#9494b8"
     },
-   Orange: {
-  "--color-1": "#FFD9B3",
-  "--color-2": "#FFB870",
-  "--color-3": "#F28C28",
-  "--color-4": "#C96A1B",
-  "--color-5": "#8A4513",
-  "--color-6": "#800000",
-  "--color-7": "#F30000"
-},
+    Orange: {
+      "--color-1": "#FFD9B3",
+      "--color-2": "#FFB870",
+      "--color-3": "#F28C28",
+      "--color-4": "#C96A1B",
+      "--color-5": "#8A4513",
+      "--color-6": "#800000",
+      "--color-7": "#F30000"
+    },
   };
 
   const neutrals = {
@@ -558,14 +558,14 @@ function renderMessages() {
             role: "assistant",
             content: answer,
             time: formatDateTime(),
-            model: currentModel
+            model: modelSelector.options[modelSelector.selectedIndex].text
           };
         } catch (e) {
           chat.messages[chat.messages.length - 1] = {
             role: "assistant",
             content: "Error: " + e.message,
             time: formatDateTime(),
-            model: currentModel
+            model: modelSelector.options[modelSelector.selectedIndex].text
           };
         }
 
@@ -669,7 +669,7 @@ async function sendMessage() {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
-      model: currentModel
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
     console.error("sendMessage failed:", e);
@@ -678,7 +678,7 @@ async function sendMessage() {
       role: "assistant",
       content: "Error: " + e.message,
       time: formatDateTime(),
-      model: currentModel
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   }
 
@@ -740,7 +740,7 @@ async function sendMessage() {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
-      model: currentModel
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
     console.error("sendMessageRetry failed:", e);
@@ -749,7 +749,7 @@ async function sendMessage() {
       role: "assistant",
       content: "Error: " + e.message,
       time: formatDateTime(),
-      model: currentModel
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   }
 
