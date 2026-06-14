@@ -437,12 +437,11 @@ body.dark-mode {
   white-space: pre-line;
 }
 
-.msg-meta {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;   /* keeps everything pushed to the right like before */
-  gap: 8px;
-  margin-top: 4px;             /* this replaces the margin-top that was on msg-time */
+.msg-model {
+  font-size: 0.75rem;
+  color: var(--primary-contrast);
+  opacity: 0.8;
+  font-style: italic;
 }
 
 .msg-meta {
