@@ -499,15 +499,15 @@ body.dark-mode {
 }
 
 .copy-code-btn {
-  position: absolute;
-  top: 24px; /* was 6px, now accounts for the 18px margin-top */
+  position: absolute !important;
+  top: 40px !important;
   right: 10px;
   padding: 4px 8px;
   font-size: 12px;
   border: none;
   border-radius: 8px;
-  background: var(--color-3);
-  color: var(--primary-contrast);
+  background: lime !important;
+  color: black !important;
   cursor: pointer;
   z-index: 2;
 }
