@@ -518,7 +518,8 @@ body.dark-mode {
   border-radius: 12px;
   background: var(--color-1);
   border: 1px solid var(--border);
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: auto;
   white-space: pre;
 }
 
