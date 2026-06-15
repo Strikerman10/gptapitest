@@ -512,7 +512,7 @@ body.dark-mode {
   z-index: 2;
 }
 
-.code-block-wrapper pre {
+.message .code-block-wrapper pre {
   margin: 0;
   padding: 10px 12px 10px;
   padding-top: 36px;
