@@ -500,7 +500,7 @@ body.dark-mode {
 
 .copy-code-btn {
   position: absolute;
-  top: 6px;
+  top: 24px; /* was 6px, now accounts for the 18px margin-top */
   right: 10px;
   padding: 4px 8px;
   font-size: 12px;
@@ -522,6 +522,7 @@ body.dark-mode {
   max-width: 100%;
   overflow: auto;
   white-space: pre;
+  margin-top: 18px; /* pushes pre down so button sits inside it */
 }
 
 .message p {
