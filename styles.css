@@ -496,11 +496,12 @@ body.dark-mode {
   position: relative;
   margin-top: 8px;
   margin-bottom: 2px;
+  min-height: 50px;
 }
 
 .copy-code-btn {
   position: absolute;
-  top: 27px;
+  top: 8px;
   right: 6px;
   padding: 6px 7px;
   font-size: 12px;
