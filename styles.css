@@ -1285,7 +1285,7 @@ body.dark-mode .message p {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    opacity: 0.5;
+    opacity: 1.0;
     margin: 0.75rem 0 0.25rem 0.25rem;
     padding: 0;
     color: var(--primary-contrast);
@@ -1305,9 +1305,5 @@ body.dark-mode .message p {
    #modelSheet .sheet-close {
      color: white !important;
    }
-
- .model-group-label {
-  color: white;
-}
    
 } /* end @media (max-width: 768px) */
