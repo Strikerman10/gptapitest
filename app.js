@@ -645,7 +645,12 @@ async function sendMessage() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  const userMessage = { role: "user", content: text, time: formatDateTime(), model: modelSelector.options[modelSelector.selectedIndex].text };
+  const userMessage = {
+    role: "user",
+    content: text,
+    time: formatDateTime(),
+    model: modelSelector.options[modelSelector.selectedIndex].text
+  };
   chat.messages.push(userMessage);
 
   if (chat.title === "New Chat" || !chat.title) {
@@ -660,37 +665,15 @@ async function sendMessage() {
   saveChats();
   saveChatsToWorker();
 
- try {
-  const cleanMessages = chat.messages
-    .filter(m => m.content !== "__TYPING__")
-    .slice(-10);
+  try {
+    const cleanMessages = chat.messages
+      .filter(m => m.content !== "__TYPING__")
+      .slice(-10);
 
-  console.log("About to send:", {
-    provider: currentProvider,
-    model: modelSelector.options[modelSelector.selectedIndex].text,
-    messages: cleanMessages
-  });
+    const data = await requestAssistant(cleanMessages);
+    const answer = extractAnswer(data);
 
-  const data = await requestAssistant(cleanMessages);
-  const answer = extractAnswer(data);
-
-  chat.messages[chat.messages.length - 1] = {
-    role: "assistant",
-    content: answer,
-    time: formatDateTime(),
-    model: modelSelector.options[modelSelector.selectedIndex].text
-  };
-} catch (e) {
-  console.error("sendMessage failed:", e);
-  chat.messages[chat.messages.length - 1] = {
-    role: "assistant",
-    content: "Error: " + e.message,
-    time: formatDateTime(),
-    model: modelSelector.options[modelSelector.selectedIndex].text
-  };
-}
-
-      chat.messages[chat.messages.length - 1] = {
+    chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
@@ -698,7 +681,6 @@ async function sendMessage() {
     };
   } catch (e) {
     console.error("sendMessage failed:", e);
-
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: "Error: " + e.message,
@@ -713,7 +695,7 @@ async function sendMessage() {
   renderChatList();
 }
 
- async function sendMessageRetry() {
+async function sendMessageRetry() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
@@ -722,58 +704,36 @@ async function sendMessage() {
   saveChats();
   saveChatsToWorker();
 
-          try {
-          const cleanMessages = chat.messages
-            .filter(m => m.content !== "__TYPING__")
-            .slice(-10);
-        
-          console.log("Retry send:", {
-            provider: currentProvider,
-            model: currentModel,
-            messages: cleanMessages
-          });
-        
-          const data = await requestAssistant(cleanMessages);
-          const answer = extractAnswer(data);
-        
-          chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: answer,
-            time: formatDateTime(),
-            model: modelSelector.options[modelSelector.selectedIndex].text
-          };
-        } catch (e) {
-          console.error("sendMessageRetry failed:", e);
-          chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: "Error: " + e.message,
-            time: formatDateTime(),
-            model: modelSelector.options[modelSelector.selectedIndex].text
-          };
-        }
-      
-              chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: answer,
-            time: formatDateTime(),
-            model: modelSelector.options[modelSelector.selectedIndex].text
-          };
-        } catch (e) {
-          console.error("sendMessageRetry failed:", e);
-      
-          chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: "Error: " + e.message,
-            time: formatDateTime(),
-            model: modelSelector.options[modelSelector.selectedIndex].text
-          };
-        }
+  try {
+    const cleanMessages = chat.messages
+      .filter(m => m.content !== "__TYPING__")
+      .slice(-10);
+
+    const data = await requestAssistant(cleanMessages);
+    const answer = extractAnswer(data);
+
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: answer,
+      time: formatDateTime(),
+      model: modelSelector.options[modelSelector.selectedIndex].text
+    };
+  } catch (e) {
+    console.error("sendMessageRetry failed:", e);
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: "Error: " + e.message,
+      time: formatDateTime(),
+      model: modelSelector.options[modelSelector.selectedIndex].text
+    };
+  }
 
   saveChats();
   saveChatsToWorker();
   renderMessages();
   renderChatList();
 }
+
   document.getElementById("newChatBtn").addEventListener("click", () => {
     createNewChat();
     if (window.innerWidth <= 768) closeSidebar();
@@ -785,6 +745,7 @@ async function sendMessage() {
       sendMessage();
     }
   });
+
 modelSelector.value = `${currentProvider}|${currentModel}`;
 
 modelSelector.addEventListener("change", (e) => {
