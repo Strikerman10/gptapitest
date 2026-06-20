@@ -2,6 +2,7 @@
 // CONFIG
 // ==========================
 const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
+const OLLAMA_URL = "http://127.0.0.1:11434";
 
 let userId = localStorage.getItem("chat_user_id");
 
@@ -82,16 +83,65 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/>/g, "&gt;");
   }
 
-  function extractAnswer(data) {
-    return (
-      data?.output_text ||
-      data?.output?.[0]?.content?.[0]?.text ||
-      data?.content?.[0]?.text ||
-      data?.detail ||
-      data?.error ||
-      "No response"
-    );
+    function extractAnswer(data) {
+      return (
+        data?.message?.content ||               // Ollama
+        data?.output_text ||                    // HF-style
+        data?.output?.[0]?.content?.[0]?.text ||
+        data?.content?.[0]?.text ||
+        data?.detail ||
+        data?.error ||
+        "No response"
+      );
+    }
+
+
+async function requestAssistant(cleanMessages) {
+  if (currentProvider === "ollama") {
+    const res = await fetch(`${OLLAMA_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: currentModel,      // e.g. qwen2.5:3b
+        messages: cleanMessages,
+        stream: false
+      }),
+    });
+
+    const rawText = await res.text();
+    let data = {};
+    try { data = rawText ? JSON.parse(rawText) : {}; }
+    catch { throw new Error(`Invalid JSON from Ollama: ${rawText}`); }
+
+    if (!res.ok) {
+      throw new Error(data?.error || data?.message || `Ollama returned ${res.status}`);
+    }
+
+    return data;
   }
+
+  // Cloud providers via worker
+  const res = await fetch(`${WORKER_URL}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      provider: currentProvider,   // openai | anthropic | gemini
+      model: currentModel,
+      messages: cleanMessages,
+    }),
+  });
+
+  const rawText = await res.text();
+  let data = {};
+  try { data = rawText ? JSON.parse(rawText) : {}; }
+  catch { throw new Error(`Invalid JSON from worker: ${rawText}`); }
+
+  if (!res.ok) {
+    throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
+  }
+
+  return data;
+}
   
 function renderMessageContent(content) {
   const parts = content.split(/```([\s\S]*?)```/g);
@@ -535,15 +585,8 @@ function renderMessages() {
             .filter(m => m.content !== "__TYPING__")
             .slice(-10);
 
-          const res = await fetch(`${WORKER_URL}/chat`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              provider: currentProvider,
-              model: currentModel,
-              messages: cleanMessages
-            }),
-          });
+         const data = await requestAssistant(cleanMessages);
+         const answer = extractAnswer(data);
 
           if (!res.ok) {
             const errText = await res.text();
@@ -636,15 +679,8 @@ async function sendMessage() {
       messages: cleanMessages
     });
 
-    const res = await fetch(`${WORKER_URL}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        provider: currentProvider,
-        model: currentModel,
-        messages: cleanMessages,
-      }),
-    });
+   const data = await requestAssistant(cleanMessages);
+   const answer = extractAnswer(data);
 
     console.log("HTTP status:", res.status);
 
@@ -707,15 +743,8 @@ async function sendMessage() {
       messages: cleanMessages
     });
 
-    const res = await fetch(`${WORKER_URL}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        provider: currentProvider,
-        model: currentModel,
-        messages: cleanMessages
-      }),
-    });
+   const data = await requestAssistant(cleanMessages);
+   const answer = extractAnswer(data);
 
     console.log("Retry status:", res.status);
 
