@@ -54,6 +54,9 @@
           <option value="gemini|gemini-3.5-flash">Gemini 3.5 Flash</option>
           <option value="gemini|gemini-2.5-flash">Gemini 2.5 Flash</option>
           <option value="gemini|gemini-3.1-flash-lite">Gemini Flash Lite 3.1</option>
+
+          <option disabled>── Hugging Face ──</option>
+          <option value="gemini|gemini-3.5-flash">Qwen2.5-3B</option>
         </select>
       </div>
 
@@ -351,6 +354,30 @@
         </span>
         <span class="model-check">✓</span>
       </button>
+
+      <button class="model-sheet-option" data-model="Qwen/Qwen2.5-3B">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+            <!-- Face -->
+            <circle cx="16" cy="16" r="14" fill="#FFD21E" stroke="#000" stroke-width="1.5"/>
+            <!-- Eyes -->
+            <ellipse cx="11" cy="13" rx="2.5" ry="3" fill="#000"/>
+            <ellipse cx="21" cy="13" rx="2.5" ry="3" fill="#000"/>
+            <!-- Eye shine -->
+            <ellipse cx="12" cy="12" rx="1" ry="1.2" fill="#fff"/>
+            <ellipse cx="22" cy="12" rx="1" ry="1.2" fill="#fff"/>
+            <!-- Cheeks -->
+            <ellipse cx="7" cy="18" rx="3" ry="2" fill="#FF9B9B" opacity="0.6"/>
+            <ellipse cx="25" cy="18" rx="3" ry="2" fill="#FF9B9B" opacity="0.6"/>
+            <!-- Smile with tongue -->
+            <path d="M 10 20 Q 16 27 22 20" stroke="#000" stroke-width="1.5" fill="#FF6B6B" stroke-linecap="round"/>
+            <ellipse cx="16" cy="24" rx="3" ry="2" fill="#FF6B6B"/>
+          </svg>
+        <span class="model-info">
+          <span class="model-name">Qwen 2.5-3B</span>
+        </span>
+        <span class="model-check">✓</span>
+      </button>
+      
     </div>
   </section>
   <script src="app.js" defer></script>
