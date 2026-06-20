@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function requestAssistant(cleanMessages) {
   if (currentProvider === "ollama") {
-    const res = await fetch(`${OLLAMA_URL}/api/chat`, {
+    const res = await fetch(`${OLLAMA_URL}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -119,6 +119,7 @@ async function requestAssistant(cleanMessages) {
 
     return data;
   }
+}
 
   // Cloud providers via worker
   const res = await fetch(`${WORKER_URL}/chat`, {
