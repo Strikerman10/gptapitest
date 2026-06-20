@@ -2,7 +2,7 @@
 // CONFIG
 // ==========================
 const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
-const OLLAMA_URL = "http://127.0.0.1:11434";
+const OLLAMA_URL = "http://127.0.0.1:3001";
 
 let userId = localStorage.getItem("chat_user_id");
 
