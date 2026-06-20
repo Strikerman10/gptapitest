@@ -581,20 +581,15 @@ function renderMessages() {
         renderMessages();
 
         try {
-          const cleanMessages = chat.messages
-            .filter(m => m.content !== "__TYPING__")
-            .slice(-10);
-
-         const data = await requestAssistant(cleanMessages);
-         const answer = extractAnswer(data);
-
-          if (!res.ok) {
-            const errText = await res.text();
-            throw new Error(`Worker returned ${res.status}: ${errText}`);
-          }
-
-          const data = await res.json();
-         const answer = extractAnswer(data);
+            const data = await requestAssistant(cleanMessages);
+            const answer = extractAnswer(data);
+            
+            chat.messages[chat.messages.length - 1] = {
+              role: "assistant",
+              content: answer,
+              time: formatDateTime(),
+              model: modelSelector.options[modelSelector.selectedIndex].text
+            };
 
         chat.messages[chat.messages.length - 1] = {
             role: "assistant",
@@ -602,6 +597,7 @@ function renderMessages() {
             time: formatDateTime(),
             model: modelSelector.options[modelSelector.selectedIndex].text
           };
+          
         } catch (e) {
           chat.messages[chat.messages.length - 1] = {
             role: "assistant",
@@ -682,23 +678,15 @@ async function sendMessage() {
    const data = await requestAssistant(cleanMessages);
    const answer = extractAnswer(data);
 
-    console.log("HTTP status:", res.status);
+   const data = await requestAssistant(cleanMessages);
+const answer = extractAnswer(data);
 
-    const rawText = await res.text();
-    console.log("Worker raw response:", rawText);
-
-    let data = {};
-    try {
-      data = rawText ? JSON.parse(rawText) : {};
-    } catch (jsonErr) {
-      throw new Error(`Invalid JSON from worker: ${rawText}`);
-    }
-
-    if (!res.ok) {
-      throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
-    }
-
-    const answer = extractAnswer(data);
+chat.messages[chat.messages.length - 1] = {
+  role: "assistant",
+  content: answer,
+  time: formatDateTime(),
+  model: modelSelector.options[modelSelector.selectedIndex].text
+};
 
       chat.messages[chat.messages.length - 1] = {
       role: "assistant",
@@ -746,40 +734,32 @@ async function sendMessage() {
    const data = await requestAssistant(cleanMessages);
    const answer = extractAnswer(data);
 
-    console.log("Retry status:", res.status);
-
-    const rawText = await res.text();
-    console.log("Retry raw response:", rawText);
-
-    let data = {};
-    try {
-      data = rawText ? JSON.parse(rawText) : {};
-    } catch {
-      throw new Error(`Invalid JSON from worker: ${rawText}`);
-    }
-
-    if (!res.ok) {
-      throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
-    }
-
-    const answer = extractAnswer(data);
-
-        chat.messages[chat.messages.length - 1] = {
-      role: "assistant",
-      content: answer,
-      time: formatDateTime(),
-      model: modelSelector.options[modelSelector.selectedIndex].text
-    };
-  } catch (e) {
-    console.error("sendMessageRetry failed:", e);
-
-    chat.messages[chat.messages.length - 1] = {
-      role: "assistant",
-      content: "Error: " + e.message,
-      time: formatDateTime(),
-      model: modelSelector.options[modelSelector.selectedIndex].text
-    };
-  }
+  const data = await requestAssistant(cleanMessages);
+      const answer = extractAnswer(data);
+      
+      chat.messages[chat.messages.length - 1] = {
+        role: "assistant",
+        content: answer,
+        time: formatDateTime(),
+        model: modelSelector.options[modelSelector.selectedIndex].text
+      };
+      
+              chat.messages[chat.messages.length - 1] = {
+            role: "assistant",
+            content: answer,
+            time: formatDateTime(),
+            model: modelSelector.options[modelSelector.selectedIndex].text
+          };
+        } catch (e) {
+          console.error("sendMessageRetry failed:", e);
+      
+          chat.messages[chat.messages.length - 1] = {
+            role: "assistant",
+            content: "Error: " + e.message,
+            time: formatDateTime(),
+            model: modelSelector.options[modelSelector.selectedIndex].text
+          };
+        }
 
   saveChats();
   saveChatsToWorker();
