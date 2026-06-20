@@ -579,33 +579,29 @@ function renderMessages() {
         saveChats();
         saveChatsToWorker();
         renderMessages();
-
-        try {
-            const data = await requestAssistant(cleanMessages);
-            const answer = extractAnswer(data);
-            
-            chat.messages[chat.messages.length - 1] = {
-              role: "assistant",
-              content: answer,
-              time: formatDateTime(),
-              model: modelSelector.options[modelSelector.selectedIndex].text
-            };
-
+      
+      try {
+        const cleanMessages = chat.messages
+          .filter(m => m.content !== "__TYPING__")
+          .slice(-10);
+      
+        const data = await requestAssistant(cleanMessages);
+        const answer = extractAnswer(data);
+      
         chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: answer,
-            time: formatDateTime(),
-            model: modelSelector.options[modelSelector.selectedIndex].text
-          };
-          
-        } catch (e) {
-          chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: "Error: " + e.message,
-            time: formatDateTime(),
-            model: modelSelector.options[modelSelector.selectedIndex].text
-          };
-        }
+          role: "assistant",
+          content: answer,
+          time: formatDateTime(),
+          model: modelSelector.options[modelSelector.selectedIndex].text
+        };
+      } catch (e) {
+        chat.messages[chat.messages.length - 1] = {
+          role: "assistant",
+          content: "Error: " + e.message,
+          time: formatDateTime(),
+          model: modelSelector.options[modelSelector.selectedIndex].text
+        };
+      }
 
         saveChats();
         saveChatsToWorker();
@@ -664,29 +660,35 @@ async function sendMessage() {
   saveChats();
   saveChatsToWorker();
 
-  try {
-    const cleanMessages = chat.messages
-      .filter(m => m.content !== "__TYPING__")
-      .slice(-10);
+ try {
+  const cleanMessages = chat.messages
+    .filter(m => m.content !== "__TYPING__")
+    .slice(-10);
 
-    console.log("About to send:", {
-      provider: currentProvider,
-      model: modelSelector.options[modelSelector.selectedIndex].text,
-      messages: cleanMessages
-    });
+  console.log("About to send:", {
+    provider: currentProvider,
+    model: modelSelector.options[modelSelector.selectedIndex].text,
+    messages: cleanMessages
+  });
 
-   const data = await requestAssistant(cleanMessages);
-   const answer = extractAnswer(data);
+  const data = await requestAssistant(cleanMessages);
+  const answer = extractAnswer(data);
 
-   const data = await requestAssistant(cleanMessages);
-const answer = extractAnswer(data);
-
-chat.messages[chat.messages.length - 1] = {
-  role: "assistant",
-  content: answer,
-  time: formatDateTime(),
-  model: modelSelector.options[modelSelector.selectedIndex].text
-};
+  chat.messages[chat.messages.length - 1] = {
+    role: "assistant",
+    content: answer,
+    time: formatDateTime(),
+    model: modelSelector.options[modelSelector.selectedIndex].text
+  };
+} catch (e) {
+  console.error("sendMessage failed:", e);
+  chat.messages[chat.messages.length - 1] = {
+    role: "assistant",
+    content: "Error: " + e.message,
+    time: formatDateTime(),
+    model: modelSelector.options[modelSelector.selectedIndex].text
+  };
+}
 
       chat.messages[chat.messages.length - 1] = {
       role: "assistant",
@@ -720,29 +722,35 @@ chat.messages[chat.messages.length - 1] = {
   saveChats();
   saveChatsToWorker();
 
-  try {
-    const cleanMessages = chat.messages
-      .filter(m => m.content !== "__TYPING__")
-      .slice(-10);
-
-    console.log("Retry send:", {
-      provider: currentProvider,
-      model: currentModel,
-      messages: cleanMessages
-    });
-
-   const data = await requestAssistant(cleanMessages);
-   const answer = extractAnswer(data);
-
-  const data = await requestAssistant(cleanMessages);
-      const answer = extractAnswer(data);
-      
-      chat.messages[chat.messages.length - 1] = {
-        role: "assistant",
-        content: answer,
-        time: formatDateTime(),
-        model: modelSelector.options[modelSelector.selectedIndex].text
-      };
+          try {
+          const cleanMessages = chat.messages
+            .filter(m => m.content !== "__TYPING__")
+            .slice(-10);
+        
+          console.log("Retry send:", {
+            provider: currentProvider,
+            model: currentModel,
+            messages: cleanMessages
+          });
+        
+          const data = await requestAssistant(cleanMessages);
+          const answer = extractAnswer(data);
+        
+          chat.messages[chat.messages.length - 1] = {
+            role: "assistant",
+            content: answer,
+            time: formatDateTime(),
+            model: modelSelector.options[modelSelector.selectedIndex].text
+          };
+        } catch (e) {
+          console.error("sendMessageRetry failed:", e);
+          chat.messages[chat.messages.length - 1] = {
+            role: "assistant",
+            content: "Error: " + e.message,
+            time: formatDateTime(),
+            model: modelSelector.options[modelSelector.selectedIndex].text
+          };
+        }
       
               chat.messages[chat.messages.length - 1] = {
             role: "assistant",
