@@ -2,7 +2,6 @@
 // CONFIG
 // ==========================
 const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
-const OLLAMA_URL = "http://127.0.0.1:3001";
 
 let userId = localStorage.getItem("chat_user_id");
 
@@ -83,66 +82,16 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/>/g, "&gt;");
   }
 
-    function extractAnswer(data) {
-      return (
-        data?.message?.content ||               // Ollama
-        data?.output_text ||                    // HF-style
-        data?.output?.[0]?.content?.[0]?.text ||
-        data?.content?.[0]?.text ||
-        data?.detail ||
-        data?.error ||
-        "No response"
-      );
-    }
-
-
-async function requestAssistant(cleanMessages) {
-  if (currentProvider === "ollama") {
-    const res = await fetch(`${OLLAMA_URL}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: currentModel,      // e.g. qwen2.5:3b
-        messages: cleanMessages,
-        stream: false
-      }),
-    });
-
-    const rawText = await res.text();
-    let data = {};
-    try { data = rawText ? JSON.parse(rawText) : {}; }
-    catch { throw new Error(`Invalid JSON from Ollama: ${rawText}`); }
-
-    if (!res.ok) {
-      throw new Error(data?.error || data?.message || `Ollama returned ${res.status}`);
-    }
-
-    return data;
+  function extractAnswer(data) {
+    return (
+      data?.output_text ||
+      data?.output?.[0]?.content?.[0]?.text ||
+      data?.content?.[0]?.text ||
+      data?.detail ||
+      data?.error ||
+      "No response"
+    );
   }
-}
-
-  // Cloud providers via worker
-  const res = await fetch(`${WORKER_URL}/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      provider: currentProvider,   // openai | anthropic | gemini
-      model: currentModel,
-      messages: cleanMessages,
-    }),
-  });
-
-  const rawText = await res.text();
-  let data = {};
-  try { data = rawText ? JSON.parse(rawText) : {}; }
-  catch { throw new Error(`Invalid JSON from worker: ${rawText}`); }
-
-  if (!res.ok) {
-    throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
-  }
-
-  return data;
-}
   
 function renderMessageContent(content) {
   const parts = content.split(/```([\s\S]*?)```/g);
@@ -580,29 +529,44 @@ function renderMessages() {
         saveChats();
         saveChatsToWorker();
         renderMessages();
-      
-      try {
-        const cleanMessages = chat.messages
-          .filter(m => m.content !== "__TYPING__")
-          .slice(-10);
-      
-        const data = await requestAssistant(cleanMessages);
-        const answer = extractAnswer(data);
-      
+
+        try {
+          const cleanMessages = chat.messages
+            .filter(m => m.content !== "__TYPING__")
+            .slice(-10);
+
+          const res = await fetch(`${WORKER_URL}/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              provider: currentProvider,
+              model: currentModel,
+              messages: cleanMessages
+            }),
+          });
+
+          if (!res.ok) {
+            const errText = await res.text();
+            throw new Error(`Worker returned ${res.status}: ${errText}`);
+          }
+
+          const data = await res.json();
+         const answer = extractAnswer(data);
+
         chat.messages[chat.messages.length - 1] = {
-          role: "assistant",
-          content: answer,
-          time: formatDateTime(),
-          model: modelSelector.options[modelSelector.selectedIndex].text
-        };
-      } catch (e) {
-        chat.messages[chat.messages.length - 1] = {
-          role: "assistant",
-          content: "Error: " + e.message,
-          time: formatDateTime(),
-          model: modelSelector.options[modelSelector.selectedIndex].text
-        };
-      }
+            role: "assistant",
+            content: answer,
+            time: formatDateTime(),
+            model: modelSelector.options[modelSelector.selectedIndex].text
+          };
+        } catch (e) {
+          chat.messages[chat.messages.length - 1] = {
+            role: "assistant",
+            content: "Error: " + e.message,
+            time: formatDateTime(),
+            model: modelSelector.options[modelSelector.selectedIndex].text
+          };
+        }
 
         saveChats();
         saveChatsToWorker();
@@ -646,12 +610,7 @@ async function sendMessage() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  const userMessage = {
-    role: "user",
-    content: text,
-    time: formatDateTime(),
-    model: modelSelector.options[modelSelector.selectedIndex].text
-  };
+  const userMessage = { role: "user", content: text, time: formatDateTime(), model: modelSelector.options[modelSelector.selectedIndex].text };
   chat.messages.push(userMessage);
 
   if (chat.title === "New Chat" || !chat.title) {
@@ -671,10 +630,41 @@ async function sendMessage() {
       .filter(m => m.content !== "__TYPING__")
       .slice(-10);
 
-    const data = await requestAssistant(cleanMessages);
+    console.log("About to send:", {
+      provider: currentProvider,
+      model: modelSelector.options[modelSelector.selectedIndex].text,
+      messages: cleanMessages
+    });
+
+    const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        provider: currentProvider,
+        model: currentModel,
+        messages: cleanMessages,
+      }),
+    });
+
+    console.log("HTTP status:", res.status);
+
+    const rawText = await res.text();
+    console.log("Worker raw response:", rawText);
+
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (jsonErr) {
+      throw new Error(`Invalid JSON from worker: ${rawText}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
+    }
+
     const answer = extractAnswer(data);
 
-    chat.messages[chat.messages.length - 1] = {
+      chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
@@ -682,6 +672,7 @@ async function sendMessage() {
     };
   } catch (e) {
     console.error("sendMessage failed:", e);
+
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: "Error: " + e.message,
@@ -696,7 +687,7 @@ async function sendMessage() {
   renderChatList();
 }
 
-async function sendMessageRetry() {
+ async function sendMessageRetry() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
@@ -710,10 +701,41 @@ async function sendMessageRetry() {
       .filter(m => m.content !== "__TYPING__")
       .slice(-10);
 
-    const data = await requestAssistant(cleanMessages);
+    console.log("Retry send:", {
+      provider: currentProvider,
+      model: currentModel,
+      messages: cleanMessages
+    });
+
+    const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        provider: currentProvider,
+        model: currentModel,
+        messages: cleanMessages
+      }),
+    });
+
+    console.log("Retry status:", res.status);
+
+    const rawText = await res.text();
+    console.log("Retry raw response:", rawText);
+
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch {
+      throw new Error(`Invalid JSON from worker: ${rawText}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
+    }
+
     const answer = extractAnswer(data);
 
-    chat.messages[chat.messages.length - 1] = {
+        chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
@@ -721,6 +743,7 @@ async function sendMessageRetry() {
     };
   } catch (e) {
     console.error("sendMessageRetry failed:", e);
+
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: "Error: " + e.message,
@@ -734,7 +757,6 @@ async function sendMessageRetry() {
   renderMessages();
   renderChatList();
 }
-
   document.getElementById("newChatBtn").addEventListener("click", () => {
     createNewChat();
     if (window.innerWidth <= 768) closeSidebar();
@@ -746,7 +768,6 @@ async function sendMessageRetry() {
       sendMessage();
     }
   });
-
 modelSelector.value = `${currentProvider}|${currentModel}`;
 
 modelSelector.addEventListener("change", (e) => {
