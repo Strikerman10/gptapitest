@@ -650,70 +650,73 @@ function renderMessages() {
       `;
 
       reloadBtn.addEventListener("click", async () => {
-        chat.messages.splice(idx, 1);
-        chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
+  // Remove the assistant message at this specific index
+  chat.messages.splice(idx, 1);
+  
+  // Insert the typing indicator at the SAME position, not the end
+  chat.messages.splice(idx, 0, { role: "assistant", content: "__TYPING__", time: formatDateTime() });
 
-        saveChats();
-        saveChatsToWorker();
-        renderMessages();
+  saveChats();
+  saveChatsToWorker();
+  renderMessages();
 
-        try {
-        const cleanMessages = chat.messages
-            .filter(m => m.content !== "__TYPING__")
-            .slice(-10)
-            .reduce((acc, msg) => {
-              // Avoid two consecutive messages from the same role
-              if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
-                acc[acc.length - 1] = msg; // replace with latest
-              } else {
-                acc.push(msg);
-              }
-              return acc;
-            }, []);
-          
-          // Final safety check - Anthropic requires last message to be user
-          if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
-            cleanMessages.pop();
-          }
-
-          const res = await fetch(`${WORKER_URL}/chat`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              provider: currentProvider,
-              model: currentModel,
-              messages: cleanMessages
-            }),
-          });
-
-          if (!res.ok) {
-            const errText = await res.text();
-            throw new Error(`Worker returned ${res.status}: ${errText}`);
-          }
-
-          const data = await res.json();
-         const answer = extractAnswer(data);
-
-        chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: answer,
-            time: formatDateTime(),
-            model: modelSelector.options[modelSelector.selectedIndex].text
-          };
-        } catch (e) {
-          chat.messages[chat.messages.length - 1] = {
-            role: "assistant",
-            content: "Error: " + e.message,
-            time: formatDateTime(),
-            model: modelSelector.options[modelSelector.selectedIndex].text
-          };
+  try {
+    const cleanMessages = chat.messages
+      .filter(m => m.content !== "__TYPING__")
+      .slice(-10)
+      .reduce((acc, msg) => {
+        if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
+          acc[acc.length - 1] = msg;
+        } else {
+          acc.push(msg);
         }
+        return acc;
+      }, []);
 
-        saveChats();
-        saveChatsToWorker();
-        renderMessages();
-        renderChatList();
-      });
+    if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
+      cleanMessages.pop();
+    }
+
+    const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        provider: currentProvider,
+        model: currentModel,
+        messages: cleanMessages
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Worker returned ${res.status}: ${errText}`);
+    }
+
+    const data = await res.json();
+    const answer = extractAnswer(data);
+
+    // Replace at the SAME idx position, not the end
+    chat.messages[idx] = {
+      role: "assistant",
+      content: answer,
+      time: formatDateTime(),
+      model: modelSelector.options[modelSelector.selectedIndex].text
+    };
+  } catch (e) {
+    // Replace at the SAME idx position on error too
+    chat.messages[idx] = {
+      role: "assistant",
+      content: "Error: " + e.message,
+      time: formatDateTime(),
+      model: modelSelector.options[modelSelector.selectedIndex].text
+    };
+  }
+
+  saveChats();
+  saveChatsToWorker();
+  renderMessages();
+  renderChatList();
+});
 
       reloadRow.appendChild(reloadBtn);
       wrapper.appendChild(reloadRow);
