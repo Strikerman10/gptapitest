@@ -31,7 +31,14 @@ BODY - Main App Container
   <body>
   <div class="app-container">
    
-    <!-- Sidebar -->
+
+  <!-- ==========================
+       SIDEBAR
+       - Sidebar header / logo
+       - New chat button
+       - Model selector (desktop dropdown)
+       - Chat list (populated by JS)
+       ========================== -->
     <div class="sidebar" role="navigation" aria-label="Chat history">
       <div class="sidebar-header">
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
@@ -70,7 +77,14 @@ BODY - Main App Container
 MAIN CHAT WINDOW
 ========================== -->
 <div class="main-content chat-window" role="main">
-  <!-- Header -->
+
+  <!-- ==========================
+         CHAT HEADER
+         - Chat title
+         - Sidebar toggle button
+         - Light/Dark mode toggle
+         - Palette theme picker button
+         ========================== -->
   <div class="chat-header" id="chatHeader">
   <span class="chat-title" id="chatTitle">Messages</span>
 
@@ -227,6 +241,9 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
     </div>
     <div class="model-sheet-list">
 
+    <!-- ==========================
+     OPENAI MODELS
+     ========================== -->
       <p class="model-group-label">OpenAI</p>
       <button class="model-sheet-option" data-model="openai|gpt-5.5-2026-04-23">
         <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="chatgpt">
@@ -269,6 +286,9 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
         <span class="model-check">✓</span>
       </button>
 
+    <!-- ==========================
+     ANTHROPIC MODELS
+     ========================== -->
       <p class="model-group-label">Anthropic</p>
       <button class="model-sheet-option" data-model="anthropic|claude-opus-4-8">
         <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -300,6 +320,9 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
         <span class="model-check">✓</span>
       </button>
 
+    <!-- ==========================
+     GEMINI MODELS
+     ========================== -->
       <p class="model-group-label">Google</p>
       <button class="model-sheet-option" data-model="gemini|gemini-3.5-flash">
         <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
