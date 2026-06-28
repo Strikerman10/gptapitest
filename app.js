@@ -110,35 +110,51 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   
 function renderMessageContent(content) {
-  const parts = content.split(/```([\s\S]*?)```/g);
+  // Count backtick markers - if odd number, one was never closed
+  const tickCount = (content.match(/
+
+/g) || []).length;
+if (tickCount % 2 !== 0) {
+content = content + "\n
+
+";
+  }
+
+  const parts = content.split(/
+
+(\w*\n[\s\S]*?)\n
+
+/g);
   let html = "";
 
   for (let i = 0; i < parts.length; i++) {
     if (i % 2 === 0) {
-      // normal text
-      html += `<div class="msg-paragraph">${escapeHTML(parts[i]).replace(/\n/g, "<br>")}</div>`;
+      // Normal text - escape and convert newlines to <br>
+      const escaped = escapeHTML(parts[i]).replace(/\n/g, "<br>");
+      if (escaped.trim()) {
+        html += `<div class="msg-paragraph">${escaped}</div>`;
+      }
     } else {
-      // code block
+      // Code block - strip optional language label from first line
       let code = parts[i].trim();
-
-      // remove optional language line like "js\n"
-      const firstLineBreak = code.indexOf("\n");
-      let language = "";
-      if (firstLineBreak !== -1) {
-        const possibleLang = code.slice(0, firstLineBreak).trim();
-        if (/^[a-zA-Z0-9_-]+$/.test(possibleLang)) {
-          language = possibleLang;
-          code = code.slice(firstLineBreak + 1);
+      const firstNewline = code.indexOf("\n");
+      let lang = "";
+      if (firstNewline !== -1) {
+        const firstLine = code.substring(0, firstNewline).trim();
+        // If the first line is just a language tag like "js" or "html"
+        if (/^\w+$/.test(firstLine)) {
+          lang = firstLine;
+          code = code.substring(firstNewline + 1);
         }
       }
 
+      const id = "code-" + Math.random().toString(36).substring(2, 9);
       html += `
-        <div class="code-block-wrapper" data-code="${encodeURIComponent(code)}">
-          <button class="copy-code-btn" type="button">Copy</button>
-          ${language ? `<div class="code-language">${language}</div>` : ""}
-          <pre><code>${escapeHTML(code)}</code></pre>
-        </div>
-      `;
+        <div class="code-block-wrapper">
+          <div class="code-lang-label">${lang || "code"}</div>
+          <button class="copy-code-btn" data-target="${id}">Copy</button>
+          <pre><code id="${id}">${escapeHTML(code)}</code></pre>
+        </div>`;
     }
   }
 
