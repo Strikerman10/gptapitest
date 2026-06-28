@@ -1308,3 +1308,57 @@ body.dark-mode .message p {
    }
    
 } /* end @media (max-width: 768px) */
+
+/* ===========================
+  Section Headers in Sidebar
+   =========================== */
+.chat-section-header {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #888;
+  padding: 10px 12px 4px;
+  user-select: none;
+}
+
+/* Pinned chat item highlight */
+.chat-item.pinned {
+  border-left: 3px solid #f0a500;
+  background-color: rgba(240, 165, 0, 0.06);
+}
+
+/* Pin icon inside title */
+.pin-icon {
+  font-size: 0.75rem;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* Pin button */
+.pin-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.chat-item:hover .pin-btn {
+  opacity: 1;
+}
+
+/* Always show pin button when active/pinned */
+.pin-btn.active {
+  opacity: 1;
+  color: #f0a500;
+}
+
+.pin-btn:hover {
+  color: #f0a500;
+  background: rgba(240, 165, 0, 0.1);
+}
