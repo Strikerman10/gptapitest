@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
-<head>
+<!-- ==========================
+HEAD - Meta, Title, Styles
+========================== -->
+  <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Orion AI Test</title>
@@ -22,7 +25,10 @@
 
   </style>
 </head>
-<body>
+<!-- ==========================
+BODY - Main App Container
+========================== -->
+  <body>
   <div class="app-container">
    
     <!-- Sidebar -->
@@ -60,7 +66,9 @@
       <div class="chat-list" id="chatList" aria-live="polite"></div>
     </div>
 
-   <!-- Chat Window -->
+<!-- ==========================
+MAIN CHAT WINDOW
+========================== -->
 <div class="main-content chat-window" role="main">
   <!-- Header -->
   <div class="chat-header" id="chatHeader">
@@ -90,7 +98,11 @@
           fill="currentColor"/>
       </svg>
     </button>
- <!-- Palette Selector -->
+
+<!-- ==========================
+PALETTE / THEME PICKER BUTTON
+(Opens the colour palette bottom sheet)
+========================== -->
 <div class="theme-dropdown">
   <button id="themeBtn" class="theme-btn" aria-label="Change Theme" aria-expanded="false" aria-controls="paletteSheet">
  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
@@ -114,7 +126,10 @@
   </button>
 </div>
 
-<!-- Bottom Sheet -->
+<!-- ==========================
+PALETTE BOTTOM SHEET
+(Colour theme picker, opened by the palette button above)
+========================== -->
 <div id="sheetBackdrop" class="sheet-backdrop hidden"></div>
 
 <section id="paletteSheet" class="palette-sheet hidden" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
@@ -149,9 +164,17 @@
   </div>
 
 
-  <!-- Messages -->
+<!-- ==========================
+MESSAGES AREA
+(Chat messages are injected here by JS)
+========================== -->
   <div class="messages" id="messages" aria-live="polite"></div>
 
+<!-- ==========================
+SCROLL BUTTONS
+- Scroll to top
+- Scroll to bottom
+========================== -->
 <!-- Scroll-to-Top Button -->
 <button id="scrollTopBtn" class="scroll-top-btn" title="Scroll to top">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -172,7 +195,11 @@
   </svg>
 </button>
 
-    <!-- Input -->
+<!-- ==========================
+MESSAGE INPUT AREA
+- Text input field
+- Send button
+========================== -->
   <div class="input-area">
     <textarea id="input" placeholder="Type your message..."></textarea>
     <button class="send-btn" id="sendBtn" type="submit">
@@ -186,7 +213,10 @@
 </div>
 </div>
 
-  <!-- Model Sheet Backdrop -->
+<!-- ==========================
+MODEL SELECTOR BOTTOM SHEET (MOBILE)
+(Replaces the dropdown on small screens)
+========================== -->
   <div id="modelSheetBackdrop" class="sheet-backdrop hidden"></div>
 
   <section id="modelSheet" class="palette-sheet hidden" role="dialog" aria-modal="true" aria-labelledby="modelTitle">
