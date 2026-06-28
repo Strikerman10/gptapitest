@@ -658,9 +658,23 @@ function renderMessages() {
         renderMessages();
 
         try {
-          const cleanMessages = chat.messages
+        const cleanMessages = chat.messages
             .filter(m => m.content !== "__TYPING__")
-            .slice(-10);
+            .slice(-10)
+            .reduce((acc, msg) => {
+              // Avoid two consecutive messages from the same role
+              if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
+                acc[acc.length - 1] = msg; // replace with latest
+              } else {
+                acc.push(msg);
+              }
+              return acc;
+            }, []);
+          
+          // Final safety check - Anthropic requires last message to be user
+          if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
+            cleanMessages.pop();
+          }
 
           const res = await fetch(`${WORKER_URL}/chat`, {
             method: "POST",
@@ -756,7 +770,21 @@ async function sendMessage() {
   try {
     const cleanMessages = chat.messages
       .filter(m => m.content !== "__TYPING__")
-      .slice(-10);
+      .slice(-10)
+      .reduce((acc, msg) => {
+        // Avoid two consecutive messages from the same role
+        if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
+          acc[acc.length - 1] = msg; // replace with latest
+        } else {
+          acc.push(msg);
+        }
+        return acc;
+      }, []);
+    
+    // Final safety check - Anthropic requires last message to be user
+    if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
+      cleanMessages.pop();
+    }
 
     console.log("About to send:", {
       provider: currentProvider,
@@ -825,9 +853,23 @@ async function sendMessage() {
   saveChatsToWorker();
 
   try {
-    const cleanMessages = chat.messages
+     const cleanMessages = chat.messages
       .filter(m => m.content !== "__TYPING__")
-      .slice(-10);
+      .slice(-10)
+      .reduce((acc, msg) => {
+        // Avoid two consecutive messages from the same role
+        if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
+          acc[acc.length - 1] = msg; // replace with latest
+        } else {
+          acc.push(msg);
+        }
+        return acc;
+      }, []);
+    
+    // Final safety check - Anthropic requires last message to be user
+    if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
+      cleanMessages.pop();
+    }
 
     console.log("Retry send:", {
       provider: currentProvider,
