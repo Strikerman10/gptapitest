@@ -378,7 +378,7 @@ function renderMessageContent(content) {
   }
 
   function createNewChat() {
-    const newChat = { id: Date.now().toString(), title: "New Chat", messages: [] };
+    const newChat = { id: Date.now().toString(), title: "New Chat", messages: [], pinned: false };
     chats.unshift(newChat);
     currentIndex = 0;
     saveChats();
@@ -397,54 +397,140 @@ function renderMessageContent(content) {
     renderMessages();
   }
 
-  function renderChatList() {
-    chatListEl.innerHTML = "";
-    chats.forEach((chat, i) => {
-      const item = document.createElement("div");
-      item.className = "chat-item" + (i === currentIndex ? " selected" : "");
+    function togglePin(index) {
+      chats[index].pinned = !chats[index].pinned;
+    
+      // Sort: pinned first, unpinned after — preserve order within each group
+      const pinned   = chats.filter(c => c.pinned);
+      const unpinned = chats.filter(c => !c.pinned);
+      chats = [...pinned, ...unpinned];
+    
+      // Keep currentIndex pointing to the same chat after re-sort
+      currentIndex = chats.findIndex(c => c === chats[0]) ?? 0;
+      // Re-find by id to be safe
+      const currentId = chats[index]?.id;
+      if (currentId) currentIndex = chats.findIndex(c => c.id === currentId);
+    
+      saveChats();
+      renderChatList();
+    }
+  
+function renderChatList() {
+  chatListEl.innerHTML = "";
 
-      function truncate(str, n) {
-        return str.length > n ? str.slice(0, n) + "…" : str;
+  // Sort: pinned first
+  const pinned   = chats.map((c, i) => ({ chat: c, i })).filter(x => x.chat.pinned);
+  const unpinned = chats.map((c, i) => ({ chat: c, i })).filter(x => !x.chat.pinned);
+
+  function truncate(str, n) {
+    return str.length > n ? str.slice(0, n) + "…" : str;
+  }
+
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const titleLimit    = isMobile ? 45 : 70;
+  const subtitleLimit = isMobile ? 40 : 60;
+
+  function buildItem({ chat, i }) {
+    const item = document.createElement("div");
+    item.className = "chat-item" + (i === currentIndex ? " selected" : "");
+    if (chat.pinned) item.classList.add("pinned");
+
+    const preview = document.createElement("div");
+    preview.className = "chat-preview";
+
+    const title    = truncate(chat.title || "New Chat", titleLimit);
+    const subtitle = (chat.messages && chat.messages.length > 0)
+      ? truncate(chat.messages[chat.messages.length - 1].content, subtitleLimit)
+      : "";
+
+    preview.innerHTML = `
+      <div class="chat-title">
+        ${chat.pinned ? '<span class="pin-icon">📌</span>' : ""}
+        ${title}
+      </div>
+      <div class="chat-subtitle">${subtitle}</div>
+    `;
+
+    // Pin button
+    const pinBtn = document.createElement("button");
+    pinBtn.className = "pin-btn" + (chat.pinned ? " active" : "");
+    pinBtn.setAttribute("aria-label", chat.pinned ? "Unpin chat" : "Pin chat");
+    pinBtn.title = chat.pinned ? "Unpin" : "Pin to top";
+    pinBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" width="14" height="14"
+           fill="${chat.pinned ? 'currentColor' : 'none'}"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="17" x2="12" y2="22"/>
+        <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15
+                 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2
+                 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+      </svg>
+    `;
+    pinBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      togglePin(i);
+    });
+
+    // Delete button
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-btn";
+    delBtn.setAttribute("aria-label", "Delete chat");
+    delBtn.textContent = "×";
+    delBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      deleteChat(i);
+    });
+
+    item.addEventListener("click", () => {
+      const [clicked] = chats.splice(i, 1);
+
+      // Keep pinned chats pinned at top, don't move them
+      if (!clicked.pinned) {
+        // Insert after all pinned chats
+        const firstUnpinned = chats.findIndex(c => !c.pinned);
+        if (firstUnpinned === -1) {
+          chats.push(clicked);
+        } else {
+          chats.splice(firstUnpinned, 0, clicked);
+        }
+        currentIndex = chats.findIndex(c => c.id === clicked.id);
+      } else {
+        // Put pinned back at original spot (top of pinned)
+        chats.unshift(clicked);
+        currentIndex = 0;
       }
 
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
-      const titleLimit = isMobile ? 45 : 70;
-      const subtitleLimit = isMobile ? 40 : 60;
-
-      const preview = document.createElement("div");
-      preview.className = "chat-preview";
-
-      const title = truncate(chat.title || "New Chat", titleLimit);
-      const subtitle = (chat.messages && chat.messages.length > 0)
-        ? truncate(chat.messages[chat.messages.length - 1].content, subtitleLimit)
-        : "";
-
-      preview.innerHTML = `
-        <div class="chat-title">${title}</div>
-        <div class="chat-subtitle">${subtitle}</div>
-      `;
-
-      const delBtn = document.createElement("button");
-      delBtn.className = "delete-btn";
-      delBtn.setAttribute("aria-label", "Delete chat");
-      delBtn.textContent = "×";
-      delBtn.addEventListener("click", (e) => { e.stopPropagation(); deleteChat(i); });
-
-      item.addEventListener("click", () => {
-        const [chat] = chats.splice(i, 1);
-        chats.unshift(chat);
-        currentIndex = 0;
-        saveChats();
-        renderChatList();
-        renderMessages();
-        if (window.innerWidth <= 768) closeSidebar();
-      });
-
-      item.appendChild(preview);
-      item.appendChild(delBtn);
-      chatListEl.appendChild(item);
+      saveChats();
+      renderChatList();
+      renderMessages();
+      if (window.innerWidth <= 768) closeSidebar();
     });
+
+    item.appendChild(preview);
+    item.appendChild(pinBtn);
+    item.appendChild(delBtn);
+    chatListEl.appendChild(item);
   }
+
+  // Render pinned section
+  if (pinned.length > 0) {
+    const pinnedHeader = document.createElement("div");
+    pinnedHeader.className = "chat-section-header";
+    pinnedHeader.textContent = "Pinned";
+    chatListEl.appendChild(pinnedHeader);
+    pinned.forEach(buildItem);
+  }
+
+  // Render unpinned section
+  if (unpinned.length > 0) {
+    const allHeader = document.createElement("div");
+    allHeader.className = "chat-section-header";
+    allHeader.textContent = pinned.length > 0 ? "All Chats" : "";
+    if (pinned.length > 0) chatListEl.appendChild(allHeader);
+    unpinned.forEach(buildItem);
+  }
+}
 
 function renderMessages() {
   messagesEl.innerHTML = "";
