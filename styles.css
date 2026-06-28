@@ -492,10 +492,28 @@ body.dark-mode {
 /* ===========================
    Code Copy Button
    =========================== */
+
+/* Make the message bubble not overflow its container */
+.message {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Make the text container shrink properly */
+.msg-text {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
 .code-block-wrapper {
   position: relative;
   margin-top: 8px;
   margin-bottom: 2px;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .copy-code-btn {
@@ -518,9 +536,22 @@ body.dark-mode {
   border-radius: 12px;
   background: var(--color-1);
   border: 1px solid var(--border);
+  /* This is the key fix - allows scrolling inside the box */
+  /* instead of pushing the box wider                      */
   max-width: 100%;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: visible;
   white-space: pre;
+  box-sizing: border-box;
+}
+
+.code-block-wrapper code {
+  font-family: monospace;
+  color: var(--text);
+  /* Stop code text from wrapping and breaking the layout */
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .message p {
@@ -537,11 +568,6 @@ body.dark-mode {
 
 .message .code-block-wrapper {
   margin: 0;
-}
-
-.code-block-wrapper code {
-  font-family: monospace;
-  color: var(--text);
 }
 
 
