@@ -1,5 +1,5 @@
 // ==========================
-// CONFIG
+// CONFIG & GLOBAL STATE
 // ==========================
 const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
 
@@ -10,7 +10,14 @@ let currentIndex = null;
 let currentProvider = localStorage.getItem("chat_provider") || "openai";
 let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini-2026-03-17";
 
+// ==========================
+// DOM READY
+// ==========================
 document.addEventListener("DOMContentLoaded", () => {
+
+  // ==========================
+  // DOM ELEMENT REFERENCES
+  // ==========================
   const chatListEl    = document.getElementById("chatList");
   const messagesEl    = document.getElementById("messages");
   const chatTitleEl   = document.getElementById("chatTitle");
@@ -27,6 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
   // ───────────────────────────────────────────────────────
 
+  // ==========================
+  // INPUT AUTO RESIZE
+  // ==========================
   function autoResize() {
     inputEl.style.height = "auto";
     inputEl.style.height = Math.min(inputEl.scrollHeight, 200) + "px";
@@ -49,6 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const inputArea    = document.querySelector(".input-area");
   const textarea     = inputArea.querySelector("textarea");
 
+  // ==========================
+  // SCROLL BUTTONS
+  // ==========================
   function updateScrollBtnPosition() {
     const inputHeight = inputArea.offsetHeight;
     scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
@@ -75,6 +88,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
 
+  // ==========================
+  // UTILITY FUNCTIONS
+  // ==========================
   function escapeHTML(str) {
     return str
       .replace(/&/g, "&amp;")
@@ -128,7 +144,10 @@ function renderMessageContent(content) {
 
   return html;
 }
-  
+
+// ==========================
+// SIDEBAR - OPEN / CLOSE / TOGGLE
+// ==========================
   function openSidebar() {
     if (window.innerWidth <= 768) {
       sidebarEl.classList.add("open");
@@ -179,6 +198,9 @@ function renderMessageContent(content) {
 
   backdropEl.addEventListener("click", closeSidebar);
 
+// ==========================
+// SIDEBAR - SWIPE TO OPEN / CLOSE (MOBILE)
+// ==========================
   let touchStartX = 0;
   document.addEventListener("touchstart", e => {
     if (window.innerWidth > 768) return;
@@ -197,6 +219,9 @@ function renderMessageContent(content) {
     }
   });
 
+// ==========================
+// THEME - COLOUR PALETTES
+// ==========================
   const palettes = {
     Green: {
       "--color-1": "#94e8b4",
@@ -254,6 +279,9 @@ function renderMessageContent(content) {
     },
   };
 
+// ==========================
+// THEME - LIGHT / DARK NEUTRALS
+// ==========================
   const neutrals = {
     light: {
       "--bg": "hsl(0 0% 99%)",
@@ -278,6 +306,9 @@ function renderMessageContent(content) {
   let currentPalette = localStorage.getItem("palette") || "Red";
   let currentMode = localStorage.getItem("mode") || "light";
 
+// ==========================
+// THEME - APPLY THEME
+// ==========================
   function applyTheme() {
     const root = document.documentElement;
     const palette = palettes[currentPalette] || palettes.Red;
@@ -332,6 +363,9 @@ function renderMessageContent(content) {
     }
   }
 
+// ==========================
+// SAVE CHATS - LOCAL STORAGE & WORKER
+// ==========================
   function saveChats() {
     localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
     localStorage.setItem("secure_chat_index", String(currentIndex));
@@ -854,6 +888,10 @@ async function sendMessage() {
       sendMessage();
     }
   });
+  
+// ==========================
+// MODEL SELECTOR - DESKTOP DROPDOWN
+// ==========================
 modelSelector.value = `${currentProvider}|${currentModel}`;
 
 modelSelector.addEventListener("change", (e) => {
@@ -878,6 +916,9 @@ modelSelector.addEventListener("change", (e) => {
   syncActiveModel(e.target.value);
 });
 
+// ==========================
+// THEME - LIGHT/DARK TOGGLE BUTTON
+// ==========================
 const darkIcon  = themeToggleBtn.querySelector(".dark-icon");
 const lightIcon = themeToggleBtn.querySelector(".light-icon");
 darkIcon.classList.toggle("hidden", currentMode === "dark");
@@ -890,7 +931,9 @@ themeToggleBtn.addEventListener("click", () => {
   applyTheme();
 });
 
-// Bottom sheet open/close
+// ==========================
+// THEME - PALETTE SHEET (BOTTOM SHEET)
+// ==========================
 function openPaletteSheet() {
   paletteSheet.classList.remove("hidden");
   sheetBackdrop.classList.remove("hidden");
@@ -928,6 +971,9 @@ paletteOptions.forEach(btn => {
   });
 });
 
+// ==========================
+// MODEL SELECTOR - MOBILE BOTTOM SHEET
+// ==========================
 function openModelSheet() {
     modelSheet.classList.remove('hidden');
     modelSheetBackdrop.classList.remove('hidden');
@@ -983,7 +1029,10 @@ function openModelSheet() {
     setTimeout(closeModelSheet, 180);
     });
     });
-  
+
+// ==========================
+// KEYBOARD SHORTCUTS
+// ==========================
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && paletteSheet.classList.contains("show")) {
     closePaletteSheet();
