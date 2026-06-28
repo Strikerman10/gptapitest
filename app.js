@@ -110,38 +110,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   
 function renderMessageContent(content) {
-  // Count backtick markers - if odd number, one was never closed
-  const tickCount = (content.match(/
+  const FENCE = String.fromCharCode(96, 96, 96);
+  const fenceRegex = new RegExp(FENCE + "(\\w*\\n[\\s\\S]*?)\\n" + FENCE, "g");
+  const countRegex = new RegExp(FENCE, "g");
 
-/g) || []).length;
-if (tickCount % 2 !== 0) {
-content = content + "\n
-
-";
+  const tickCount = (content.match(countRegex) || []).length;
+  if (tickCount % 2 !== 0) {
+    content = content + "\n" + FENCE;
   }
 
-  const parts = content.split(/
-
-(\w*\n[\s\S]*?)\n
-
-/g);
+  const parts = content.split(fenceRegex);
   let html = "";
 
   for (let i = 0; i < parts.length; i++) {
     if (i % 2 === 0) {
-      // Normal text - escape and convert newlines to <br>
       const escaped = escapeHTML(parts[i]).replace(/\n/g, "<br>");
       if (escaped.trim()) {
         html += `<div class="msg-paragraph">${escaped}</div>`;
       }
     } else {
-      // Code block - strip optional language label from first line
       let code = parts[i].trim();
       const firstNewline = code.indexOf("\n");
       let lang = "";
       if (firstNewline !== -1) {
         const firstLine = code.substring(0, firstNewline).trim();
-        // If the first line is just a language tag like "js" or "html"
         if (/^\w+$/.test(firstLine)) {
           lang = firstLine;
           code = code.substring(firstNewline + 1);
@@ -160,7 +152,6 @@ content = content + "\n
 
   return html;
 }
-
 // ==========================
 // SIDEBAR - OPEN / CLOSE / TOGGLE
 // ==========================
@@ -719,11 +710,12 @@ function renderMessages() {
 
   messagesEl.querySelectorAll(".copy-code-btn").forEach(btn => {
     btn.addEventListener("click", async () => {
-      const wrapper = btn.closest(".code-block-wrapper");
-      const code = decodeURIComponent(wrapper.dataset.code);
-
+      const targetId = btn.getAttribute("data-target");
+      const codeEl = document.getElementById(targetId);
+      if (!codeEl) return;
+  
       try {
-        await navigator.clipboard.writeText(code);
+        await navigator.clipboard.writeText(codeEl.textContent);
         const oldText = btn.textContent;
         btn.textContent = "Copied!";
         setTimeout(() => {
@@ -735,7 +727,7 @@ function renderMessages() {
       }
     });
   });
-
+  
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
