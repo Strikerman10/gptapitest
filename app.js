@@ -204,23 +204,25 @@ function handleUnauthorized() {
   window.addEventListener("resize", updateScrollBtnPosition);
 
      messagesEl.addEventListener("scroll", () => {
-    const distanceFromTop = messagesEl.scrollTop;
-    const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
-
-    if (distanceFromTop <= 200) {
-        // Near the top - hide scroll to top, show scroll to bottom
-        scrollTopBtn.style.display    = "none";
-        scrollBottomBtn.style.display = "flex";
-    } else if (distanceFromBottom <= 600) {
-        // Near the bottom - show scroll to top, hide scroll to bottom
-        scrollTopBtn.style.display    = "flex";
-        scrollBottomBtn.style.display = "none";
-    } else {
-        // In the middle - show scroll to top, hide scroll to bottom
-        scrollTopBtn.style.display    = "flex";
-        scrollBottomBtn.style.display = "none";
-    }
-});
+      const distanceFromTop = messagesEl.scrollTop;
+      const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+      const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
+  
+      if (!canScroll) {
+          // No scrollbar at all - hide both buttons
+          scrollTopBtn.style.display    = "none";
+          scrollBottomBtn.style.display = "none";
+      } else if (distanceFromTop <= 200) {
+          scrollTopBtn.style.display    = "none";
+          scrollBottomBtn.style.display = "flex";
+      } else if (distanceFromBottom <= 600) {
+          scrollTopBtn.style.display    = "flex";
+          scrollBottomBtn.style.display = "none";
+      } else {
+          scrollTopBtn.style.display    = "flex";
+          scrollBottomBtn.style.display = "none";
+      }
+  });
 
   scrollTopBtn.addEventListener("click", () => {
     messagesEl.scrollTo({ top: 0, behavior: "smooth" });
