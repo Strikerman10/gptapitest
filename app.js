@@ -215,8 +215,15 @@ let isExpanded = false;
 expandBtn.addEventListener("click", () => {
     isExpanded = !isExpanded;
 
-    textarea.style.transition = "height 0.3s ease";
-    textarea.style.height = isExpanded ? EXPANDED_HEIGHT + "px" : COLLAPSED_HEIGHT + "px";
+    textarea.style.transition = "height 0.3s ease, min-height 0.3s ease";
+
+    if (isExpanded) {
+        textarea.style.minHeight = EXPANDED_HEIGHT + "px";
+        textarea.style.height = EXPANDED_HEIGHT + "px";
+    } else {
+        textarea.style.minHeight = COLLAPSED_HEIGHT + "px";
+        textarea.style.height = COLLAPSED_HEIGHT + "px";
+    }
 
     // Flip the icon when expanded
     expandBtn.style.transform = isExpanded ? "rotate(180deg) translateY(2px)" : "";
@@ -224,6 +231,7 @@ expandBtn.addEventListener("click", () => {
     // Reposition scroll buttons
     updateScrollBtnPosition();
 });
+
      messagesEl.addEventListener("scroll", () => {
     const distanceFromTop = messagesEl.scrollTop;
     const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
