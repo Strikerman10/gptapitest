@@ -1352,7 +1352,7 @@ body.dark-mode .message p {
 /* Pinned chat item highlight */
 .chat-item.pinned {
   border-left: 3px solid var(--color-4);
-  background-color: rgba(var(--color-4-rgb, 240, 165, 0), 0.06);
+  background-color: var(--surface-hover);
 }
 
 /* Pin icon inside title */
