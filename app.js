@@ -588,6 +588,10 @@ function renderMessages() {
     return;
   }
 
+const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
+  return (msg.role === "assistant" && msg.content !== "__TYPING__") ? idx : last;
+}, -1);
+
   chat.messages.forEach((msg, idx) => {
     const wrapper = document.createElement("div");
     wrapper.className = `message-wrapper ${msg.role}`;
@@ -630,7 +634,7 @@ function renderMessages() {
     div.appendChild(textDiv);
     wrapper.appendChild(div);
 
-    if (msg.role === "assistant" && msg.content !== "__TYPING__") {
+    if (msg.role === "assistant" && msg.content !== "__TYPING__" && idx === lastAssistantIdx) {
       const reloadRow = document.createElement("div");
       reloadRow.className = "reload-row";
 
