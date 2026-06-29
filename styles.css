@@ -1336,14 +1336,14 @@ body.dark-mode .message p {
 } /* end @media (max-width: 768px) */
 
 /* ===========================
-  Section Headers in Sidebar
+  Section Headers in Sidebar and Pinned Chats
    =========================== */
 .chat-section-header {
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--primary-contrast);
+  color: var(--text);
   padding: 10px 12px 4px;
   user-select: none;
   opacity: 0.6;
@@ -1382,10 +1382,10 @@ body.dark-mode .message p {
 /* Always show pin button when active/pinned */
 .pin-btn.active {
   opacity: 1;
-  color: var(--color-4);
+  color: var(--color-6);
 }
 
 .pin-btn:hover {
-  color: var(--color-4);
+  color: var(--text);
   background: var(--color-6);
 }
