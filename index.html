@@ -29,6 +29,31 @@ HEAD - Meta, Title, Styles
 BODY - Main App Container
 ========================== -->
   <body>
+
+  <!-- ===================== -->
+  <!-- AUTH MODAL            -->
+  <!-- ===================== -->
+  <div id="authModal" class="auth-modal-overlay">
+    <div class="auth-modal-box">
+  
+      <h2 id="authModalTitle">Welcome Back</h2>
+      <p id="authModalSubtitle">Sign in to access your chats</p>
+  
+      <div class="auth-tabs">
+        <button id="tabLogin"    class="auth-tab active">Login</button>
+        <button id="tabRegister" class="auth-tab">Register</button>
+      </div>
+  
+      <div class="auth-form">
+        <input id="authUsername" type="text"     placeholder="Username" autocomplete="username" />
+        <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password" />
+        <p id="authError" class="auth-error"></p>
+        <button id="authSubmitBtn" class="auth-submit">Sign In</button>
+      </div>
+
+    </div>
+  </div>
+  
   <div class="app-container">
    
 
