@@ -489,7 +489,14 @@ function renderMessageContent(content) {
 
   async function loadChats() {
     try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`);
+        const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+        headers: {
+          "Authorization": `Bearer ${authToken}`
+        }
+      });
+
+      const res = await fetch(`${WORKER_URL}/chat`, {
+      
       if (res.ok) {
         const workerChats = await res.json();
         if (Array.isArray(workerChats) && workerChats.length) {
@@ -839,16 +846,21 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       cleanMessages.pop();
     }
 
-    const res = await fetch(`${WORKER_URL}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        provider: currentProvider,
-        model: currentModel,
-        messages: cleanMessages
-      }),
-    });
+      const res = await fetch(`${WORKER_URL}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken}`
+        },
+        body: JSON.stringify({
+          provider: currentProvider,
+          model: currentModel,
+          messages: cleanMessages
+        }),
+      });
 
+    if (res.status === 401) { handleUnauthorized(); return; }
+    
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(`Worker returned ${res.status}: ${errText}`);
@@ -970,6 +982,8 @@ async function sendMessage() {
       }),
     });
 
+    if (res.status === 401) { handleUnauthorized(); return; }
+    
     console.log("HTTP status:", res.status);
 
     const rawText = await res.text();
@@ -1046,9 +1060,12 @@ async function sendMessage() {
       messages: cleanMessages
     });
 
-    const res = await fetch(`${WORKER_URL}/chat`, {
+       const res = await fetch(`${WORKER_URL}/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`
+      },
       body: JSON.stringify({
         provider: currentProvider,
         model: currentModel,
@@ -1056,6 +1073,8 @@ async function sendMessage() {
       }),
     });
 
+    if (res.status === 401) { handleUnauthorized(); return; }
+    
     console.log("Retry status:", res.status);
 
     const rawText = await res.text();
