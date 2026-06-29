@@ -170,10 +170,16 @@ function handleUnauthorized() {
   // ==========================
   // INPUT AUTO RESIZE
   // ==========================
+const expandBtn = document.getElementById("expandBtn");
+const COLLAPSED_HEIGHT = 42;
+const EXPANDED_HEIGHT = 102;
+let isExpanded = false;
+  
   function autoResize() {
+    if (isExpanded) return;
     inputEl.style.height = "auto";
-    inputEl.style.height = Math.min(inputEl.scrollHeight, 200) + "px";
-  }
+    inputEl.style.height = Math.min(inputEl.scrollHeight, COLLAPSED_HEIGHT) + "px";
+}
   inputEl.addEventListener("input", autoResize);
   autoResize();
 
