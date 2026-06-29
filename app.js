@@ -3,7 +3,16 @@
 // ==========================
 const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
 
-let userId = localStorage.getItem("chat_user_id");
+// AUTH STATE
+// We no longer use a plain prompt() for userId.
+// Instead we store a proper auth token and userId from login.
+let authToken = localStorage.getItem("authToken") || null;
+let userId    = localStorage.getItem("userId")    || null;
+
+let chats = [];
+let currentIndex = null;
+let currentProvider = localStorage.getItem("chat_provider") || "openai";
+let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.4-mini-2026-03-17";
 
 let chats = [];
 let currentIndex = null;
