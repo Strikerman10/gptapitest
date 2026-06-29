@@ -207,7 +207,7 @@ function handleUnauthorized() {
         const distanceFromTop = messagesEl.scrollTop;
         const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
     
-        if (distanceFromTop <= 200) {
+        if (distanceFromTop <= 600) {
             // Near the top - show only scroll to bottom
             scrollTopBtn.style.display    = "none";
             scrollBottomBtn.style.display = "flex";
