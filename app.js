@@ -630,7 +630,7 @@ function renderMessages() {
     div.appendChild(textDiv);
     wrapper.appendChild(div);
 
-    if (msg.role === "assistant" && msg.content !== "__TYPING__") {
+    if (msg.role === "assistant" && msg.content !== "__TYPING__" && idx === lastIdx) {
       const reloadRow = document.createElement("div");
       reloadRow.className = "reload-row";
 
