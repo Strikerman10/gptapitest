@@ -487,47 +487,50 @@ function renderMessageContent(content) {
     localStorage.setItem("mode", currentMode);
   }
 
-  async function loadChats() {
-    try {
-        const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
-        headers: {
-          "Authorization": `Bearer ${authToken}`
-        }
-      });
-
-      const res = await fetch(`${WORKER_URL}/chat`, {
-      
-      if (res.ok) {
-        const workerChats = await res.json();
-        if (Array.isArray(workerChats) && workerChats.length) {
-          chats = workerChats;
-          currentIndex = 0;
-          localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
-          localStorage.setItem("secure_chat_index", String(currentIndex));
-          return;
-        }
+ async function loadChats() {
+  try {
+    const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+      headers: {
+        "Authorization": `Bearer ${authToken}`
       }
-    } catch (err) {
-      console.warn("Worker load failed, falling back to local:", err);
+    });
+
+    if (res.status === 401) { 
+      handleUnauthorized(); 
+      return; 
     }
 
-    const raw = localStorage.getItem("secure_chat_chats");
-    const idx = localStorage.getItem("secure_chat_index");
-    if (raw) {
-      try {
-        chats = JSON.parse(raw);
-        currentIndex = idx !== null ? Number(idx) : chats.length ? 0 : null;
-        await saveChatsToWorker();
-      } catch (e) {
-        console.warn("Error parsing local chats:", e);
-        chats = [];
-        createNewChat();
+    if (res.ok) {
+      const workerChats = await res.json();
+      if (Array.isArray(workerChats) && workerChats.length) {
+        chats = workerChats;
+        currentIndex = 0;
+        localStorage.setItem("secure_chat_chats", JSON.stringify(chats));
+        localStorage.setItem("secure_chat_index", String(currentIndex));
+        return;
       }
-    } else {
+    }
+  } catch (err) {
+    console.warn("Worker load failed, falling back to local:", err);
+  }
+
+  const raw = localStorage.getItem("secure_chat_chats");
+  const idx = localStorage.getItem("secure_chat_index");
+  if (raw) {
+    try {
+      chats = JSON.parse(raw);
+      currentIndex = idx !== null ? Number(idx) : chats.length ? 0 : null;
+      await saveChatsToWorker();
+    } catch (e) {
+      console.warn("Error parsing local chats:", e);
       chats = [];
       createNewChat();
     }
+  } else {
+    chats = [];
+    createNewChat();
   }
+}
 
 // ==========================
 // SAVE CHATS - LOCAL STORAGE & WORKER
