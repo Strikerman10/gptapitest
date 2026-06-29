@@ -1343,15 +1343,16 @@ body.dark-mode .message p {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #888;
+  color: var(--primary-contrast);
   padding: 10px 12px 4px;
   user-select: none;
+  opacity: 0.6;
 }
 
 /* Pinned chat item highlight */
 .chat-item.pinned {
-  border-left: 3px solid #f0a500;
-  background-color: rgba(240, 165, 0, 0.06);
+  border-left: 3px solid var(--color-4);
+  background-color: rgba(var(--color-4-rgb, 240, 165, 0), 0.06);
 }
 
 /* Pin icon inside title */
@@ -1366,7 +1367,7 @@ body.dark-mode .message p {
   background: none;
   border: none;
   cursor: pointer;
-  color: #888;
+  color: var(--primary-contrast);
   padding: 4px;
   border-radius: 4px;
   opacity: 0;
@@ -1381,10 +1382,10 @@ body.dark-mode .message p {
 /* Always show pin button when active/pinned */
 .pin-btn.active {
   opacity: 1;
-  color: #f0a500;
+  color: var(--color-4);
 }
 
 .pin-btn:hover {
-  color: #f0a500;
-  background: rgba(240, 165, 0, 0.1);
+  color: var(--color-4);
+  background: var(--color-6);
 }
