@@ -14,11 +14,6 @@ let currentIndex = null;
 let currentProvider = localStorage.getItem("chat_provider") || "openai";
 let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.4-mini-2026-03-17";
 
-let chats = [];
-let currentIndex = null;
-let currentProvider = localStorage.getItem("chat_provider") || "openai";
-let currentModel = localStorage.getItem("chat_model") || "gpt-5.4-mini-2026-03-17";
-
 // ==========================
 // DOM READY
 // ==========================
