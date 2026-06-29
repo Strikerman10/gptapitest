@@ -235,7 +235,7 @@ function handleUnauthorized() {
 
   setTimeout(() => {
       messagesEl.dispatchEvent(new Event("scroll"));
-  }, 100);ispatchEvent(new Event("scroll"));
+  }, 100);
 
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
