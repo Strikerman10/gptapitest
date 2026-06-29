@@ -204,25 +204,27 @@ function handleUnauthorized() {
   window.addEventListener("resize", updateScrollBtnPosition);
 
      messagesEl.addEventListener("scroll", () => {
-      const distanceFromTop = messagesEl.scrollTop;
-      const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
-      const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
-  
-      if (!canScroll) {
-          // No scrollbar at all - hide both buttons
-          scrollTopBtn.style.display    = "none";
-          scrollBottomBtn.style.display = "none";
-      } else if (distanceFromTop <= 200) {
-          scrollTopBtn.style.display    = "none";
-          scrollBottomBtn.style.display = "flex";
-      } else if (distanceFromBottom <= 600) {
-          scrollTopBtn.style.display    = "flex";
-          scrollBottomBtn.style.display = "none";
-      } else {
-          scrollTopBtn.style.display    = "flex";
-          scrollBottomBtn.style.display = "none";
-      }
-  });
+    const distanceFromTop = messagesEl.scrollTop;
+    const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+    const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
+
+    if (!canScroll) {
+        scrollTopBtn.style.display    = "none";
+        scrollBottomBtn.style.display = "none";
+    } else if (distanceFromTop <= 50) {
+        // Near the top
+        scrollTopBtn.style.display    = "none";
+        scrollBottomBtn.style.display = "flex";
+    } else if (distanceFromBottom <= 50) {
+        // Near the bottom
+        scrollTopBtn.style.display    = "flex";
+        scrollBottomBtn.style.display = "none";
+    } else {
+        // In the middle - show both
+        scrollTopBtn.style.display    = "flex";
+        scrollBottomBtn.style.display = "flex";
+    }
+});
 
   scrollTopBtn.addEventListener("click", () => {
     messagesEl.scrollTo({ top: 0, behavior: "smooth" });
@@ -231,7 +233,9 @@ function handleUnauthorized() {
     messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
   });
 
-  messagesEl.dispatchEvent(new Event("scroll"));
+  setTimeout(() => {
+      messagesEl.dispatchEvent(new Event("scroll"));
+  }, 100);ispatchEvent(new Event("scroll"));
 
   const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
   const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
