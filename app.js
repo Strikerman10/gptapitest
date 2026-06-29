@@ -192,17 +192,38 @@ function handleUnauthorized() {
   const inputArea    = document.querySelector(".input-area");
   const textarea     = inputArea.querySelector("textarea");
 
-  // ==========================
-  // SCROLL BUTTONS
-  // ==========================
-  function updateScrollBtnPosition() {
+// ==========================
+// SCROLL BUTTONS
+// ==========================
+function updateScrollBtnPosition() {
     const inputHeight = inputArea.offsetHeight;
     scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
-  }
-  updateScrollBtnPosition();
-  textarea.addEventListener("input", updateScrollBtnPosition);
-  window.addEventListener("resize", updateScrollBtnPosition);
+    scrollBottomBtn.style.bottom = (inputHeight + 20) + "px"; // keep both in sync
+}
+updateScrollBtnPosition();
+textarea.addEventListener("input", updateScrollBtnPosition);
+window.addEventListener("resize", updateScrollBtnPosition);
 
+// ==========================
+// EXPAND INPUT BUTTON
+// ==========================
+const expandBtn = document.getElementById("expandBtn");
+const COLLAPSED_HEIGHT = 42;
+const EXPANDED_HEIGHT = 102;
+let isExpanded = false;
+
+expandBtn.addEventListener("click", () => {
+    isExpanded = !isExpanded;
+
+    textarea.style.transition = "height 0.3s ease";
+    textarea.style.height = isExpanded ? EXPANDED_HEIGHT + "px" : COLLAPSED_HEIGHT + "px";
+
+    // Flip the icon when expanded
+    expandBtn.style.transform = isExpanded ? "rotate(180deg) translateY(2px)" : "";
+
+    // Reposition scroll buttons
+    updateScrollBtnPosition();
+});
      messagesEl.addEventListener("scroll", () => {
     const distanceFromTop = messagesEl.scrollTop;
     const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
