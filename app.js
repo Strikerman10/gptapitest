@@ -203,10 +203,15 @@ function handleUnauthorized() {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
-  messagesEl.addEventListener("scroll", () => {
-    const threshold = 200;
-    scrollTopBtn.style.display    = messagesEl.scrollTop > threshold ? "flex" : "none";
-    scrollBottomBtn.style.display = messagesEl.scrollTop <= threshold ? "flex" : "none";
+   messagesEl.addEventListener("scroll", () => {
+      const topThreshold = 200;
+      const bottomThreshold = 200;
+      
+      const distanceFromTop = messagesEl.scrollTop;
+      const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+  
+      scrollTopBtn.style.display    = distanceFromTop > topThreshold ? "flex" : "none";
+      scrollBottomBtn.style.display = distanceFromBottom > bottomThreshold ? "flex" : "none";
   });
 
   scrollTopBtn.addEventListener("click", () => {
