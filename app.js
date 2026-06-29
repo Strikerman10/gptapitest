@@ -484,11 +484,8 @@ function renderChatList() {
       ? truncate(chat.messages[chat.messages.length - 1].content, subtitleLimit)
       : "";
 
-    preview.innerHTML = `
-      <div class="chat-title">
-        ${chat.pinned ? '<span class="pin-icon">📌</span>' : ""}
-        ${title}
-      </div>
+      preview.innerHTML = `
+      <div class="chat-title">${title}</div>
       <div class="chat-subtitle">${subtitle}</div>
     `;
 
