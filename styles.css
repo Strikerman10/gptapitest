@@ -1386,6 +1386,6 @@ body.dark-mode .message p {
 }
 
 .pin-btn:hover {
-  color: var(--text);
+  color: var(--primary-contrast);
   background: var(--color-6);
 }
