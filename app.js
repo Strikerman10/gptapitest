@@ -152,12 +152,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-function handleUnauthorized() {
+async function handleUnauthorized() {
   authToken = null;
   userId = null;
   localStorage.removeItem("authToken");
   localStorage.removeItem("userId");
-  initAuth();
+  await initAuth();
 }
   
   // ── NEW: Model Sheet elements ──────────────────────────
@@ -552,7 +552,7 @@ function renderMessageContent(content) {
           },
           body: JSON.stringify({ userId, chats }),
         });
-        if (res.status === 401) { handleUnauthorized(); return; }
+        if (res.status === 401) { await handleUnauthorized(); return; }
         if (!res.ok) console.warn("Worker save failed:", await res.text());
       } catch (e) {
         console.warn("Could not reach worker:", e);
@@ -575,7 +575,7 @@ function renderMessageContent(content) {
             "Authorization": `Bearer ${authToken}`
           }
         });
-        if (res.status === 401) { handleUnauthorized(); return; }
+        if (res.status === 401) { await handleUnauthorized(); return; }
         if (!res.ok) return;
         const workerChats = await res.json();
         if (Array.isArray(workerChats) && workerChats.length) {
@@ -862,7 +862,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
         }),
       });
 
-    if (res.status === 401) { handleUnauthorized(); return; }
+    if (res.status === 401) { await handleUnauthorized(); return; }
     
     if (!res.ok) {
       const errText = await res.text();
@@ -985,7 +985,7 @@ async function sendMessage() {
       }),
     });
 
-    if (res.status === 401) { handleUnauthorized(); return; }
+    if (res.status === 401) { await handleUnauthorized(); return; }
     
     console.log("HTTP status:", res.status);
 
@@ -999,7 +999,7 @@ async function sendMessage() {
       throw new Error(`Invalid JSON from worker: ${rawText}`);
     }
 
-    if (res.status === 401) { handleUnauthorized(); return; }
+    if (res.status === 401) { await handleUnauthorized(); return; }
     if (!res.ok) {
       throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
     }
@@ -1076,7 +1076,7 @@ async function sendMessage() {
       }),
     });
 
-    if (res.status === 401) { handleUnauthorized(); return; }
+    if (res.status === 401) { await handleUnauthorized(); return; }
     
     console.log("Retry status:", res.status);
 
@@ -1297,7 +1297,7 @@ document.addEventListener("keydown", (e) => {
         }
       });
       
-      if (res.status === 401) { handleUnauthorized(); return; }
+      if (res.status === 401) { await handleUnauthorized(); return; }
       if (res.ok) {
         const workerChats = await res.json();
         if (Array.isArray(workerChats) && workerChats.length) {
@@ -1319,7 +1319,7 @@ document.addEventListener("keydown", (e) => {
     }
 
     if (!gotFromWorker) {
-      loadChats();
+      await loadChats();
     }
 
     renderChatList();
