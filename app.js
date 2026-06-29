@@ -170,10 +170,11 @@ function handleUnauthorized() {
   // ==========================
   // INPUT AUTO RESIZE
   // ==========================
-  function autoResize() {
+ function autoResize() {
+    if (isExpanded) return; // don't fight the expanded height
     inputEl.style.height = "auto";
-    inputEl.style.height = Math.min(inputEl.scrollHeight, 200) + "px";
-  }
+    inputEl.style.height = Math.min(inputEl.scrollHeight, COLLAPSED_HEIGHT) + "px";
+}
   inputEl.addEventListener("input", autoResize);
   autoResize();
 
@@ -195,7 +196,12 @@ function handleUnauthorized() {
 // ==========================
 // SCROLL BUTTONS
 // ==========================
-function updateScrollBtnPosition() {
+  const expandBtn = document.getElementById("expandBtn");
+  const COLLAPSED_HEIGHT = 42;
+  const EXPANDED_HEIGHT = 102;
+  let isExpanded = false;
+  
+  function updateScrollBtnPosition() {
     const inputHeight = inputArea.offsetHeight;
     scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
     scrollBottomBtn.style.bottom = (inputHeight + 20) + "px"; // keep both in sync
@@ -207,11 +213,6 @@ window.addEventListener("resize", updateScrollBtnPosition);
 // ==========================
 // EXPAND INPUT BUTTON
 // ==========================
-const expandBtn = document.getElementById("expandBtn");
-const COLLAPSED_HEIGHT = 42;
-const EXPANDED_HEIGHT = 102;
-let isExpanded = false;
-
 expandBtn.addEventListener("click", () => {
     isExpanded = !isExpanded;
 
