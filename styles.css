@@ -1355,19 +1355,12 @@ body.dark-mode .message p {
   background-color: var(--surface-hover);
 }
 
-/* Pin icon inside title */
-.pin-icon {
-  font-size: 0.75rem;
-  margin-right: 4px;
-  vertical-align: middle;
-}
-
 /* Pin button */
 .pin-btn {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--primary-contrast);
+  color: var(--color-6);
   padding: 4px;
   border-radius: 4px;
   opacity: 0;
