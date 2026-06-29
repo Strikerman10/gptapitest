@@ -203,24 +203,24 @@ function handleUnauthorized() {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
-      messagesEl.addEventListener("scroll", () => {
-      const distanceFromTop = messagesEl.scrollTop;
-      const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
-  
-      if (distanceFromTop <= 600) {
-          // Near the top - show only scroll to bottom
-          scrollTopBtn.style.display    = "none";
-          scrollBottomBtn.style.display = "flex";
-      } else if (distanceFromBottom <= 200) {
-          // Near the bottom - show only scroll to top
-          scrollTopBtn.style.display    = "flex";
-          scrollBottomBtn.style.display = "none";
-      } else {
-          // In the middle - show only scroll to top
-          scrollTopBtn.style.display    = "flex";
-          scrollBottomBtn.style.display = "none";
-      }
-  });
+     messagesEl.addEventListener("scroll", () => {
+    const distanceFromTop = messagesEl.scrollTop;
+    const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+
+    if (distanceFromTop <= 200) {
+        // Near the top - hide scroll to top, show scroll to bottom
+        scrollTopBtn.style.display    = "none";
+        scrollBottomBtn.style.display = "flex";
+    } else if (distanceFromBottom <= 600) {
+        // Near the bottom - show scroll to top, hide scroll to bottom
+        scrollTopBtn.style.display    = "flex";
+        scrollBottomBtn.style.display = "none";
+    } else {
+        // In the middle - show scroll to top, hide scroll to bottom
+        scrollTopBtn.style.display    = "flex";
+        scrollBottomBtn.style.display = "none";
+    }
+});
 
   scrollTopBtn.addEventListener("click", () => {
     messagesEl.scrollTo({ top: 0, behavior: "smooth" });
