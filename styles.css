@@ -866,7 +866,7 @@ body.dark-mode {
    Scroll to Top
    =========================== */
 .scroll-top-btn {
-  position: absolute;
+  position: fixed;
   bottom: 95px;
   right: 12px;
   z-index: 50;
