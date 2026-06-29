@@ -192,47 +192,17 @@ function handleUnauthorized() {
   const inputArea    = document.querySelector(".input-area");
   const textarea     = inputArea.querySelector("textarea");
 
-// ==========================
-// SCROLL BUTTONS
-// ==========================
-function updateScrollBtnPosition() {
+  // ==========================
+  // SCROLL BUTTONS
+  // ==========================
+  function updateScrollBtnPosition() {
     const inputHeight = inputArea.offsetHeight;
     scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
-    scrollBottomBtn.style.bottom = (inputHeight + 20) + "px"; // keep both in sync
-}
-updateScrollBtnPosition();
-textarea.addEventListener("input", updateScrollBtnPosition);
-window.addEventListener("resize", updateScrollBtnPosition);
+  }
+  updateScrollBtnPosition();
+  textarea.addEventListener("input", updateScrollBtnPosition);
+  window.addEventListener("resize", updateScrollBtnPosition);
 
-// ==========================
-// EXPAND INPUT BUTTON
-// ==========================
-const expandBtn = document.getElementById("expandBtn");
-const COLLAPSED_HEIGHT = 42;
-const EXPANDED_HEIGHT = 102;
-let isExpanded = false;
-
-expandBtn.addEventListener("click", () => {
-    isExpanded = !isExpanded;
-
-    if (isExpanded) {
-        textarea.style.transition = "height 0.3s ease, min-height 0.3s ease";
-        textarea.style.minHeight = EXPANDED_HEIGHT + "px";
-        textarea.style.height = EXPANDED_HEIGHT + "px";
-    } else {
-        textarea.style.transition = "none";
-        textarea.style.minHeight = "";
-        textarea.style.height = "";
-        // Force a reflow
-        textarea.offsetHeight;
-        textarea.style.transition = "height 0.3s ease, min-height 0.3s ease";
-        textarea.style.minHeight = COLLAPSED_HEIGHT + "px";
-        textarea.style.height = COLLAPSED_HEIGHT + "px";
-    }
-
-    expandBtn.style.transform = isExpanded ? "rotate(180deg) translateY(2px)" : "";
-    updateScrollBtnPosition();
-});
      messagesEl.addEventListener("scroll", () => {
     const distanceFromTop = messagesEl.scrollTop;
     const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
