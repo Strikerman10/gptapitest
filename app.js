@@ -56,6 +56,10 @@ async function initAuth() {
   const submitBtn = oldSubmitBtn.cloneNode(true);
   oldSubmitBtn.parentNode.replaceChild(submitBtn, oldSubmitBtn);
 
+ // ✅ Reset button state in case it was left disabled from previous login
+  submitBtn.disabled    = false;
+  submitBtn.textContent = "Sign In";
+  
   const oldTabLogin = document.getElementById("tabLogin");
   const tabLogin = oldTabLogin.cloneNode(true);
   oldTabLogin.parentNode.replaceChild(tabLogin, oldTabLogin);
