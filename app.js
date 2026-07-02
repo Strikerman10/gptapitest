@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebarEl        = document.querySelector(".sidebar");
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
   const modelSelector    = document.getElementById("modelSelector");
-  const logoutBtn = document.getElementById("logoutBtn");
 
   // ==========================
   // AUTH MODAL LOGIC
@@ -152,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
-  
+
 async function handleUnauthorized() {
   authToken = null;
   userId = null;
@@ -160,41 +159,6 @@ async function handleUnauthorized() {
   localStorage.removeItem("userId");
   await initAuth();
 }
-
-// ==========================
-// LOGOUT BUTTON
-// ==========================
-logoutBtn.addEventListener("click", () => {
-  // Clear auth state
-  authToken = null;
-  userId    = null;
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("userId");
-
-  // Clear chat state so next user starts fresh
-  chats        = [];
-  currentIndex = null;
-  localStorage.removeItem("secure_chat_chats");
-  localStorage.removeItem("secure_chat_index");
-
-  // Clear the UI
-  document.getElementById("messages").innerHTML = "";
-  document.getElementById("chatList").innerHTML  = "";
-  document.getElementById("chatTitle").textContent = "Messages";
-
-  // Show login modal again
-  showAuthModal();
-
-  // Reset modal to login tab state
-  document.getElementById("tabLogin").classList.add("active");
-  document.getElementById("tabRegister").classList.remove("active");
-  document.getElementById("authSubmitBtn").textContent = "Sign In";
-  document.getElementById("authModalTitle").textContent = "Welcome Back";
-  document.getElementById("authModalSubtitle").textContent = "Sign in to access your chats";
-  document.getElementById("authError").textContent = "";
-  document.getElementById("authUsername").value = "";
-  document.getElementById("authPassword").value = "";
-});  
   
   // ── NEW: Model Sheet elements ──────────────────────────
   const modelSheet         = document.getElementById('modelSheet');
