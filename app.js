@@ -32,6 +32,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const modelSelector    = document.getElementById("modelSelector");
   const logoutBtn     = document.getElementById("logoutBtn");
 
+// ==========================
+// LOGOUT MODAL
+// ==========================
+const logoutModal = document.getElementById('logoutModal');
+const modalCancel = document.getElementById('modalCancel');
+const modalConfirm = document.getElementById('modalConfirm');
+
+// Open modal
+logoutBtn.addEventListener("click", () => {
+  logoutModal.classList.add('active');
+});
+
+// Close modal on cancel
+modalCancel.addEventListener('click', () => {
+  logoutModal.classList.remove('active');
+});
+
+// Close modal if clicking outside the box
+logoutModal.addEventListener('click', (e) => {
+  if (e.target === logoutModal) {
+    logoutModal.classList.remove('active');
+  }
+});
+  
   // ==========================
   // AUTH MODAL LOGIC
   // ==========================
@@ -173,30 +197,6 @@ async function handleUnauthorized() {
   localStorage.removeItem("userId");
   await initAuth();
 }
-
-// ==========================
-// LOGOUT MODAL
-// ==========================
-const logoutModal = document.getElementById('logoutModal');
-const modalCancel = document.getElementById('modalCancel');
-const modalConfirm = document.getElementById('modalConfirm');
-
-// Open modal
-logoutBtn.addEventListener("click", () => {
-  logoutModal.classList.add('active');
-});
-
-// Close modal on cancel
-modalCancel.addEventListener('click', () => {
-  logoutModal.classList.remove('active');
-});
-
-// Close modal if clicking outside the box
-logoutModal.addEventListener('click', (e) => {
-  if (e.target === logoutModal) {
-    logoutModal.classList.remove('active');
-  }
-});
 
 // Confirm logout
 modalConfirm.addEventListener("click", () => {
