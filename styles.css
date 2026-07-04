@@ -1497,19 +1497,19 @@ body.dark-mode .message p {
    LOGOUT BUTTON
    ========================== */
 #logoutBtn {
-  background: none;
-  border: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--color-6);
+  color: var(--color-1);
+  display: grid;
+  place-items: center;
   cursor: pointer;
-  color: currentColor;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  border-radius: 6px;
-  transition: opacity 0.2s, background 0.2s;
 }
 
-#logoutBtn:hover {
-  opacity: 0.7;
-  background: var(--surface-hover);
+#logoutBtn svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
 }
