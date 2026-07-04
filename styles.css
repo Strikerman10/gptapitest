@@ -1499,8 +1499,7 @@ body.dark-mode .message p {
   background: none;
   border: none;
   cursor: pointer;
-  background: var(--color-1);
-  color: var(--primary-contrast)
+  color: var(--color-1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1511,4 +1510,77 @@ body.dark-mode .message p {
 
 #logoutBtn:hover {
   background: var(--color-6);
+}
+
+/* ==========================
+   LOGOUT MODAL
+   ========================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-title {
+  color: var(--color-1);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-message {
+  color: var(--color-1);
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.modal-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: opacity 0.2s;
+}
+
+.cancel-btn {
+  background: none;
+  color: var(--color-1);
+}
+
+.confirm-btn {
+  background: var(--color-6);
+  color: var(--color-1);
+  border-color: var(--color-6);
+}
+
+.modal-btn:hover {
+  opacity: 0.8;
 }
