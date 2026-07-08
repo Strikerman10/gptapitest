@@ -271,43 +271,38 @@ modalConfirm.addEventListener("click", () => {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
-     messagesEl.addEventListener("scroll", () => {
-    const distanceFromTop = messagesEl.scrollTop;
-    const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
-    const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
+  let lastScrollTop = messagesEl.scrollTop;
 
-    if (!canScroll) {
-        scrollTopBtn.style.display    = "none";
-        scrollBottomBtn.style.display = "none";
-    } else if (distanceFromTop <= 50) {
-        // Near the top
-        scrollTopBtn.style.display    = "none";
-        scrollBottomBtn.style.display = "flex";
-    } else if (distanceFromBottom <= 50) {
-        // Near the bottom
-        scrollTopBtn.style.display    = "flex";
-        scrollBottomBtn.style.display = "none";
-    } else {
-        // In the middle - show both
-        scrollTopBtn.style.display    = "flex";
-        scrollBottomBtn.style.display = "flex";
-    }
+messagesEl.addEventListener("scroll", () => {
+  const currentScrollTop = messagesEl.scrollTop;
+  const distanceFromTop = currentScrollTop;
+  const distanceFromBottom = messagesEl.scrollHeight - currentScrollTop - messagesEl.clientHeight;
+  const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
+
+  if (!canScroll) {
+    scrollTopBtn.style.display = "none";
+    scrollBottomBtn.style.display = "none";
+  } else if (distanceFromTop <= 50) {
+    // Near the top
+    scrollTopBtn.style.display = "none";
+    scrollBottomBtn.style.display = "flex";
+  } else if (distanceFromBottom <= 50) {
+    // Near the bottom
+    scrollTopBtn.style.display = "flex";
+    scrollBottomBtn.style.display = "none";
+  } else if (currentScrollTop > lastScrollTop) {
+    // Scrolling down
+    scrollTopBtn.style.display = "flex";
+    scrollBottomBtn.style.display = "none";
+  } else if (currentScrollTop < lastScrollTop) {
+    // Scrolling up
+    scrollTopBtn.style.display = "none";
+    scrollBottomBtn.style.display = "flex";
+  }
+
+  lastScrollTop = currentScrollTop;
 });
-
-  scrollTopBtn.addEventListener("click", () => {
-    messagesEl.scrollTo({ top: 0, behavior: "smooth" });
-  });
-  scrollBottomBtn.addEventListener("click", () => {
-    messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
-  });
-
-  setTimeout(() => {
-      messagesEl.dispatchEvent(new Event("scroll"));
-  }, 100);
-
-  const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
-  const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
-
+  
   // ==========================
   // UTILITY FUNCTIONS
   // ==========================
