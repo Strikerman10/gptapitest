@@ -279,24 +279,26 @@ messagesEl.addEventListener("scroll", () => {
   const distanceFromBottom = messagesEl.scrollHeight - currentScrollTop - messagesEl.clientHeight;
   const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
 
+  // Always reset both first
+  scrollTopBtn.style.display = "none";
+  scrollBottomBtn.style.display = "none";
+
   if (!canScroll) {
-    scrollTopBtn.style.display = "none";
-    scrollBottomBtn.style.display = "none";
-  } else if (distanceFromTop <= 50) {
-    // Near the top
-    scrollTopBtn.style.display = "none";
+    lastScrollTop = currentScrollTop;
+    return;
+  }
+
+  if (distanceFromTop <= 50) {
+    // Near the top -> show bottom only
     scrollBottomBtn.style.display = "flex";
   } else if (distanceFromBottom <= 50) {
-    // Near the bottom
+    // Near the bottom -> show top only
     scrollTopBtn.style.display = "flex";
-    scrollBottomBtn.style.display = "none";
-  } else if (currentScrollTop > lastScrollTop) {
-    // Scrolling down
+  } else if (currentScrollTop > lastScrollTop + 2) {
+    // Scrolling down -> show top only
     scrollTopBtn.style.display = "flex";
-    scrollBottomBtn.style.display = "none";
-  } else if (currentScrollTop < lastScrollTop) {
-    // Scrolling up
-    scrollTopBtn.style.display = "none";
+  } else if (currentScrollTop < lastScrollTop - 2) {
+    // Scrolling up -> show bottom only
     scrollBottomBtn.style.display = "flex";
   }
 
