@@ -260,6 +260,17 @@ modalConfirm.addEventListener("click", () => {
   const inputArea    = document.querySelector(".input-area");
   const textarea     = inputArea.querySelector("textarea");
 
+  // ==========================
+  // SCROLL BUTTONS
+  // ==========================
+  function updateScrollBtnPosition() {
+    const inputHeight = inputArea.offsetHeight;
+    scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
+  }
+  updateScrollBtnPosition();
+  textarea.addEventListener("input", updateScrollBtnPosition);
+  window.addEventListener("resize", updateScrollBtnPosition);
+
 let lastScrollTop = 0;
 
 messagesEl.addEventListener("scroll", () => {
