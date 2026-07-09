@@ -1,6 +1,6 @@
-<br>[Line 3](./index.html#L3) | Head – Meta & Title
-<br>Auth Modal | [Line 22](./index.html#L22)
-<br>Sidebar | [Line 42](./index.html#L42)
+<br>[Line 3](./index.html#L3)   | Head – Meta & Title |
+<br>[Line 22](./index.html#L22) | Auth Modal | 
+<br>[Line 42](./index.html#L42) |Sidebar |
 <br>Model Selector Dropdown | [Line 57](./index.html#L57)
 <br>Chat Header | [Line 75](./index.html#L75)
 <br>Sidebar Toggle Button | [Line 83](./index.html#L83)
