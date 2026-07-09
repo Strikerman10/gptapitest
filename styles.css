@@ -498,8 +498,16 @@ body.dark-mode {
 /* Make the message bubble not overflow its container */
 .message {
   min-width: 0;
-  max-width: 100%;
+  max-width: 85%;
   overflow: hidden;
+}
+
+.message.user {
+  margin-right: 10px;
+}
+
+.message.assistant {
+  margin-left: 10px;
 }
 
 /* Make the text container shrink properly */
