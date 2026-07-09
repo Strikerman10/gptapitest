@@ -366,7 +366,7 @@ body.dark-mode {
   align-self: flex-end;
   animation: fadeSlideInRight 0.35s ease-out;
   white-space: pre-wrap;
-  margin-right: 10px;
+  margin-right: 8px;
 }
 
 .message.assistant {
@@ -378,7 +378,7 @@ body.dark-mode {
   padding-top: 1rem;
   padding-bottom: 0.25rem; /* or 1rem */
   animation: fadeSlideInLeft 0.35s ease-out;
-  margin-left: 10px;
+  margin-left: 8px;
 }
 
 @keyframes fadeSlideInLeft {
@@ -498,16 +498,16 @@ body.dark-mode {
 /* Make the message bubble not overflow its container */
 .message {
   min-width: 0;
-  max-width: 85%;
+  max-width: 90%;
   overflow: hidden;
 }
 
 .message.user {
-  margin-right: 10px;
+  margin-right: 8px;
 }
 
 .message.assistant {
-  margin-left: 10px;
+  margin-left: 8px;
 }
 
 /* Make the text container shrink properly */
