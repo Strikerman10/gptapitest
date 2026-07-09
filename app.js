@@ -260,18 +260,9 @@ modalConfirm.addEventListener("click", () => {
   const inputArea    = document.querySelector(".input-area");
   const textarea     = inputArea.querySelector("textarea");
 
-  // ==========================
-  // SCROLL BUTTONS
-  // ==========================
-  function updateScrollBtnPosition() {
-    const inputHeight = inputArea.offsetHeight;
-    scrollTopBtn.style.bottom = (inputHeight + 20) + "px";
-  }
-  updateScrollBtnPosition();
-  textarea.addEventListener("input", updateScrollBtnPosition);
-  window.addEventListener("resize", updateScrollBtnPosition);
+let lastScrollTop = 0;
 
-     messagesEl.addEventListener("scroll", () => {
+messagesEl.addEventListener("scroll", () => {
     const distanceFromTop = messagesEl.scrollTop;
     const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
     const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
@@ -288,25 +279,20 @@ modalConfirm.addEventListener("click", () => {
         scrollTopBtn.style.display    = "flex";
         scrollBottomBtn.style.display = "none";
     } else {
-        // In the middle - show both
-        scrollTopBtn.style.display    = "flex";
-        scrollBottomBtn.style.display = "flex";
+        // In the middle - show only one button based on scroll direction
+        const isScrollingUp = messagesEl.scrollTop < lastScrollTop;
+
+        if (isScrollingUp) {
+            scrollTopBtn.style.display    = "none";
+            scrollBottomBtn.style.display = "flex";
+        } else {
+            scrollTopBtn.style.display    = "flex";
+            scrollBottomBtn.style.display = "none";
+        }
     }
+
+    lastScrollTop = messagesEl.scrollTop; // 👈 And this stays at the bottom inside the listener
 });
-
-  scrollTopBtn.addEventListener("click", () => {
-    messagesEl.scrollTo({ top: 0, behavior: "smooth" });
-  });
-  scrollBottomBtn.addEventListener("click", () => {
-    messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
-  });
-
-  setTimeout(() => {
-      messagesEl.dispatchEvent(new Event("scroll"));
-  }, 100);
-
-  const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
-  const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
 
   // ==========================
   // UTILITY FUNCTIONS
