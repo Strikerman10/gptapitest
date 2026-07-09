@@ -271,7 +271,7 @@ modalConfirm.addEventListener("click", () => {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
-let lastScrollTop = 0;
+     let lastScrollTop = 0; // 👈 Add it here
 
 messagesEl.addEventListener("scroll", () => {
     const distanceFromTop = messagesEl.scrollTop;
@@ -304,6 +304,20 @@ messagesEl.addEventListener("scroll", () => {
 
     lastScrollTop = messagesEl.scrollTop; // 👈 And this stays at the bottom inside the listener
 });
+
+  scrollTopBtn.addEventListener("click", () => {
+    messagesEl.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  scrollBottomBtn.addEventListener("click", () => {
+    messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
+  });
+
+  setTimeout(() => {
+      messagesEl.dispatchEvent(new Event("scroll"));
+  }, 100);
+
+  const hamburgerIcon = toggleSidebarBtn.querySelector(".hide-icon");
+  const chevronIcon   = toggleSidebarBtn.querySelector(".show-icon");
 
   // ==========================
   // UTILITY FUNCTIONS
