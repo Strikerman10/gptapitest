@@ -1,4 +1,4 @@
-<br>Head – Meta & Title | [Line 3](./index.html#L3)
+<br>[Line 3](./index.html#L3) | Head – Meta & Title
 <br>Auth Modal | [Line 22](./index.html#L22)
 <br>Sidebar | [Line 42](./index.html#L42)
 <br>Model Selector Dropdown | [Line 57](./index.html#L57)
