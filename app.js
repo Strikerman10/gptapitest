@@ -417,6 +417,10 @@ function setInitialState() {
   }
 }
   setInitialState();
+  
+  window.addEventListener("resize", () => {
+  setInitialState();
+});
 
   toggleSidebarBtn.addEventListener("click", () => {
     if (window.innerWidth <= 1023) {
