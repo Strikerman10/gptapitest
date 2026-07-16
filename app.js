@@ -1388,7 +1388,7 @@ document.addEventListener("keydown", (e) => {
     const authed = await initAuth();
     if (!authed) return;
 
-    await new Promise(r => setTimeout(r, 300)); // ← small breathing room
+    await new Promise(r => setTimeout(r, 150)); // ← small breathing room
     
     let gotFromWorker = false;
     try {
