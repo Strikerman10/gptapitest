@@ -271,7 +271,9 @@ modalConfirm.addEventListener("click", () => {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
-     messagesEl.addEventListener("scroll", () => {
+let lastScrollTop = 0; // 👈 Add it here
+
+  messagesEl.addEventListener("scroll", () => {
     const distanceFromTop = messagesEl.scrollTop;
     const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
     const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
@@ -288,10 +290,19 @@ modalConfirm.addEventListener("click", () => {
         scrollTopBtn.style.display    = "flex";
         scrollBottomBtn.style.display = "none";
     } else {
-        // In the middle - show both
-        scrollTopBtn.style.display    = "flex";
-        scrollBottomBtn.style.display = "flex";
+        // In the middle - show only one button based on scroll direction
+        const isScrollingUp = messagesEl.scrollTop < lastScrollTop;
+
+        if (isScrollingUp) {
+            scrollTopBtn.style.display    = "none";
+            scrollBottomBtn.style.display = "flex";
+        } else {
+            scrollTopBtn.style.display    = "flex";
+            scrollBottomBtn.style.display = "none";
+        }
     }
+
+    lastScrollTop = messagesEl.scrollTop; // 👈 And this stays at the bottom inside the listener
 });
 
   scrollTopBtn.addEventListener("click", () => {
