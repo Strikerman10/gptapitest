@@ -496,16 +496,8 @@ body.dark-mode {
 /* Make the message bubble not overflow its container */
 .message {
   min-width: 0;
-  max-width: 95%;
+  max-width: 100%;
   overflow: hidden;
-}
-
-.message.user {
-  margin-right: 5px;
-}
-
-.message.assistant {
-  margin-left: 5px;
 }
 
 /* Make the text container shrink properly */
@@ -975,10 +967,6 @@ body.dark-mode {
     transform: translateX(0);
   }
 
-  .sidebar.open {
-    transform: translateX(0);
-  }
-   
   .main-content,
   .chat-window {
     margin-left: 0;
@@ -1511,7 +1499,7 @@ body.dark-mode .message p {
   background: none;
   border: none;
   cursor: pointer;
-   background: var(--color-1);
+  background: var(--color-2);
   color: var(--primary-contrast);
   display: flex;
   align-items: center;
@@ -1603,17 +1591,3 @@ body.dark-mode .message p {
 .confirm-btn:hover {
   background: #c53030;
 }
-   @media (max-width: 1023px) {
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 70%;
-    max-width: 320px;
-    z-index: 200;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-  }
-}
-
