@@ -44,12 +44,12 @@ BODY - Main App Container
         <button id="tabRegister" class="auth-tab">Register</button>
       </div>
   
-      <div class="auth-form">
-        <input id="authUsername" type="text"     placeholder="Username" autocomplete="username" />
-        <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password" />
-        <p id="authError" class="auth-error"></p>
-        <button id="authSubmitBtn" class="auth-submit">Sign In</button>
-      </div>
+     <form class="auth-form" autocomplete="on" onsubmit="return false;">
+  <input id="authUsername" type="text" placeholder="Username" autocomplete="username" />
+  <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password" />
+  <p id="authError" class="auth-error"></p>
+  <button id="authSubmitBtn" class="auth-submit" type="button">Sign In</button>
+    </form>
 
     </div>
   </div>
