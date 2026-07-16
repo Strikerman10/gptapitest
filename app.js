@@ -1,7 +1,7 @@
 // ==========================
 // CONFIG & GLOBAL STATE
 // ==========================
-const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
+const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
 // AUTH STATE
 // We no longer use a plain prompt() for userId.
@@ -271,9 +271,7 @@ modalConfirm.addEventListener("click", () => {
   textarea.addEventListener("input", updateScrollBtnPosition);
   window.addEventListener("resize", updateScrollBtnPosition);
 
-     let lastScrollTop = 0; // 👈 Add it here
-
-messagesEl.addEventListener("scroll", () => {
+     messagesEl.addEventListener("scroll", () => {
     const distanceFromTop = messagesEl.scrollTop;
     const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
     const canScroll = messagesEl.scrollHeight > messagesEl.clientHeight;
@@ -290,19 +288,10 @@ messagesEl.addEventListener("scroll", () => {
         scrollTopBtn.style.display    = "flex";
         scrollBottomBtn.style.display = "none";
     } else {
-        // In the middle - show only one button based on scroll direction
-        const isScrollingUp = messagesEl.scrollTop < lastScrollTop;
-
-        if (isScrollingUp) {
-            scrollTopBtn.style.display    = "none";
-            scrollBottomBtn.style.display = "flex";
-        } else {
-            scrollTopBtn.style.display    = "flex";
-            scrollBottomBtn.style.display = "none";
-        }
+        // In the middle - show both
+        scrollTopBtn.style.display    = "flex";
+        scrollBottomBtn.style.display = "flex";
     }
-
-    lastScrollTop = messagesEl.scrollTop; // 👈 And this stays at the bottom inside the listener
 });
 
   scrollTopBtn.addEventListener("click", () => {
@@ -387,43 +376,39 @@ function renderMessageContent(content) {
 // SIDEBAR - OPEN / CLOSE / TOGGLE
 // ==========================
   function openSidebar() {
-  if (window.innerWidth <= 1023) {
-    sidebarEl.classList.add("open");
-    backdropEl.classList.add("visible");
-  } else {
-    sidebarEl.classList.remove("collapsed");
+    if (window.innerWidth <= 768) {
+      sidebarEl.classList.add("open");
+      backdropEl.classList.add("visible");
+    } else {
+      sidebarEl.classList.remove("collapsed");
+    }
+    hamburgerIcon.classList.add("hidden");
+    chevronIcon.classList.remove("hidden");
   }
-  hamburgerIcon.classList.add("hidden");
-  chevronIcon.classList.remove("hidden");
-}
 
-function closeSidebar() {
-  if (window.innerWidth <= 1023) {
-    sidebarEl.classList.remove("open");
-    backdropEl.classList.remove("visible");
-  } else {
-    sidebarEl.classList.add("collapsed");
+  function closeSidebar() {
+    if (window.innerWidth <= 768) {
+      sidebarEl.classList.remove("open");
+      backdropEl.classList.remove("visible");
+    } else {
+      sidebarEl.classList.add("collapsed");
+    }
+    hamburgerIcon.classList.remove("hidden");
+    chevronIcon.classList.add("hidden");
   }
-  hamburgerIcon.classList.remove("hidden");
-  chevronIcon.classList.add("hidden");
-}
 
-function setInitialState() {
-  if (window.innerWidth <= 1023) {
-    closeSidebar();
-  } else {
-    openSidebar();
-    backdropEl.classList.remove("visible");
+  function setInitialState() {
+    if (window.innerWidth <= 768) {
+      closeSidebar();
+    } else {
+      openSidebar();
+      backdropEl.classList.remove("visible");
+    }
   }
-}
   setInitialState();
-  
-  window.addEventListener("resize", () => {
-  setInitialState();
-});
 
   toggleSidebarBtn.addEventListener("click", () => {
-    if (window.innerWidth <= 1023) {
+    if (window.innerWidth <= 768) {
       if (sidebarEl.classList.contains("open")) {
         closeSidebar();
       } else {
@@ -445,11 +430,11 @@ function setInitialState() {
 // ==========================
   let touchStartX = 0;
   document.addEventListener("touchstart", e => {
-    if (window.innerWidth > 1023) return;
+    if (window.innerWidth > 768) return;
     touchStartX = e.changedTouches[0].screenX;
   });
   document.addEventListener("touchend", e => {
-    if (window.innerWidth > 1023) return;
+    if (window.innerWidth > 768) return;
     const touchEndX = e.changedTouches[0].screenX;
     const deltaX = touchEndX - touchStartX;
 
