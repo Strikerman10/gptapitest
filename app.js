@@ -199,7 +199,7 @@ async function handleUnauthorized() {
 }
 
 // Confirm logout
-modalConfirm.addEventListener("click", () => {
+modalConfirm.addEventListener("click", async () => {
   logoutModal.classList.remove('active');
 
   authToken    = null;
@@ -216,7 +216,6 @@ modalConfirm.addEventListener("click", () => {
   document.getElementById("chatList").innerHTML    = "";
   document.getElementById("chatTitle").textContent = "Messages";
 
-  // Reset modal to clean login state
   document.getElementById("authModalTitle").textContent    = "Welcome Back";
   document.getElementById("authModalSubtitle").textContent = "Sign in to access your chats";
   document.getElementById("authError").textContent         = "";
@@ -225,7 +224,28 @@ modalConfirm.addEventListener("click", () => {
   document.getElementById("tabLogin").classList.add("active");
   document.getElementById("tabRegister").classList.remove("active");
 
-  initAuth();
+  const authed = await initAuth(); // ← await it
+  if (!authed) return;
+
+  // ← re-fetch chats after login
+  try {
+    const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+      headers: { "Authorization": `Bearer ${authToken}` }
+    });
+    if (res.ok) {
+      const workerChats = await res.json();
+      if (Array.isArray(workerChats) && workerChats.length) {
+        chats = workerChats;
+        currentIndex = 0;
+        saveChats();
+      }
+    }
+  } catch (e) {
+    console.warn("Could not reload chats after login:", e);
+  }
+
+  renderChatList();
+  renderMessages();
 });
   
   // ── NEW: Model Sheet elements ──────────────────────────
@@ -1368,6 +1388,8 @@ document.addEventListener("keydown", (e) => {
     const authed = await initAuth();
     if (!authed) return;
 
+    await new Promise(r => setTimeout(r, 300)); // ← small breathing room
+    
     let gotFromWorker = false;
     try {
       const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
