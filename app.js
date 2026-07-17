@@ -1178,22 +1178,61 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
 
 async function sendMessage() {
   const text = inputEl.value.trim();
-  if (!text) return;
+
+  // Allow send if there's text OR at least one fully-uploaded attachment
+  const readyAttachments = pendingAttachments.filter(a => !a.uploading && a.r2Key);
+  if (!text && readyAttachments.length === 0) return;
+
+  // Block send if uploads are still in progress
+  if (pendingAttachments.some(a => a.uploading)) {
+    alert("Please wait for attachments to finish uploading.");
+    return;
+  }
+
+  // Block attachments on Gemini (worker rejects them anyway)
+  if (readyAttachments.length > 0 && currentProvider === "gemini") {
+    alert("Gemini doesn't support file/image attachments. Please switch to OpenAI or Anthropic, or remove the attachment.");
+    return;
+  }
 
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  const userMessage = { role: "user", content: text, time: formatDateTime(), model: modelSelector.options[modelSelector.selectedIndex].text };
-  chat.messages.push(userMessage);
+  const userMessage = {
+    role: "user",
+    content: text,
+    time: formatDateTime(),
+    model: modelSelector.options[modelSelector.selectedIndex].text
+  };
 
-  if (chat.title === "New Chat" || !chat.title) {
-    const firstLine = text.split(/\r?\n/)[0];
-    chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
+  // Attach uploaded files (if any)
+  if (readyAttachments.length > 0) {
+    userMessage.attachments = readyAttachments.map(a => ({
+      r2Key: a.r2Key,
+      filename: a.filename,
+      contentType: a.contentType
+    }));
   }
 
+  chat.messages.push(userMessage);
+
+ if (chat.title === "New Chat" || !chat.title) {
+  if (text) {
+    const firstLine = text.split(/\r?\n/)[0];
+    chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
+  } else if (readyAttachments.length > 0) {
+    chat.title = `📎 ${readyAttachments[0].filename}`;  // fallback title
+  }
+}
   chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
   inputEl.value = "";
+
+  // Clear attachments now that they're attached to the message
+  pendingAttachments.forEach(a => { if (a.previewUrl) URL.revokeObjectURL(a.previewUrl); });
+  pendingAttachments = [];
+  renderChips();
+
   autoResize();
   saveChats();
   saveChatsToWorker();
@@ -1280,9 +1319,19 @@ async function sendMessage() {
   renderChatList();
 }
 
- async function sendMessageRetry() {
+async function sendMessageRetry() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
+
+  // Check if any recent message has attachments + Gemini is selected
+  const hasAttachments = chat.messages
+    .slice(-10)
+    .some(m => Array.isArray(m.attachments) && m.attachments.length > 0);
+
+  if (hasAttachments && currentProvider === "gemini") {
+    alert("This conversation contains attachments, which Gemini doesn't support. Please switch to OpenAI or Anthropic to retry.");
+    return;
+  }
 
   chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
@@ -1319,13 +1368,17 @@ async function sendMessage() {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${authToken}`
-      },
+      }, 
       body: JSON.stringify({
         provider: currentProvider,
         model: currentModel,
-        messages: cleanMessages
+        messages: cleanMessages.map(m => ({
+          role: m.role,
+          content: m.content,
+          ...(m.attachments ? { attachments: m.attachments } : {})
+        })),
       }),
-    });
+  });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
     
