@@ -444,7 +444,7 @@ body.dark-mode {
   font-size: 0.75rem;
   color: var(--primary-contrast);
   opacity: 0.8;
-  white-space: pre-line;
+  white-space: normal;
   text-align: right;        /* 👈 matches right-aligned stack */
   word-break: break-word;   /* 👈 wraps long filenames cleanly */
   max-width: 220px;         /* 👈 prevents super-long names blowing out width */
