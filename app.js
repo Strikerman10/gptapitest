@@ -59,6 +59,41 @@ fileInputEl.addEventListener("change", async (e) => {
   }
 });
 
+// ===== DRAG-AND-DROP SUPPORT =====
+const dropZone = document.querySelector(".input-area");
+
+// Prevent the browser from opening dropped files
+["dragenter", "dragover", "dragleave", "drop"].forEach(evt => {
+  dropZone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+});
+
+// Highlight while dragging over
+["dragenter", "dragover"].forEach(evt => {
+  dropZone.addEventListener(evt, () => dropZone.classList.add("drag-over"));
+});
+["dragleave", "drop"].forEach(evt => {
+  dropZone.addEventListener(evt, () => dropZone.classList.remove("drag-over"));
+});
+
+// Handle the drop — reuse your EXACT same pipeline as the file picker
+dropZone.addEventListener("drop", async (e) => {
+  const files = Array.from(e.dataTransfer?.files || []);
+  for (const file of files) {
+    await handleFileSelect(file);
+  }
+});
+  
+// ===== END DRAG-AND-DROP =====
+
+async function handleFileSelect(file) {
+  let type = file.type;
+  if (!type && /\.md$/i.test(file.name)) type = "text/markdown";
+  if (!type && /\.txt$/i.test(file.name)) type = "text/plain";
+  // ... rest of your function
+  
 async function handleFileSelect(file) {
   let type = file.type;
   if (!type && /\.md$/i.test(file.name)) type = "text/markdown";
