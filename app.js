@@ -32,6 +32,129 @@ document.addEventListener("DOMContentLoaded", () => {
   const modelSelector    = document.getElementById("modelSelector");
   const logoutBtn     = document.getElementById("logoutBtn");
 
+// ============================
+// FILE ATTACHMENTS
+// ============================
+
+const ALLOWED_TYPES = new Set([
+  "image/png", "image/jpeg", "image/gif", "image/webp",
+  "application/pdf", "text/plain", "text/markdown"
+]);
+const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+
+// Pending attachments for the NEXT message. Each: { r2Key, filename, contentType, previewUrl }
+let pendingAttachments = [];
+
+const fileInputEl = document.getElementById("fileInput");
+const attachBtnEl  = document.getElementById("attachBtn");
+const chipsEl      = document.getElementById("attachmentChips");
+
+attachBtnEl.addEventListener("click", () => fileInputEl.click());
+
+fileInputEl.addEventListener("change", async (e) => {
+  const files = Array.from(e.target.files || []);
+  fileInputEl.value = ""; // reset so same file can be re-picked
+  for (const file of files) {
+    await handleFileSelect(file);
+  }
+});
+
+async function handleFileSelect(file) {
+  let type = file.type;
+  if (!type && /\.md$/i.test(file.name)) type = "text/markdown";
+  if (!type && /\.txt$/i.test(file.name)) type = "text/plain";
+
+  if (!ALLOWED_TYPES.has(type)) {
+    alert(`Unsupported file type: ${file.name} (${type || "unknown"})`);
+    return;
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    alert(`File too large: ${file.name} (max 15MB)`);
+    return;
+  }
+
+  const tempId = "tmp_" + Math.random().toString(36).slice(2);
+  const previewUrl = type.startsWith("image/") ? URL.createObjectURL(file) : null;
+  const placeholder = {
+    tempId, filename: file.name, contentType: type,
+    previewUrl, r2Key: null, uploading: true
+  };
+  pendingAttachments.push(placeholder);
+  renderChips();
+
+  try {
+    const uploaded = await uploadFile(file);
+    placeholder.r2Key = uploaded.r2Key;
+    placeholder.uploading = false;
+    renderChips();
+  } catch (err) {
+    console.error("Upload failed:", err);
+    alert(`Upload failed for ${file.name}: ${err.message}`);
+    pendingAttachments = pendingAttachments.filter(a => a.tempId !== tempId);
+    renderChips();
+  }
+}
+
+async function uploadFile(file) {
+  const form = new FormData();
+  form.append("file", file);
+
+  const res = await fetch(`${WORKER_URL}/upload`, {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${authToken}` }, // browser sets multipart Content-Type
+    body: form
+  });
+
+  if (res.status === 401) { await handleUnauthorized(); throw new Error("Unauthorized"); }
+
+  const raw = await res.text();
+  let data = {};
+  try { data = raw ? JSON.parse(raw) : {}; }
+  catch { throw new Error(`Invalid JSON from upload: ${raw}`); }
+
+  if (!res.ok) throw new Error(data.error || `Upload returned ${res.status}`);
+
+  return data; // expecting { r2Key, filename, contentType, ... }
+}
+
+function renderChips() {
+  chipsEl.innerHTML = "";
+  pendingAttachments.forEach((att) => {
+    const chip = document.createElement("div");
+    chip.className = "chip" + (att.uploading ? " uploading" : "");
+
+    if (att.previewUrl) {
+      const img = document.createElement("img");
+      img.src = att.previewUrl;
+      chip.appendChild(img);
+    } else {
+      const icon = document.createElement("span");
+      icon.textContent = att.contentType === "application/pdf" ? "📄" : "📝";
+      chip.appendChild(icon);
+    }
+
+    const name = document.createElement("span");
+    name.className = "chip-name";
+    name.textContent = att.uploading ? `${att.filename} (uploading…)` : att.filename;
+    chip.appendChild(name);
+
+    if (!att.uploading) {
+      const remove = document.createElement("button");
+      remove.className = "chip-remove";
+      remove.type = "button";
+      remove.textContent = "✕";
+      remove.addEventListener("click", () => {
+        if (att.previewUrl) URL.revokeObjectURL(att.previewUrl);
+        pendingAttachments = pendingAttachments.filter(a => a !== att);
+        renderChips();
+      });
+      chip.appendChild(remove);
+    }
+
+    chipsEl.appendChild(chip);
+  });
+}
+  
 // ==========================
 // LOGOUT MODAL
 // ==========================
