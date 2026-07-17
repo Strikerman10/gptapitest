@@ -614,10 +614,11 @@ body.dark-mode {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface-2, transparent);
-  color: var(--text, currentColor);
-  border: 1px solid var(--border);
+  background: var(--color-6);              /* 👈 same as send button */
+  color: var(--primary-contrast);         /* 👈 same icon color */
+  border: none;                           /* 👈 send button has no border */
   cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);  /* 👈 same shadow */
   transition: background 0.25s ease, transform 0.2s ease;
   outline: none;
   bottom: 6px;
@@ -652,16 +653,6 @@ body.dark-mode {
 .send-btn:active {
   background: var(--color-7);
   transform: translateY(-2px);
-}
-
-/* Attachment preview chips */
-.attachment-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.attachment-chips:empty {
-  display: none;   /* no wasted space when there are no attachments */
 }
 
 /* ===========================
@@ -1635,6 +1626,9 @@ body.dark-mode .message p {
   background: #c53030;
 }
 
+/* ===========================
+   Attachments
+   =========================== */
 .attachment-chips {
   display: flex;
   flex-wrap: wrap;
@@ -1681,16 +1675,7 @@ body.dark-mode .message p {
   align-items: flex-end;
   gap: 8px;
 }
-.attach-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #aaa;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-}
-.attach-btn:hover { color: #fff; }
+
 .attach-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .input-area.drag-over {
