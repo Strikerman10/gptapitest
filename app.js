@@ -1125,6 +1125,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
             ...(m.attachments ? { attachments: m.attachments } : {})
           })),
         }),
+      });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
     
@@ -1286,8 +1287,7 @@ async function sendMessage() {
         model: currentModel,
         messages: cleanMessages,
       }),
-    });  
-  });
+    });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
     
