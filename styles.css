@@ -440,6 +440,21 @@ body.dark-mode {
   font-style: normal;       /* 👈 removes italic so it matches msg-time */
 }
 
+.msg-attachments {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-top: 2px;
+  word-break: break-word;
+}
+.msg-attachments {
+  font-size: 0.75rem;
+  color: var(--primary-contrast);
+  opacity: 0.8;
+  white-space: pre-line;
+  text-align: right;        /* 👈 matches right-aligned stack */
+  word-break: break-word;   /* 👈 wraps long filenames cleanly */
+  max-width: 220px;         /* 👈 prevents super-long names blowing out width */
+}
 .msg-meta {
   display: flex;
   flex-direction: column;   /* 👈 stacks time and model vertically */
