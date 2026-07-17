@@ -1048,6 +1048,15 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       metaDiv.appendChild(modelDiv);
     }
 
+    // 📎 Show attachment filenames if present
+    if (Array.isArray(msg.attachments) && msg.attachments.length > 0) {
+      const attachDiv = document.createElement("div");
+      attachDiv.className = "msg-attachments";
+      const names = msg.attachments.map(a => a.filename || "file").join(", ");
+      attachDiv.textContent = `📎 ${names}`;
+      metaDiv.appendChild(attachDiv);
+    }
+
     textDiv.appendChild(metaDiv);
 
     div.appendChild(textDiv);
@@ -1106,12 +1115,16 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${authToken}`
         },
+        
         body: JSON.stringify({
           provider: currentProvider,
           model: currentModel,
-          messages: cleanMessages
+          messages: cleanMessages.map(m => ({
+            role: m.role,
+            content: m.content,
+            ...(m.attachments ? { attachments: m.attachments } : {})
+          })),
         }),
-      });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
     
