@@ -1286,7 +1286,8 @@ async function sendMessage() {
         model: currentModel,
         messages: cleanMessages,
       }),
-    });
+    });  
+  });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
     
