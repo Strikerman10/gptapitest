@@ -1670,12 +1670,6 @@ body.dark-mode .message p {
 .chip .chip-remove:hover { color: #fff; }
 .chip.uploading { opacity: 0.6; }
 
-.input-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-}
-
 .attach-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .input-area.drag-over {
