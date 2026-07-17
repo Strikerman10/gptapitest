@@ -87,12 +87,6 @@ dropZone.addEventListener("drop", async (e) => {
 });
   
 // ===== END DRAG-AND-DROP =====
-
-async function handleFileSelect(file) {
-  let type = file.type;
-  if (!type && /\.md$/i.test(file.name)) type = "text/markdown";
-  if (!type && /\.txt$/i.test(file.name)) type = "text/plain";
-  // ... rest of your function
   
 async function handleFileSelect(file) {
   let type = file.type;
