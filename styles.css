@@ -570,21 +570,29 @@ body.dark-mode {
   margin: 0;
 }
 
-
 /* ===========================
    Input Area
    =========================== */
 .input-area {
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;   /* 👈 chips row ON TOP of input row */
   gap: 8px;
   padding: 12px;
   border-top: 1px solid var(--border);
   background: var(--surface-1);
 }
 
+/* The row holding attach + textarea + send */
+.input-row {
+  display: flex;            /* 👈 THIS makes the row lay out horizontally */
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
 .input-area textarea {
-  flex: 1;
+  flex: 1 1 auto;           /* 👈 stretch to fill the row */
+  min-width: 0;             /* 👈 critical — prevents flex overflow bug */
   min-height: 42px;
   max-height: 200px;
   padding: 10px;
@@ -594,6 +602,31 @@ body.dark-mode {
   resize: none;
   overflow-y: auto;
   font-size: 14px;
+}
+
+/* Attach button */
+.attach-btn {
+  flex-shrink: 0;
+  align-self: flex-end;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2, transparent);
+  color: var(--text, currentColor);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.2s ease;
+  outline: none;
+  bottom: 6px;
+  position: relative;
+}
+
+.attach-btn:hover {
+  background: var(--color-7, rgba(0,0,0,0.05));
+  transform: translateY(-2px);
 }
 
 .send-btn {
@@ -612,13 +645,23 @@ body.dark-mode {
   transition: background 0.25s ease, transform 0.2s ease;
   outline: none;
   position: relative;
-  bottom: 6px; /* moves it up */
+  bottom: 6px;
 }
 
 .send-btn:hover,
 .send-btn:active {
   background: var(--color-7);
   transform: translateY(-2px);
+}
+
+/* Attachment preview chips */
+.attachment-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.attachment-chips:empty {
+  display: none;   /* no wasted space when there are no attachments */
 }
 
 /* ===========================
