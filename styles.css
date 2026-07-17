@@ -452,6 +452,14 @@ body.dark-mode {
   font-weight: 600;         /* 👈 bold */
 }
 
+.msg-attachments .attach-icon {
+  width: 13px;            /* 👈 smaller than the 20px button version */
+  height: 13px;
+  vertical-align: -2px;   /* 👈 nudge down to align with text */
+  margin-right: 4px;      /* 👈 gap between icon and filename */
+  flex-shrink: 0;
+}
+
 .msg-meta {
   display: flex;
   flex-direction: column;   /* 👈 stacks time and model vertically */
