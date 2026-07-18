@@ -1626,7 +1626,6 @@ async function sendMessageRetry() {
         stream: false
       });
       data = reply;
-    }
 
     } else {
       // ── Cloud Mode - Your existing Worker (unchanged) ──
