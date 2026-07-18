@@ -141,23 +141,25 @@ document.addEventListener("DOMContentLoaded", async () => {   // ← add async h
   const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
 
   // ── Local model visibility ─────────────────────────────
- function updateLocalModelVisibility() {
-  const label        = document.getElementById("localModelsLabel");
+function updateLocalModelVisibility() {
+  const labelDesktop = document.getElementById("localModelsLabel");
+  const labelMobile  = document.getElementById("localModelsLabelMobile");
+  const labels       = [labelDesktop, labelMobile].filter(Boolean);
   const ollamaModels = document.querySelectorAll(".ollama-model");
   const webllmModels = document.querySelectorAll(".webllm-model");
 
   if (LOCAL_MODE === "ollama") {
-    if (label) label.hidden = false;
+    labels.forEach(l => l.hidden = false);
     ollamaModels.forEach(el => el.hidden = false);
     webllmModels.forEach(el => el.hidden = true);
 
   } else if (LOCAL_MODE === "webllm") {
-    if (label) label.hidden = false;
+    labels.forEach(l => l.hidden = false);
     ollamaModels.forEach(el => el.hidden = true);
     webllmModels.forEach(el => el.hidden = false);
 
   } else {
-    if (label) label.hidden = true;
+    labels.forEach(l => l.hidden = true);
     ollamaModels.forEach(el => el.hidden = true);
     webllmModels.forEach(el => el.hidden = true);
   }
