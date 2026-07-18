@@ -42,7 +42,7 @@ async function populateOllamaModels() {
     const opt = document.createElement("option");
     opt.className = "ollama-model";
     opt.value = "ollama|" + m.name;
-    opt.textContent = "💻 " + m.name + " (Ollama)";
+    opt.textContent = " " + m.name + " (Ollama)";
     opt.hidden = (LOCAL_MODE !== "ollama");
     select.appendChild(opt);
   });
