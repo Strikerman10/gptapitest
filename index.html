@@ -535,13 +535,6 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
     </div>
   </div>
 </div>
-   <!-- Load WebLLM library, then expose it globally -->
-  <script type="module">
-    import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
-    window.CreateMLCEngine = CreateMLCEngine;
-    window.dispatchEvent(new Event("webllm-ready"));  // signal it's loaded
-  </script>
-  
   <script src="app.js" defer></script>
 </body>
 </html>
