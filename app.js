@@ -24,6 +24,51 @@ async function detectBackend() {
   return "worker";
 }
 
+async function populateOllamaModels() {
+  let data;
+  try {
+    const res = await fetch("http://localhost:11434/api/tags");
+    data = await res.json();
+  } catch (e) {
+    console.warn("Could not load Ollama models:", e.message);
+    return;
+  }
+
+  // ---- DESKTOP <select> ----
+  const select = document.getElementById("modelSelector");
+  select.querySelectorAll(".ollama-model").forEach(el => el.remove());
+
+  data.models.forEach(m => {
+    const opt = document.createElement("option");
+    opt.className = "ollama-model";
+    opt.value = "ollama|" + m.name;
+    opt.textContent = "💻 " + m.name + " (Ollama)";
+    opt.hidden = (LOCAL_MODE !== "ollama");
+    select.appendChild(opt);
+  });
+
+  // ---- MOBILE .model-sheet-list ----
+  const sheet = document.querySelector(".model-sheet-list");
+  if (sheet) {
+    sheet.querySelectorAll(".ollama-model").forEach(el => el.remove());
+
+    data.models.forEach(m => {
+      const btn = document.createElement("button");
+      btn.className = "model-sheet-option local-model ollama-model";
+      btn.dataset.model = "ollama|" + m.name;
+      btn.hidden = (LOCAL_MODE !== "ollama");
+      btn.innerHTML =
+        `<span class="model-icon">💻</span>
+         <span class="model-info">
+           <span class="model-name">${m.name}</span>
+           <span class="model-sub">Ollama · PC only</span>
+         </span>
+         <span class="model-check">✓</span>`;
+      sheet.appendChild(btn);
+    });
+  }
+}
+
 // AUTH STATE
 // We no longer use a plain prompt() for userId.
 // Instead we store a proper auth token and userId from login.
@@ -1834,7 +1879,10 @@ document.addEventListener("keydown", (e) => {
     applyTheme();
     syncActiveModel(`${currentProvider}|${currentModel}`);
 
-    LOCAL_MODE = await detectBackend();
+   LOCAL_MODE = await detectBackend();
+    if (LOCAL_MODE === "ollama") {
+      await populateOllamaModels();
+    }
     updateLocalModelVisibility();
     
    // NEW — show login modal if not authenticated
