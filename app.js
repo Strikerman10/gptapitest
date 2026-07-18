@@ -1538,7 +1538,31 @@ if (currentProvider === "ollama") {
   }
   if (!res.ok) throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
 }
+  // ── Same for all backends ──
+    const answer = extractAnswer(data);
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: answer,
+      time: formatDateTime(),
+      model: getSelectedModelName()
+    };
 
+  } catch (e) {
+    console.error("sendMessage failed:", e);
+    chat.messages[chat.messages.length - 1] = {
+      role: "assistant",
+      content: "Error: " + e.message,
+      time: formatDateTime(),
+      model: getSelectedModelName()
+    };
+  }
+
+  saveChats();
+  saveChatsToWorker();
+  renderMessages();
+  renderChatList();
+}
+    
 // ==========================
 // RETRY SEND MESSAGES
 // ==========================
