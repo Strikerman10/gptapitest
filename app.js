@@ -79,6 +79,24 @@ async function initWebLLM(modelId = WEBLLM_DEFAULT) {
 }
 
 // ==========================
+// GET SELECTED MODEL NAME
+// Works for both desktop dropdown and mobile sheet
+// ==========================
+function getSelectedModelName() {
+  // Try mobile sheet first (has data-model attribute with active class)
+  const activeSheet = document.querySelector('.model-sheet-option.active');
+  if (activeSheet) {
+    return activeSheet.querySelector('.model-name')?.textContent?.trim() || currentModel;
+  }
+  // Fall back to desktop dropdown
+  if (modelSelector && modelSelector.selectedIndex >= 0) {
+    return modelSelector.options[modelSelector.selectedIndex].text;
+  }
+  // Last resort - return the raw model string
+  return currentModel;
+}
+
+// ==========================
 // DOM READY
 // ==========================
 document.addEventListener("DOMContentLoaded", async () => {   // ← add async here
@@ -1272,7 +1290,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
-      model: modelSelector.options[modelSelector.selectedIndex].text
+      model: getSelectedModelName()
     };
   } catch (e) {
     // Replace at the SAME idx position on error too
@@ -1280,7 +1298,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       role: "assistant",
       content: "Error: " + e.message,
       time: formatDateTime(),
-      model: modelSelector.options[modelSelector.selectedIndex].text
+      model: getSelectedModelName()
     };
   }
 
@@ -1352,7 +1370,7 @@ async function sendMessage() {
     role: "user",
     content: text,
     time: formatDateTime(),
-    model: modelSelector.options[modelSelector.selectedIndex].text
+    model: getSelectedModelName()
   };
 
   if (readyAttachments.length > 0) {
@@ -1469,7 +1487,7 @@ async function sendMessage() {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
-      model: modelSelector.options[modelSelector.selectedIndex].text
+      model: getSelectedModelName()
     };
 
   } catch (e) {
@@ -1478,7 +1496,7 @@ async function sendMessage() {
       role: "assistant",
       content: "Error: " + e.message,
       time: formatDateTime(),
-      model: modelSelector.options[modelSelector.selectedIndex].text
+      model: getSelectedModelName()
     };
   }
 
@@ -1603,7 +1621,7 @@ async function sendMessageRetry() {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
-      model: modelSelector.options[modelSelector.selectedIndex].text
+      model: getSelectedModelName()
     };
 
   } catch (e) {
@@ -1612,7 +1630,7 @@ async function sendMessageRetry() {
       role: "assistant",
       content: "Error: " + e.message,
       time: formatDateTime(),
-      model: modelSelector.options[modelSelector.selectedIndex].text
+      model: getSelectedModelName()
     };
   }
 
