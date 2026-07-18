@@ -516,36 +516,7 @@ modalConfirm.addEventListener("click", async () => {
   renderChatList();
   renderMessages();
 });
-  
-  // ── NEW: Model Sheet elements ──────────────────────────
-  const modelSheet         = document.getElementById('modelSheet');
-  const modelSheetBackdrop = document.getElementById('modelSheetBackdrop');
-  const closeModelSheetBtn = document.getElementById('closeModelSheetBtn');
-  const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
-  // ───────────────────────────────────────────────────────
 
-  // ── Local model visibility ─────────────────────────────
-  function updateLocalModelVisibility() {
-    const label        = document.getElementById("localModelsLabel");
-    const ollamaModels = document.querySelectorAll(".ollama-model");
-    const webllmModels = document.querySelectorAll(".webllm-model");
-
-    if (LOCAL_MODE === "ollama") {
-      label.style.display = "";
-      ollamaModels.forEach(el => el.style.display = "");
-      webllmModels.forEach(el => el.style.display = "none");
-
-    } else if (LOCAL_MODE === "webllm") {
-      label.style.display = "";
-      ollamaModels.forEach(el => el.style.display = "none");
-      webllmModels.forEach(el => el.style.display = "");
-
-    } else {
-      label.style.display = "none";
-      ollamaModels.forEach(el => el.style.display = "none");
-      webllmModels.forEach(el => el.style.display = "none");
-    }
-  }
   // ───────────────────────────────────────────────────────
   
   // ==========================
