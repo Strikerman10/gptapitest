@@ -1696,48 +1696,61 @@ console.log("RETRY ROUTE DEBUG:", { currentProvider, provider, currentModel, mod
 // ==========================
 modelSelector.value = `${currentProvider}|${currentModel}`;
 
+function normalizeProvider(p) {
+  return (p || "").trim().toLowerCase();
+}
+
 function modeFromProvider(provider) {
-  if (provider === "ollama") return "ollama";
-  if (provider === "webllm") return "webllm";
-  return "worker"; // cloud providers
+  const p = normalizeProvider(provider);
+  if (p === "ollama") return "ollama";
+  if (p === "webllm") return "webllm";
+  return "worker";
+}
+
+function parseModelSelection(value) {
+  const raw = (value || "").trim();
+  const sep = raw.indexOf("|");
+
+  if (sep >= 0) {
+    const provider = normalizeProvider(raw.slice(0, sep));
+    const model = raw.slice(sep + 1).trim(); // keeps model case
+    return { provider, model };
+  }
+
+  // explicit fallback if option is just model name
+  return {
+    provider: "openai",
+    model: raw || "gpt-5.4-2026-03-05"
+  };
 }
 
 async function applyModelSelection(provider, model) {
-  currentProvider = provider;
-  currentModel = model;
-  LOCAL_MODE = modeFromProvider(provider);
+  currentProvider = normalizeProvider(provider);
+  currentModel = (model || "").trim();
+  LOCAL_MODE = modeFromProvider(currentProvider);
 
   localStorage.setItem("chat_provider", currentProvider);
   localStorage.setItem("chat_model", currentModel);
 
-  // Keep UI consistent
   syncActiveModel(`${currentProvider}|${currentModel}`);
   updateLocalModelVisibility();
 
-  // Ensure WebLLM engine is ready when selected
   if (currentProvider === "webllm" && !window.webllmEngine) {
     await initWebLLM(currentModel);
   }
 
-  console.log("Model selection changed:", { currentProvider, currentModel, LOCAL_MODE });
+  console.log("Model selection changed:", {
+    currentProvider,
+    currentModel,
+    LOCAL_MODE
+  });
 }
 
 modelSelector.addEventListener("change", async (e) => {
-  const value = e.target.value || "";
-  const parts = value.split("|");
-
-  let provider, model;
-
-  if (parts.length === 2) {
-    provider = parts[0];
-    model = parts[1];
-  } else {
-    provider = "openai";
-    model = value || "gpt-5.4-2026-03-05";
-  }
-
+  const { provider, model } = parseModelSelection(e.target.value);
   await applyModelSelection(provider, model);
 });
+  
 // ==========================
 // THEME - LIGHT/DARK TOGGLE BUTTON
 // ==========================
