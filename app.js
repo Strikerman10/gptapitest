@@ -1597,52 +1597,40 @@ async function sendMessageRetry() {
   if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
     cleanMessages.pop();
   }
-
+  
+const provider = String(currentProvider || "").trim().toLowerCase();
+const model = String(currentModel || "").trim();
+console.log("RETRY ROUTE DEBUG:", { currentProvider, provider, currentModel, model, LOCAL_MODE });
+  
   try {
     let data = {};
 
     // ════════════════════════════════════════
     //  ROUTE TO CORRECT BACKEND
     // ════════════════════════════════════════
-
-    if (currentProvider === "ollama") {
-      // ── PC Mode - Talk directly to Ollama ──
+    if (provider === "ollama") {
       const res = await fetch("http://localhost:11434/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: currentModel,
-          messages: cleanMessages.map(m => ({
-            role: m.role,
-            content: m.content
-          })),
+          model,
+          messages: cleanMessages.map(m => ({ role: m.role, content: m.content })),
           stream: false
         })
       });
-      if (!res.ok) throw new Error(`Ollama returned ${res.status}`);
+      if (!res.ok) throw new Error(`Ollama returned ${res.status}: ${await res.text()}`);
       data = await res.json();
-
-   } else if (currentProvider === "webllm") {
-      // ── Phone Mode - Use WebLLM engine ──
-      if (!window.webllmEngine) {
-        await initWebLLM(currentModel);   // add this
-      }
-      if (!window.webllmEngine) {
-        throw new Error("WebLLM not ready yet");
-      }
     
-      const reply = await window.webllmEngine.chat.completions.create({
-        // model: currentModel, // optional; include if your WebLLM build expects it
-        messages: cleanMessages.map(m => ({
-          role: m.role,
-          content: m.content
-        })),
+    } else if (provider === "webllm") {
+      if (!window.webllmEngine) await initWebLLM(model);
+      if (!window.webllmEngine) throw new Error("WebLLM not ready yet");
+    
+      data = await window.webllmEngine.chat.completions.create({
+        messages: cleanMessages.map(m => ({ role: m.role, content: m.content })),
         stream: false
       });
-      data = reply;
-
+    
     } else {
-      // ── Cloud Mode - Your existing Worker (unchanged) ──
       const res = await fetch(`${WORKER_URL}/chat`, {
         method: "POST",
         headers: {
@@ -1650,8 +1638,8 @@ async function sendMessageRetry() {
           "Authorization": `Bearer ${authToken}`
         },
         body: JSON.stringify({
-          provider: currentProvider,
-          model: currentModel,
+          provider,
+          model,
           messages: cleanMessages.map(m => ({
             role: m.role,
             content: m.content,
@@ -1659,13 +1647,11 @@ async function sendMessageRetry() {
           })),
         }),
       });
+    
       if (res.status === 401) { await handleUnauthorized(); return; }
       const rawText = await res.text();
-      try {
-        data = rawText ? JSON.parse(rawText) : {};
-      } catch {
-        throw new Error(`Invalid JSON from worker: ${rawText}`);
-      }
+      try { data = rawText ? JSON.parse(rawText) : {}; }
+      catch { throw new Error(`Invalid JSON from worker: ${rawText}`); }
       if (!res.ok) throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
     }
 
