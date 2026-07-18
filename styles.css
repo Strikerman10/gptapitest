@@ -1324,6 +1324,9 @@ body.dark-mode .message p {
     background: color-mix(in srgb, var(--color-4) 80%, black 20%);
   }
 
+  .model-sheet-option[hidden] {
+  display: none !important;
+}
   .model-icon {
     font-size: 1.4rem;
     flex-shrink: 0;
