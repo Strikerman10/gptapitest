@@ -211,10 +211,13 @@ function updateLocalModelVisibility() {
     webllmModels.forEach(el => el.hidden = false);
 
   } else {
+    // worker/cloud mode
     labels.forEach(l => l.hidden = true);
     ollamaModels.forEach(el => el.hidden = true);
     webllmModels.forEach(el => el.hidden = true);
   }
+
+  updateModeIndicator();
 }
   // ────────────────────────────────────────────────────────
 
