@@ -1884,60 +1884,58 @@ function openModelSheet() {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && paletteSheet.classList.contains("show")) {
     closePaletteSheet();
-  if (modelSheet && !modelSheet.classList.contains("hidden")) closeModelSheet();
+  }
+  if (modelSheet && !modelSheet.classList.contains("hidden")) {
+    closeModelSheet();
   }
 });
 
-  (async () => {
-    applyTheme();
-    syncActiveModel(`${currentProvider}|${currentModel}`);
+(async () => {
+  applyTheme();
+  syncActiveModel(`${currentProvider}|${currentModel}`);
 
-   LOCAL_MODE = await detectBackend();
-    if (LOCAL_MODE === "ollama") {
-      await populateOllamaModels();
-    }
-    updateLocalModelVisibility();
-    
-   // NEW — show login modal if not authenticated
-    const authed = await initAuth();
-    if (!authed) return;
+  LOCAL_MODE = await detectBackend();
+  if (LOCAL_MODE === "ollama") {
+    await populateOllamaModels();
+  }
+  updateLocalModelVisibility();
 
-    await new Promise(r => setTimeout(r, 150)); // ← small breathing room
-    
-    let gotFromWorker = false;
-    try {
-      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
-        headers: {
-          "Authorization": `Bearer ${authToken}`
+  const authed = await initAuth();
+  if (!authed) return;
+
+  await new Promise(r => setTimeout(r, 150));
+
+  let gotFromWorker = false;
+  try {
+    const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+      headers: { "Authorization": `Bearer ${authToken}` }
+    });
+
+    if (res.status === 401) { await handleUnauthorized(); return; }
+    if (res.ok) {
+      const workerChats = await res.json();
+      if (Array.isArray(workerChats) && workerChats.length) {
+        chats = workerChats;
+        const savedIndex = Number(localStorage.getItem("secure_chat_index"));
+        if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < chats.length) {
+          const [activeChat] = chats.splice(savedIndex, 1);
+          chats.unshift(activeChat);
+          currentIndex = 0;
+        } else {
+          currentIndex = 0;
         }
-      });
-      
-      if (res.status === 401) { await handleUnauthorized(); return; }
-      if (res.ok) {
-        const workerChats = await res.json();
-        if (Array.isArray(workerChats) && workerChats.length) {
-          chats = workerChats;
-          const savedIndex = Number(localStorage.getItem("secure_chat_index"));
-          if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < chats.length) {
-            const [activeChat] = chats.splice(savedIndex, 1);
-            chats.unshift(activeChat);
-            currentIndex = 0;
-          } else {
-            currentIndex = 0;
-          }
-          saveChats();
-          gotFromWorker = true;
-        }
+        saveChats();
+        gotFromWorker = true;
       }
-    } catch (e) {
-      console.warn("Could not load from worker:", e);
     }
+  } catch (e) {
+    console.warn("Could not load from worker:", e);
+  }
 
-    if (!gotFromWorker) {
-      await loadChats();
-    }
+  if (!gotFromWorker) {
+    await loadChats();
+  }
 
-    renderChatList();
-    renderMessages();
-  })();
-});
+  renderChatList();
+  renderMessages();
+})();
