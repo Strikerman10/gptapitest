@@ -128,7 +128,7 @@ REUSABLE SVG ICON SYMBOLS (hidden)
   <option value="gemini|gemini-2.5-flash">Gemini 2.5 Flash</option>
   <option value="gemini|gemini-3.1-flash-lite">Gemini Flash Lite 3.1</option>
 
- <option id="localModelsLabel" class="local-label" disabled hidden>── Local AI ──</option>
+<option id="localModelsLabelDesktop" class="local-label" disabled hidden>── Local AI ──</option>
 
 <option class="ollama-model" value="ollama|llama3" hidden>Llama 3 (Ollama)</option>
 <option class="ollama-model" value="ollama|mistral" hidden>Mistral (Ollama)</option>
@@ -450,9 +450,7 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
     Only shown when LOCAL_MODE is ollama or webllm
     Hidden in cloud mode
     ========================== -->
-    <p class="model-group-label" id="localModelsLabel" hidden>
-      Local AI
-    </p>
+    <p id="localModelsLabelMobile" class="model-group-label" hidden>Local AI</p>
 
     <!-- Ollama models (PC) -->
     <button class="model-sheet-option local-model ollama-model" 
