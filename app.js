@@ -148,18 +148,18 @@ document.addEventListener("DOMContentLoaded", async () => {   // ← add async h
 
     if (LOCAL_MODE === "ollama") {
       label.style.display = "";
-      ollamaModels.forEach(el => el.style.display = "");
-      webllmModels.forEach(el => el.style.display = "none");
+      ollamaModels.forEach(el => el.hidden = true);
+      webllmModels.forEach(el => el.hidden = false);
 
     } else if (LOCAL_MODE === "webllm") {
       label.style.display = "";
-      ollamaModels.forEach(el => el.style.display = "none");
-      webllmModels.forEach(el => el.style.display = "");
+      ollamaModels.forEach(el => el.hidden = false);
+      webllmModels.forEach(el => el.hidden = true);
 
     } else {
       label.style.display = "none";
-      ollamaModels.forEach(el => el.style.display = "none");
-      webllmModels.forEach(el => el.style.display = "none");
+      ollamaModels.forEach(el => el.hidden = false);
+      webllmModels.forEach(el => el.hidden = false);
     }
   }
   // ────────────────────────────────────────────────────────
