@@ -1475,49 +1475,39 @@ async function sendMessage() {
     cleanMessages.pop();
   }
 
+  const provider = String(currentProvider || "").trim().toLowerCase();
+  const model = String(currentModel || "").trim();
+  console.log("ROUTE DEBUG:", { currentProvider, provider, currentModel, model, LOCAL_MODE });
+  
   try {
     let data = {};
 
-    // ════════════════════════════════════════
+// ════════════════════════════════════════
 //  ROUTE TO CORRECT BACKEND
 // ════════════════════════════════════════
-
-if (currentProvider === "ollama") {
-  // ── PC Mode - Talk directly to Ollama ──
+if (provider === "ollama") {
   const res = await fetch("http://localhost:11434/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: currentModel,      // e.g. "llama3"
-      messages: cleanMessages.map(m => ({
-        role: m.role,
-        content: m.content      // Ollama doesn't support attachments
-      })),
+      model,
+      messages: cleanMessages.map(m => ({ role: m.role, content: m.content })),
       stream: false
     })
   });
-  if (!res.ok) throw new Error(`Ollama returned ${res.status}`);
+  if (!res.ok) throw new Error(`Ollama returned ${res.status}: ${await res.text()}`);
   data = await res.json();
 
-} else if (currentProvider === "webllm") {
-  // ── Phone Mode - Use WebLLM engine ──
-  if (!window.webllmEngine) {
-    // optional: auto-init if not ready
-    await initWebLLM(currentModel);
-  }
+} else if (provider === "webllm") {
+  if (!window.webllmEngine) await initWebLLM(model);
   if (!window.webllmEngine) throw new Error("WebLLM not ready yet");
 
-  const reply = await window.webllmEngine.chat.completions.create({
-    messages: cleanMessages.map(m => ({
-      role: m.role,
-      content: m.content
-    })),
+  data = await window.webllmEngine.chat.completions.create({
+    messages: cleanMessages.map(m => ({ role: m.role, content: m.content })),
     stream: false
   });
-  data = reply; // already in choices[0].message.content format ✅
 
 } else {
-  // ── Cloud Mode - Your existing Worker (unchanged) ──
   const res = await fetch(`${WORKER_URL}/chat`, {
     method: "POST",
     headers: {
@@ -1525,18 +1515,17 @@ if (currentProvider === "ollama") {
       "Authorization": `Bearer ${authToken}`
     },
     body: JSON.stringify({
-      provider: currentProvider,
-      model: currentModel,
-      messages: cleanMessages,
+      provider,   // use normalized provider
+      model,      // use normalized model
+      messages: cleanMessages
     }),
   });
+
   if (res.status === 401) { await handleUnauthorized(); return; }
   const rawText = await res.text();
-  try {
-    data = rawText ? JSON.parse(rawText) : {};
-  } catch {
-    throw new Error(`Invalid JSON from worker: ${rawText}`);
-  }
+  try { data = rawText ? JSON.parse(rawText) : {}; }
+  catch { throw new Error(`Invalid JSON from worker: ${rawText}`); }
+
   if (!res.ok) throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
 }
   // ── Same for all backends ──
