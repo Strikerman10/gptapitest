@@ -1965,4 +1965,6 @@ document.addEventListener("keydown", (e) => {
 
   renderChatList();
   renderMessages();
-})();
+})(); // closes IIFE
+
+});   // ✅ closes document.addEventListener("DOMContentLoaded", async () => { ... })
