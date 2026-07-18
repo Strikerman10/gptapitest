@@ -141,27 +141,27 @@ document.addEventListener("DOMContentLoaded", async () => {   // ← add async h
   const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
 
   // ── Local model visibility ─────────────────────────────
-  function updateLocalModelVisibility() {
-    const label        = document.getElementById("localModelsLabel");
-    const ollamaModels = document.querySelectorAll(".ollama-model");
-    const webllmModels = document.querySelectorAll(".webllm-model");
+ function updateLocalModelVisibility() {
+  const label        = document.getElementById("localModelsLabel");
+  const ollamaModels = document.querySelectorAll(".ollama-model");
+  const webllmModels = document.querySelectorAll(".webllm-model");
 
-    if (LOCAL_MODE === "ollama") {
-      label.style.display = "";
-      ollamaModels.forEach(el => el.hidden = true);
-      webllmModels.forEach(el => el.hidden = false);
+  if (LOCAL_MODE === "ollama") {
+    if (label) label.hidden = false;
+    ollamaModels.forEach(el => el.hidden = false);
+    webllmModels.forEach(el => el.hidden = true);
 
-    } else if (LOCAL_MODE === "webllm") {
-      label.style.display = "";
-      ollamaModels.forEach(el => el.hidden = false);
-      webllmModels.forEach(el => el.hidden = true);
+  } else if (LOCAL_MODE === "webllm") {
+    if (label) label.hidden = false;
+    ollamaModels.forEach(el => el.hidden = true);
+    webllmModels.forEach(el => el.hidden = false);
 
-    } else {
-      label.style.display = "none";
-      ollamaModels.forEach(el => el.hidden = false);
-      webllmModels.forEach(el => el.hidden = false);
-    }
+  } else {
+    if (label) label.hidden = true;
+    ollamaModels.forEach(el => el.hidden = true);
+    webllmModels.forEach(el => el.hidden = true);
   }
+}
   // ────────────────────────────────────────────────────────
 
 // ============================
