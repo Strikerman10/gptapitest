@@ -3,6 +3,27 @@
 // ==========================
 const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
 
+let LOCAL_MODE = "worker"; // default - will be updated on load
+
+async function detectBackend() {
+  // Are we on PC with Ollama?
+  try {
+    const res = await fetch("http://localhost:11434/api/tags", {
+      signal: AbortSignal.timeout(1500)
+    });
+    if (res.ok) return "ollama";
+  } catch (e) {
+    // Ollama not available
+  }
+
+  // Are we on mobile?
+  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+  if (isMobile) return "webllm";
+
+  // Default - use worker as normal
+  return "worker";
+}
+
 // AUTH STATE
 // We no longer use a plain prompt() for userId.
 // Instead we store a proper auth token and userId from login.
