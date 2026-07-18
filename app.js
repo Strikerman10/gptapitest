@@ -737,7 +737,9 @@ function renderMessageContent(content) {
     localStorage.setItem("palette", currentPalette);
     localStorage.setItem("mode", currentMode);
   }
-
+// ==========================
+// Load Chats
+// ==========================
  async function loadChats() {
   try {
     const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
@@ -1195,6 +1197,9 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
+// ==========================
+// Send Messages
+// ========================== 
 async function sendMessage() {
   const text = inputEl.value.trim();
 
@@ -1338,6 +1343,9 @@ async function sendMessage() {
   renderChatList();
 }
 
+// ==========================
+// Retry Send Messages
+// ==========================
 async function sendMessageRetry() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
