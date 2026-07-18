@@ -1702,3 +1702,18 @@ body.dark-mode .message p {
   background: rgba(74, 158, 255, 0.06);
   border-radius: 8px;
 }
+
+/* Small subtitle under model name in sheet */
+.model-sub {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  display: block;
+  margin-top: 2px;
+}
+
+.model-icon {
+  font-size: 1.2rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
