@@ -124,6 +124,9 @@ async function handleFileSelect(file) {
   }
 }
 
+// ==========================
+// UPLOAD FILES
+// ==========================
 async function uploadFile(file) {
   const form = new FormData();
   form.append("file", file);
@@ -737,8 +740,9 @@ function renderMessageContent(content) {
     localStorage.setItem("palette", currentPalette);
     localStorage.setItem("mode", currentMode);
   }
+
 // ==========================
-// Load Chats
+// LOAD CHATS
 // ==========================
  async function loadChats() {
   try {
@@ -821,6 +825,9 @@ function renderMessageContent(content) {
     return `${hours}:${minutes}\n${day}/${month}/${year}`;
   }
 
+// ==========================
+// LOAD CHATS FROM WORKER
+// ==========================
     async function loadChatsFromWorker() {
       try {
         const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
@@ -1198,7 +1205,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
 }
 
 // ==========================
-// Send Messages
+// SEND MESSAGES
 // ========================== 
 async function sendMessage() {
   const text = inputEl.value.trim();
@@ -1344,7 +1351,7 @@ async function sendMessage() {
 }
 
 // ==========================
-// Retry Send Messages
+// RETRY SEND MESSAGES
 // ==========================
 async function sendMessageRetry() {
   if (currentIndex === null) createNewChat();
