@@ -81,69 +81,71 @@ async function initWebLLM(modelId = WEBLLM_DEFAULT) {
 // ==========================
 // DOM READY
 // ==========================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {   // ← add async here
 
   // ==========================
   // DOM ELEMENT REFERENCES
   // ==========================
-  const chatListEl    = document.getElementById("chatList");
-  const messagesEl    = document.getElementById("messages");
-  const chatTitleEl   = document.getElementById("chatTitle");
-  const inputEl       = document.getElementById("input");
+  const chatListEl       = document.getElementById("chatList");
+  const messagesEl       = document.getElementById("messages");
+  const chatTitleEl      = document.getElementById("chatTitle");
+  const inputEl          = document.getElementById("input");
   const themeToggleBtn   = document.getElementById("toggleThemeBtn");
   const sidebarEl        = document.querySelector(".sidebar");
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
   const modelSelector    = document.getElementById("modelSelector");
-  const logoutBtn     = document.getElementById("logoutBtn");
+  const logoutBtn        = document.getElementById("logoutBtn");
 
-// ==========================
-// Mode Indicator
-// ==========================
-function updateModeIndicator(customText = null) {
-  // We will add this element to your HTML
-  const el = document.getElementById("modeIndicator");
-  if (!el) return;
+  // ==========================
+  // Mode Indicator
+  // ==========================
+  function updateModeIndicator(customText = null) {
+    const el = document.getElementById("modeIndicator");
+    if (!el) return;
 
-  if (customText) {
-    el.textContent = customText;
-    return;
+    if (customText) {
+      el.textContent = customText;
+      return;
+    }
+
+    const labels = {
+      ollama: "💻 Local AI (Ollama)",
+      webllm: "📱 Local AI (WebLLM)",
+      worker: "☁️ Cloud AI"
+    };
+    el.textContent = labels[LOCAL_MODE] || "☁️ Cloud AI";
   }
 
-  // Default text based on mode
-  const labels = {
-    ollama: "💻 Local AI (Ollama)",
-    webllm: "📱 Local AI (WebLLM)",
-    worker: "☁️ Cloud AI"
-  };
-  el.textContent = labels[LOCAL_MODE] || "☁️ Cloud AI";
-}
+  // ── Model Sheet elements ───────────────────────────────
+  const modelSheet         = document.getElementById('modelSheet');
+  const modelSheetBackdrop = document.getElementById('modelSheetBackdrop');
+  const closeModelSheetBtn = document.getElementById('closeModelSheetBtn');
+  const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
 
-// ==========================
-// App Initialisation
-// ==========================
-async function init() {
-  // Detect which backend to use
-  LOCAL_MODE = await detectBackend();
-  console.log("Backend mode:", LOCAL_MODE);
+  // ── Local model visibility ─────────────────────────────
+  function updateLocalModelVisibility() {
+    const label        = document.getElementById("localModelsLabel");
+    const ollamaModels = document.querySelectorAll(".ollama-model");
+    const webllmModels = document.querySelectorAll(".webllm-model");
 
-  // If on phone, start loading WebLLM
-  // (runs in background while user looks at chat history)
-  if (LOCAL_MODE === "webllm") {
-    initWebLLM(); // don't await - loads in background
+    if (LOCAL_MODE === "ollama") {
+      label.style.display = "";
+      ollamaModels.forEach(el => el.style.display = "");
+      webllmModels.forEach(el => el.style.display = "none");
+
+    } else if (LOCAL_MODE === "webllm") {
+      label.style.display = "";
+      ollamaModels.forEach(el => el.style.display = "none");
+      webllmModels.forEach(el => el.style.display = "");
+
+    } else {
+      label.style.display = "none";
+      ollamaModels.forEach(el => el.style.display = "none");
+      webllmModels.forEach(el => el.style.display = "none");
+    }
   }
+  // ────────────────────────────────────────────────────────
 
-  // Show mode to user
-  updateModeIndicator();
-
-  // Your existing startup code
-  await loadChats();
-  renderChatList();
-  renderMessages();
-}
-
-// Replace your existing DOMContentLoaded with this
-document.addEventListener("DOMContentLoaded", init);
-  
 // ============================
 // FILE ATTACHMENTS
 // ============================
@@ -522,6 +524,30 @@ modalConfirm.addEventListener("click", async () => {
   const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
   // ───────────────────────────────────────────────────────
 
+  // ── Local model visibility ─────────────────────────────
+  function updateLocalModelVisibility() {
+    const label        = document.getElementById("localModelsLabel");
+    const ollamaModels = document.querySelectorAll(".ollama-model");
+    const webllmModels = document.querySelectorAll(".webllm-model");
+
+    if (LOCAL_MODE === "ollama") {
+      label.style.display = "";
+      ollamaModels.forEach(el => el.style.display = "");
+      webllmModels.forEach(el => el.style.display = "none");
+
+    } else if (LOCAL_MODE === "webllm") {
+      label.style.display = "";
+      ollamaModels.forEach(el => el.style.display = "none");
+      webllmModels.forEach(el => el.style.display = "");
+
+    } else {
+      label.style.display = "none";
+      ollamaModels.forEach(el => el.style.display = "none");
+      webllmModels.forEach(el => el.style.display = "none");
+    }
+  }
+  // ───────────────────────────────────────────────────────
+  
   // ==========================
   // INPUT AUTO RESIZE
   // ==========================
@@ -1743,41 +1769,67 @@ function openModelSheet() {
     }, 220);
     }
     
-    function syncActiveModel(currentVal) {
+ function syncActiveModel(currentVal) {
     modelSheetOptions.forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.model === currentVal);
+      btn.classList.toggle('active', btn.dataset.model === currentVal);
     });
-    }
-    
-   modelSelector.addEventListener('mousedown', (e) => {
-  if (window.innerWidth <= 768) {
-    e.preventDefault();
-    openModelSheet();
   }
-});
-    closeModelSheetBtn?.addEventListener('click', closeModelSheet);
-    modelSheetBackdrop?.addEventListener('click', closeModelSheet);
-    
-    modelSheetOptions.forEach(btn => {
-    btn.addEventListener('click', () => {
-    const value = btn.dataset.model;
-    const parts = value.split('|');
-    if (parts.length === 2) {
-    currentProvider = parts[0];
-    currentModel = parts[1];
-    } else {
-    currentProvider = 'openai';
-    currentModel = value;
+
+  modelSelector.addEventListener('mousedown', (e) => {
+    if (window.innerWidth <= 768) {
+      e.preventDefault();
+      openModelSheet();
     }
-    localStorage.setItem('chat_provider', currentProvider);
-    localStorage.setItem('chat_model', currentModel);
-    modelSelector.value = value;
-    modelSheetOptions.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    console.log('Mobile model selected:', { currentProvider, currentModel });
-    setTimeout(closeModelSheet, 180);
+  });
+
+  closeModelSheetBtn?.addEventListener('click', closeModelSheet);
+  modelSheetBackdrop?.addEventListener('click', closeModelSheet);
+
+  modelSheetOptions.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const value  = btn.dataset.model;
+      const parts  = value.split('|');
+      const provider = parts[0];
+      const model    = parts[1];
+
+      if (provider === "ollama") {
+        // Switch to Ollama (PC local)
+        LOCAL_MODE      = "ollama";
+        currentProvider = "ollama";
+        currentModel    = model;
+        updateModeIndicator();
+        updateLocalModelVisibility();
+
+      } else if (provider === "webllm") {
+        // Switch WebLLM model - re-init if different model
+        LOCAL_MODE      = "webllm";
+        currentProvider = "webllm";
+        currentModel    = model;
+        initWebLLM(model); // reload with chosen model
+        updateModeIndicator();
+        updateLocalModelVisibility();
+
+      } else {
+        // Cloud model (openai | anthropic | gemini)
+        // Back to cloud if they were on local before
+        LOCAL_MODE      = "worker";
+        currentProvider = provider || "openai";
+        currentModel    = model    || value;
+        updateModeIndicator();
+        updateLocalModelVisibility();
+      }
+
+      localStorage.setItem('chat_provider', currentProvider);
+      localStorage.setItem('chat_model',    currentModel);
+
+      modelSelector.value = value;
+      modelSheetOptions.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      console.log('Model selected:', { LOCAL_MODE, currentProvider, currentModel });
+      setTimeout(closeModelSheet, 180);
     });
-    });
+  });
 
 // ==========================
 // KEYBOARD SHORTCUTS
@@ -1792,6 +1844,9 @@ document.addEventListener("keydown", (e) => {
   (async () => {
     applyTheme();
     syncActiveModel(`${currentProvider}|${currentModel}`);
+
+    LOCAL_MODE = await detectBackend();
+    updateLocalModelVisibility();
     
    // NEW — show login modal if not authenticated
     const authed = await initAuth();
