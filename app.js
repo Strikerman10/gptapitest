@@ -517,8 +517,6 @@ modalConfirm.addEventListener("click", async () => {
   renderMessages();
 });
 
-  // ───────────────────────────────────────────────────────
-  
   // ==========================
   // INPUT AUTO RESIZE
   // ==========================
