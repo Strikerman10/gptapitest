@@ -6,21 +6,21 @@ const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
 let LOCAL_MODE = "worker"; // default - will be updated on load
 
 async function detectBackend() {
-  // Are we on PC with Ollama?
+  // Check mobile FIRST before anything else
+  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+  if (isMobile) return "webllm";
+
+  // Only check Ollama if we are on a desktop/PC
   try {
     const res = await fetch("http://localhost:11434/api/tags", {
       signal: AbortSignal.timeout(1500)
     });
     if (res.ok) return "ollama";
   } catch (e) {
-    // Ollama not available
+    // Ollama not available on this PC
   }
 
-  // Are we on mobile?
-  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-  if (isMobile) return "webllm";
-
-  // Default - use worker as normal
+  // Desktop but no Ollama - use worker
   return "worker";
 }
 
