@@ -1324,10 +1324,6 @@ body.dark-mode .message p {
     background: color-mix(in srgb, var(--color-4) 80%, black 20%);
   }
 
-   [hidden] {
-    display: none !important;
-  }
-   
   .model-icon {
     font-size: 1.4rem;
     flex-shrink: 0;
@@ -1705,19 +1701,4 @@ body.dark-mode .message p {
   outline-offset: 4px;
   background: rgba(74, 158, 255, 0.06);
   border-radius: 8px;
-}
-
-/* Small subtitle under model name in sheet */
-.model-sub {
-  font-size: 0.7rem;
-  opacity: 0.6;
-  display: block;
-  margin-top: 2px;
-}
-
-.model-icon {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-  flex-shrink: 0;
 }
