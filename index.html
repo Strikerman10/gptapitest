@@ -63,6 +63,7 @@ REUSABLE SVG ICON SYMBOLS (hidden)
       </linearGradient>
     </defs>
   </symbol>
+
 </svg>
 
   <!-- ===================== -->
@@ -111,33 +112,23 @@ REUSABLE SVG ICON SYMBOLS (hidden)
       <div class="new-chat-row">
         <button class="new-chat" id="newChatBtn">+ New Chat</button>
 
-<select id="modelSelector" class="model-selector" aria-label="Select model">
-  <option disabled>── OpenAI ──</option>
-  <option value="openai|gpt-5.5-2026-04-23">GPT 5.5</option>
-  <option value="openai|gpt-5.4-2026-03-05">GPT 5.4</option>
-  <option value="openai|gpt-5.3-codex">GPT 5.3 Codex</option>
-  <option value="openai|gpt-5.4-mini-2026-03-17">GPT 5.4 Mini</option>
-
-  <option disabled>── Anthropic ──</option>
-  <option value="anthropic|claude-opus-4-8">Claude Opus 4.8</option>
-  <option value="anthropic|claude-sonnet-4-6">Claude Sonnet 4.6</option>
-  <option value="anthropic|claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
-
-  <option disabled>── Gemini ──</option>
-  <option value="gemini|gemini-3.5-flash">Gemini 3.5 Flash</option>
-  <option value="gemini|gemini-2.5-flash">Gemini 2.5 Flash</option>
-  <option value="gemini|gemini-3.1-flash-lite">Gemini Flash Lite 3.1</option>
-
-<option id="localModelsLabelDesktop" class="local-label" disabled hidden>── Local AI ──</option>
-
-<option class="ollama-model" value="ollama|llama3" hidden>Llama 3 (Ollama)</option>
-<option class="ollama-model" value="ollama|mistral" hidden>Mistral (Ollama)</option>
-<option class="ollama-model" value="ollama|phi3" hidden>Phi 3 (Ollama)</option>
-
-<option class="webllm-model" value="webllm|Llama-3.2-1B-Instruct-q4f32_1-MLC" hidden>📱 Llama 3.2 1B (On-device)</option>
-<option class="webllm-model" value="webllm|Llama-3.2-3B-Instruct-q4f32_1-MLC" hidden>📱 Llama 3.2 3B (On-device)</option>
-<option class="webllm-model" value="webllm|Phi-3.5-mini-instruct-q4f16_1-MLC" hidden>📱 Phi 3.5 Mini (On-device)</option>
-</select>
+        <select id="modelSelector" class="model-selector" aria-label="Select model">
+          <option disabled>── OpenAI ──</option>
+          <option value="openai|gpt-5.5-2026-04-23">GPT 5.5</option>
+          <option value="openai|gpt-5.4-2026-03-05">GPT 5.4</option>
+          <option value="openai|gpt-5.3-codex">GPT 5.3 Codex</option>
+          <option value="openai|gpt-5.4-mini-2026-03-17">GPT 5.4 Mini</option>
+        
+          <option disabled>── Anthropic ──</option>
+          <option value="anthropic|claude-opus-4-8">Claude Opus 4.8</option>
+          <option value="anthropic|claude-sonnet-4-6">Claude Sonnet 4.6</option>
+          <option value="anthropic|claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
+        
+          <option disabled>── Gemini ──</option>
+          <option value="gemini|gemini-3.5-flash">Gemini 3.5 Flash</option>
+          <option value="gemini|gemini-2.5-flash">Gemini 2.5 Flash</option>
+          <option value="gemini|gemini-3.1-flash-lite">Gemini Flash Lite 3.1</option>
+        </select>
       </div>
 
       <div class="chat-list" id="chatList" aria-live="polite"></div>
@@ -444,81 +435,7 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
       </span>
       <span class="model-check">✓</span>
     </button>
-    
-<!-- ==========================
-    LOCAL AI MODELS
-    Only shown when LOCAL_MODE is ollama or webllm
-    Hidden in cloud mode
-    ========================== -->
-    <p id="localModelsLabelMobile" class="model-group-label" hidden>Local AI</p>
 
-    <!-- Ollama models (PC) -->
-    <button class="model-sheet-option local-model ollama-model" 
-            data-model="ollama|llama3" 
-            hidden>
-      <span class="model-icon"></span>
-      <span class="model-info">
-        <span class="model-name">Llama 3</span>
-        <span class="model-sub">Ollama · PC only</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option local-model ollama-model" 
-            data-model="ollama|mistral" 
-            hidden>
-      <span class="model-icon"></span>
-      <span class="model-info">
-        <span class="model-name">Mistral</span>
-        <span class="model-sub">Ollama · PC only</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option local-model ollama-model" 
-            data-model="ollama|phi3" 
-            hidden>
-      <span class="model-icon"></span>
-      <span class="model-info">
-        <span class="model-name">Phi 3</span>
-        <span class="model-sub">Ollama · PC only</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <!-- WebLLM models (Phone) -->
-    <button class="model-sheet-option local-model webllm-model" 
-            data-model="webllm|Llama-3.2-1B-Instruct-q4f32_1-MLC" 
-            hidden>
-      <span class="model-icon">📱</span>
-      <span class="model-info">
-        <span class="model-name">Llama 3.2 1B</span>
-        <span class="model-sub">On-device · Fast · 1GB</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option local-model webllm-model" 
-            data-model="webllm|Llama-3.2-3B-Instruct-q4f32_1-MLC" 
-            hidden>
-      <span class="model-icon">📱</span>
-      <span class="model-info">
-        <span class="model-name">Llama 3.2 3B</span>
-        <span class="model-sub">On-device · Better · 2GB</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
-    <button class="model-sheet-option local-model webllm-model" 
-            data-model="webllm|Phi-3.5-mini-instruct-q4f16_1-MLC" 
-            hidden>
-      <span class="model-icon">📱</span>
-      <span class="model-info">
-        <span class="model-name">Phi 3.5 Mini</span>
-        <span class="model-sub">On-device · Smart · 2GB</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
   </div>
 </section>
     
