@@ -3,72 +3,6 @@
 // ==========================
 const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
 
-let LOCAL_MODE = "worker"; // default - will be updated on load
-
-async function detectBackend() {
-  // Check mobile FIRST before anything else
-  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-  if (isMobile) return "webllm";
-
-  // Only check Ollama if we are on a desktop/PC
-  try {
-    const res = await fetch("http://localhost:11434/api/tags", {
-      signal: AbortSignal.timeout(1500)
-    });
-    if (res.ok) return "ollama";
-  } catch (e) {
-    // Ollama not available on this PC
-  }
-
-  // Desktop but no Ollama - use worker
-  return "worker";
-}
-
-async function populateOllamaModels() {
-  let data;
-  try {
-    const res = await fetch("http://localhost:11434/api/tags");
-    data = await res.json();
-  } catch (e) {
-    console.warn("Could not load Ollama models:", e.message);
-    return;
-  }
-
-  // ---- DESKTOP <select> ----
-  const select = document.getElementById("modelSelector");
-  select.querySelectorAll(".ollama-model").forEach(el => el.remove());
-
-  data.models.forEach(m => {
-    const opt = document.createElement("option");
-    opt.className = "ollama-model";
-    opt.value = "ollama|" + m.name;
-    opt.textContent = " " + m.name + " (Ollama)";
-    opt.hidden = (LOCAL_MODE !== "ollama");
-    select.appendChild(opt);
-  });
-
-  // ---- MOBILE .model-sheet-list ----
-  const sheet = document.querySelector(".model-sheet-list");
-  if (sheet) {
-    sheet.querySelectorAll(".ollama-model").forEach(el => el.remove());
-
-    data.models.forEach(m => {
-      const btn = document.createElement("button");
-      btn.className = "model-sheet-option local-model ollama-model";
-      btn.dataset.model = "ollama|" + m.name;
-      btn.hidden = (LOCAL_MODE !== "ollama");
-      btn.innerHTML =
-        `<span class="model-icon">💻</span>
-         <span class="model-info">
-           <span class="model-name">${m.name}</span>
-           <span class="model-sub">Ollama · PC only</span>
-         </span>
-         <span class="model-check">✓</span>`;
-      sheet.appendChild(btn);
-    });
-  }
-}
-
 // AUTH STATE
 // We no longer use a plain prompt() for userId.
 // Instead we store a proper auth token and userId from login.
@@ -81,143 +15,22 @@ let currentProvider = localStorage.getItem("chat_provider") || "openai";
 let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.4-2026-03-05";
 
 // ==========================
-// WebLLM Setup (Phone Mode)
-// ==========================
-
-// Small but capable models that work on phones
-const WEBLLM_MODELS = [
-  { id: "Llama-3.2-1B-Instruct-q4f32_1-MLC", label: "Llama 3.2 1B (Fast, 1GB)" },
-  { id: "Llama-3.2-3B-Instruct-q4f32_1-MLC", label: "Llama 3.2 3B (Better, 2GB)" },
-  { id: "Phi-3.5-mini-instruct-q4f16_1-MLC",  label: "Phi 3.5 Mini (Smart, 2GB)" },
-];
-
-// Default model for WebLLM
-const WEBLLM_DEFAULT = WEBLLM_MODELS[0].id;
-
-async function initWebLLM(modelId = WEBLLM_DEFAULT) {
-  try {
-    const { CreateMLCEngine } = await import("https://esm.run/@mlc-ai/web-llm");
-
-    updateModeIndicator("⏳ Downloading AI model... (first time only)");
-
-    window.webllmEngine = await CreateMLCEngine(modelId, {
-      initProgressCallback: (progress) => {
-        const pct = Math.round((progress.progress || 0) * 100);
-        updateModeIndicator(`⏳ Loading model: ${pct}%`);
-        console.log("WebLLM loading:", progress.text);
-      }
-    });
-
-    updateModeIndicator("📱 Local AI ready (WebLLM)");
-    console.log("WebLLM ready with model:", modelId);
-
-  } catch (e) {
-    console.error("WebLLM init failed:", e);
-
-    // Only react if user is actually on webllm right now
-    if (currentProvider === "webllm") {
-      // choose your fallback target:
-      currentProvider = "openai";
-      currentModel = "gpt-5.4-2026-03-05";
-
-      localStorage.setItem("chat_provider", currentProvider);
-      localStorage.setItem("chat_model", currentModel);
-
-      updateModeIndicator("⚠️ WebLLM failed — switched to cloud (GPT-5.4)");
-    } else {
-      updateModeIndicator("⚠️ WebLLM init failed");
-    }
-  }
-}
-
-// ==========================
-// GET SELECTED MODEL NAME
-// Works for both desktop dropdown and mobile sheet
-// ==========================
-function getSelectedModelName() {
-  // Try mobile sheet first (has data-model attribute with active class)
-  const activeSheet = document.querySelector('.model-sheet-option.active');
-  if (activeSheet) {
-    return activeSheet.querySelector('.model-name')?.textContent?.trim() || currentModel;
-  }
-  // Fall back to desktop dropdown
-  if (modelSelector && modelSelector.selectedIndex >= 0) {
-    return modelSelector.options[modelSelector.selectedIndex].text;
-  }
-  // Last resort - return the raw model string
-  return currentModel;
-}
-
-// ==========================
 // DOM READY
 // ==========================
-document.addEventListener("DOMContentLoaded", async () => {   // ← add async here
+document.addEventListener("DOMContentLoaded", () => {
 
   // ==========================
   // DOM ELEMENT REFERENCES
   // ==========================
-  const chatListEl       = document.getElementById("chatList");
-  const messagesEl       = document.getElementById("messages");
-  const chatTitleEl      = document.getElementById("chatTitle");
-  const inputEl          = document.getElementById("input");
+  const chatListEl    = document.getElementById("chatList");
+  const messagesEl    = document.getElementById("messages");
+  const chatTitleEl   = document.getElementById("chatTitle");
+  const inputEl       = document.getElementById("input");
   const themeToggleBtn   = document.getElementById("toggleThemeBtn");
   const sidebarEl        = document.querySelector(".sidebar");
   const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
   const modelSelector    = document.getElementById("modelSelector");
-  const logoutBtn        = document.getElementById("logoutBtn");
-
-  // ==========================
-  // Mode Indicator
-  // ==========================
-  function updateModeIndicator(customText = null) {
-    const el = document.getElementById("modeIndicator");
-    if (!el) return;
-
-    if (customText) {
-      el.textContent = customText;
-      return;
-    }
-
-    const labels = {
-      ollama: "💻 Local AI (Ollama)",
-      webllm: "📱 Local AI (WebLLM)",
-      worker: "☁️ Cloud AI"
-    };
-    el.textContent = labels[LOCAL_MODE] || "☁️ Cloud AI";
-  }
-
-  // ── Model Sheet elements ───────────────────────────────
-  const modelSheet         = document.getElementById('modelSheet');
-  const modelSheetBackdrop = document.getElementById('modelSheetBackdrop');
-  const closeModelSheetBtn = document.getElementById('closeModelSheetBtn');
-  const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
-
-function updateLocalModelVisibility() {
-  const labelDesktop = document.getElementById("localModelsLabelDesktop");
-  const labelMobile  = document.getElementById("localModelsLabelMobile");
-  const labels       = [labelDesktop, labelMobile].filter(Boolean);
-
-  const ollamaModels = document.querySelectorAll(".ollama-model");
-  const webllmModels = document.querySelectorAll(".webllm-model");
-
-  if (LOCAL_MODE === "ollama") {
-    labels.forEach(l => l.hidden = false);
-    ollamaModels.forEach(el => el.hidden = false);
-    webllmModels.forEach(el => el.hidden = true);
-  } else if (LOCAL_MODE === "webllm") {
-    labels.forEach(l => l.hidden = false);
-    ollamaModels.forEach(el => el.hidden = true);
-    webllmModels.forEach(el => el.hidden = false);
-  } else {
-    labels.forEach(l => l.hidden = true);
-    ollamaModels.forEach(el => el.hidden = true);
-    webllmModels.forEach(el => el.hidden = true);
-  }
-
-  updateModeIndicator();
-  console.log("LOCAL_MODE:", LOCAL_MODE, "ollama count:", ollamaModels.length);
-}
-  // ────────────────────────────────────────────────────────
+  const logoutBtn     = document.getElementById("logoutBtn");
 
 // ============================
 // FILE ATTACHMENTS
@@ -311,9 +124,6 @@ async function handleFileSelect(file) {
   }
 }
 
-// ==========================
-// UPLOAD FILES
-// ==========================
 async function uploadFile(file) {
   const form = new FormData();
   form.append("file", file);
@@ -589,6 +399,13 @@ modalConfirm.addEventListener("click", async () => {
   renderChatList();
   renderMessages();
 });
+  
+  // ── NEW: Model Sheet elements ──────────────────────────
+  const modelSheet         = document.getElementById('modelSheet');
+  const modelSheetBackdrop = document.getElementById('modelSheetBackdrop');
+  const closeModelSheetBtn = document.getElementById('closeModelSheetBtn');
+  const modelSheetOptions  = document.querySelectorAll('.model-sheet-option');
+  // ───────────────────────────────────────────────────────
 
   // ==========================
   // INPUT AUTO RESIZE
@@ -684,25 +501,16 @@ let lastScrollTop = 0; // 👈 Add it here
       .replace(/>/g, "&gt;");
   }
 
- function extractAnswer(data) {
-  return (
-    // ── Your existing formats (Worker responses) ──
-    data?.output_text ||
-    data?.output?.[0]?.content?.[0]?.text ||
-    data?.content?.[0]?.text ||
-
-    // ── Ollama format ──
-    data?.message?.content ||
-
-    // ── WebLLM / OpenAI-compatible format ──
-    data?.choices?.[0]?.message?.content ||
-
-    // ── Error fallbacks ──
-    data?.detail ||
-    data?.error ||
-    "No response"
-  );
-}
+  function extractAnswer(data) {
+    return (
+      data?.output_text ||
+      data?.output?.[0]?.content?.[0]?.text ||
+      data?.content?.[0]?.text ||
+      data?.detail ||
+      data?.error ||
+      "No response"
+    );
+  }
   
 function renderMessageContent(content) {
   const FENCE = String.fromCharCode(96, 96, 96);
@@ -930,9 +738,6 @@ function renderMessageContent(content) {
     localStorage.setItem("mode", currentMode);
   }
 
-// ==========================
-// LOAD CHATS
-// ==========================
  async function loadChats() {
   try {
     const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
@@ -1014,9 +819,6 @@ function renderMessageContent(content) {
     return `${hours}:${minutes}\n${day}/${month}/${year}`;
   }
 
-// ==========================
-// LOAD CHATS FROM WORKER
-// ==========================
     async function loadChatsFromWorker() {
       try {
         const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
@@ -1345,7 +1147,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
-      model: getSelectedModelName()
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
     // Replace at the SAME idx position on error too
@@ -1353,7 +1155,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       role: "assistant",
       content: "Error: " + e.message,
       time: formatDateTime(),
-      model: getSelectedModelName()
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   }
 
@@ -1393,28 +1195,22 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// ==========================
-// SEND MESSAGES
-// ========================== 
 async function sendMessage() {
   const text = inputEl.value.trim();
 
+  // Allow send if there's text OR at least one fully-uploaded attachment
   const readyAttachments = pendingAttachments.filter(a => !a.uploading && a.r2Key);
   if (!text && readyAttachments.length === 0) return;
 
+  // Block send if uploads are still in progress
   if (pendingAttachments.some(a => a.uploading)) {
     alert("Please wait for attachments to finish uploading.");
     return;
   }
 
+  // Block attachments on Gemini (worker rejects them anyway)
   if (readyAttachments.length > 0 && currentProvider === "gemini") {
     alert("Gemini doesn't support file/image attachments. Please switch to OpenAI or Anthropic, or remove the attachment.");
-    return;
-  }
-
-  // Block attachments in local mode (Ollama/WebLLM can't access R2 files)
-  if (readyAttachments.length > 0 && LOCAL_MODE !== "worker") {
-    alert("File attachments are only supported in cloud mode. Please remove the attachment.");
     return;
   }
 
@@ -1425,9 +1221,10 @@ async function sendMessage() {
     role: "user",
     content: text,
     time: formatDateTime(),
-    model: getSelectedModelName()
+    model: modelSelector.options[modelSelector.selectedIndex].text
   };
 
+  // Attach uploaded files (if any)
   if (readyAttachments.length > 0) {
     userMessage.attachments = readyAttachments.map(a => ({
       r2Key: a.r2Key,
@@ -1438,112 +1235,100 @@ async function sendMessage() {
 
   chat.messages.push(userMessage);
 
-  if (chat.title === "New Chat" || !chat.title) {
-    if (text) {
-      const firstLine = text.split(/\r?\n/)[0];
-      chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
-    } else if (readyAttachments.length > 0) {
-      chat.title = `📎 ${readyAttachments[0].filename}`;
-    }
+ if (chat.title === "New Chat" || !chat.title) {
+  if (text) {
+    const firstLine = text.split(/\r?\n/)[0];
+    chat.title = firstLine.length > 40 ? firstLine.slice(0, 40) + "…" : firstLine;
+  } else if (readyAttachments.length > 0) {
+    chat.title = `📎 ${readyAttachments[0].filename}`;  // fallback title
   }
-
+}
   chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
   inputEl.value = "";
 
+  // Clear attachments now that they're attached to the message
   pendingAttachments.forEach(a => { if (a.previewUrl) URL.revokeObjectURL(a.previewUrl); });
   pendingAttachments = [];
   renderChips();
+
   autoResize();
   saveChats();
-  saveChatsToWorker(); // always save history to Cloudflare ✅
+  saveChatsToWorker();
 
-  // ── Build clean message history (same as before) ──
-  const cleanMessages = chat.messages
-    .filter(m => m.content !== "__TYPING__")
-    .slice(-10)
-    .reduce((acc, msg) => {
-      if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
-        acc[acc.length - 1] = msg;
-      } else {
-        acc.push(msg);
-      }
-      return acc;
-    }, []);
-
-  if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
-    cleanMessages.pop();
-  }
-
-  const provider = String(currentProvider || "").trim().toLowerCase();
-  const model = String(currentModel || "").trim();
-  console.log("ROUTE DEBUG:", { currentProvider, provider, currentModel, model, LOCAL_MODE });
-  
   try {
-    let data = {};
+    const cleanMessages = chat.messages
+      .filter(m => m.content !== "__TYPING__")
+      .slice(-10)
+      .reduce((acc, msg) => {
+        // Avoid two consecutive messages from the same role
+        if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
+          acc[acc.length - 1] = msg; // replace with latest
+        } else {
+          acc.push(msg);
+        }
+        return acc;
+      }, []);
+    
+    // Final safety check - Anthropic requires last message to be user
+    if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
+      cleanMessages.pop();
+    }
 
-// ════════════════════════════════════════
-//  ROUTE TO CORRECT BACKEND
-// ════════════════════════════════════════
-if (provider === "ollama") {
-  const res = await fetch("http://localhost:11434/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model,
-      messages: cleanMessages.map(m => ({ role: m.role, content: m.content })),
-      stream: false
-    })
-  });
-  if (!res.ok) throw new Error(`Ollama returned ${res.status}: ${await res.text()}`);
-  data = await res.json();
-
-} else if (provider === "webllm") {
-  if (!window.webllmEngine) await initWebLLM(model);
-  if (!window.webllmEngine) throw new Error("WebLLM not ready yet");
-
-  data = await window.webllmEngine.chat.completions.create({
-    messages: cleanMessages.map(m => ({ role: m.role, content: m.content })),
-    stream: false
-  });
-
-} else {
-  const res = await fetch(`${WORKER_URL}/chat`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${authToken}`
-    },
-    body: JSON.stringify({
-      provider,   // use normalized provider
-      model,      // use normalized model
+    console.log("About to send:", {
+      provider: currentProvider,
+      model: modelSelector.options[modelSelector.selectedIndex].text,
       messages: cleanMessages
-    }),
-  });
+    });
 
-  if (res.status === 401) { await handleUnauthorized(); return; }
-  const rawText = await res.text();
-  try { data = rawText ? JSON.parse(rawText) : {}; }
-  catch { throw new Error(`Invalid JSON from worker: ${rawText}`); }
+    const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`
+      },
+      body: JSON.stringify({
+        provider: currentProvider,
+        model: currentModel,
+        messages: cleanMessages,
+      }),
+    });
 
-  if (!res.ok) throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
-}
-  // ── Same for all backends ──
+    if (res.status === 401) { await handleUnauthorized(); return; }
+    
+    console.log("HTTP status:", res.status);
+
+    const rawText = await res.text();
+    console.log("Worker raw response:", rawText);
+
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (jsonErr) {
+      throw new Error(`Invalid JSON from worker: ${rawText}`);
+    }
+
+    if (res.status === 401) { await handleUnauthorized(); return; }
+    if (!res.ok) {
+      throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
+    }
+
     const answer = extractAnswer(data);
-    chat.messages[chat.messages.length - 1] = {
+
+      chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
-      model: getSelectedModelName()
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
-
   } catch (e) {
     console.error("sendMessage failed:", e);
+
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: "Error: " + e.message,
       time: formatDateTime(),
-      model: getSelectedModelName()
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   }
 
@@ -1552,15 +1337,12 @@ if (provider === "ollama") {
   renderMessages();
   renderChatList();
 }
-    
-// ==========================
-// RETRY SEND MESSAGES
-// ==========================
+
 async function sendMessageRetry() {
   if (currentIndex === null) createNewChat();
   const chat = chats[currentIndex];
 
-  // Check attachments vs Gemini
+  // Check if any recent message has attachments + Gemini is selected
   const hasAttachments = chat.messages
     .slice(-10)
     .some(m => Array.isArray(m.attachments) && m.attachments.length > 0);
@@ -1570,107 +1352,87 @@ async function sendMessageRetry() {
     return;
   }
 
-  // Block retry with attachments in local mode
-  if (hasAttachments && LOCAL_MODE !== "worker") {
-    alert("Retrying messages with attachments is only supported in cloud mode.");
-    return;
-  }
-
   chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
   saveChats();
   saveChatsToWorker();
 
-  // ── Build clean message history (same as before) ──
-  const cleanMessages = chat.messages
-    .filter(m => m.content !== "__TYPING__")
-    .slice(-10)
-    .reduce((acc, msg) => {
-      if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
-        acc[acc.length - 1] = msg;
-      } else {
-        acc.push(msg);
-      }
-      return acc;
-    }, []);
-
-  if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
-    cleanMessages.pop();
-  }
-  
-const provider = String(currentProvider || "").trim().toLowerCase();
-const model = String(currentModel || "").trim();
-console.log("RETRY ROUTE DEBUG:", { currentProvider, provider, currentModel, model, LOCAL_MODE });
-  
   try {
-    let data = {};
-
-    // ════════════════════════════════════════
-    //  ROUTE TO CORRECT BACKEND
-    // ════════════════════════════════════════
-    if (provider === "ollama") {
-      const res = await fetch("http://localhost:11434/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model,
-          messages: cleanMessages.map(m => ({ role: m.role, content: m.content })),
-          stream: false
-        })
-      });
-      if (!res.ok) throw new Error(`Ollama returned ${res.status}: ${await res.text()}`);
-      data = await res.json();
+     const cleanMessages = chat.messages
+      .filter(m => m.content !== "__TYPING__")
+      .slice(-10)
+      .reduce((acc, msg) => {
+        // Avoid two consecutive messages from the same role
+        if (acc.length > 0 && acc[acc.length - 1].role === msg.role) {
+          acc[acc.length - 1] = msg; // replace with latest
+        } else {
+          acc.push(msg);
+        }
+        return acc;
+      }, []);
     
-    } else if (provider === "webllm") {
-      if (!window.webllmEngine) await initWebLLM(model);
-      if (!window.webllmEngine) throw new Error("WebLLM not ready yet");
-    
-      data = await window.webllmEngine.chat.completions.create({
-        messages: cleanMessages.map(m => ({ role: m.role, content: m.content })),
-        stream: false
-      });
-    
-    } else {
-      const res = await fetch(`${WORKER_URL}/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${authToken}`
-        },
-        body: JSON.stringify({
-          provider,
-          model,
-          messages: cleanMessages.map(m => ({
-            role: m.role,
-            content: m.content,
-            ...(m.attachments ? { attachments: m.attachments } : {})
-          })),
-        }),
-      });
-    
-      if (res.status === 401) { await handleUnauthorized(); return; }
-      const rawText = await res.text();
-      try { data = rawText ? JSON.parse(rawText) : {}; }
-      catch { throw new Error(`Invalid JSON from worker: ${rawText}`); }
-      if (!res.ok) throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
+    // Final safety check - Anthropic requires last message to be user
+    if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
+      cleanMessages.pop();
     }
 
-    // ── Same for all backends ──
+    console.log("Retry send:", {
+      provider: currentProvider,
+      model: currentModel,
+      messages: cleanMessages
+    });
+
+       const res = await fetch(`${WORKER_URL}/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`
+      }, 
+      body: JSON.stringify({
+        provider: currentProvider,
+        model: currentModel,
+        messages: cleanMessages.map(m => ({
+          role: m.role,
+          content: m.content,
+          ...(m.attachments ? { attachments: m.attachments } : {})
+        })),
+      }),
+  });
+
+    if (res.status === 401) { await handleUnauthorized(); return; }
+    
+    console.log("Retry status:", res.status);
+
+    const rawText = await res.text();
+    console.log("Retry raw response:", rawText);
+
+    let data = {};
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch {
+      throw new Error(`Invalid JSON from worker: ${rawText}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.detail || data.error || `Worker returned ${res.status}`);
+    }
+
     const answer = extractAnswer(data);
-    chat.messages[chat.messages.length - 1] = {
+
+        chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: answer,
       time: formatDateTime(),
-      model: getSelectedModelName()
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
-
   } catch (e) {
     console.error("sendMessageRetry failed:", e);
+
     chat.messages[chat.messages.length - 1] = {
       role: "assistant",
       content: "Error: " + e.message,
       time: formatDateTime(),
-      model: getSelectedModelName()
+      model: modelSelector.options[modelSelector.selectedIndex].text
     };
   }
 
@@ -1696,61 +1458,28 @@ console.log("RETRY ROUTE DEBUG:", { currentProvider, provider, currentModel, mod
 // ==========================
 modelSelector.value = `${currentProvider}|${currentModel}`;
 
-function normalizeProvider(p) {
-  return (p || "").trim().toLowerCase();
-}
+modelSelector.addEventListener("change", (e) => {
+  const value = e.target.value || "";
+  const parts = value.split("|");
 
-function modeFromProvider(provider) {
-  const p = normalizeProvider(provider);
-  if (p === "ollama") return "ollama";
-  if (p === "webllm") return "webllm";
-  return "worker";
-}
-
-function parseModelSelection(value) {
-  const raw = (value || "").trim();
-  const sep = raw.indexOf("|");
-
-  if (sep >= 0) {
-    const provider = normalizeProvider(raw.slice(0, sep));
-    const model = raw.slice(sep + 1).trim(); // keeps model case
-    return { provider, model };
+  if (parts.length === 2) {
+    currentProvider = parts[0];
+    currentModel = parts[1];
+  } else {
+    currentProvider = "openai";
+    currentModel = value || "gpt-5.4-2026-03-05";
   }
-
-  // explicit fallback if option is just model name
-  return {
-    provider: "openai",
-    model: raw || "gpt-5.4-2026-03-05"
-  };
-}
-
-async function applyModelSelection(provider, model) {
-  currentProvider = normalizeProvider(provider);
-  currentModel = (model || "").trim();
-  LOCAL_MODE = modeFromProvider(currentProvider);
 
   localStorage.setItem("chat_provider", currentProvider);
   localStorage.setItem("chat_model", currentModel);
 
-  syncActiveModel(`${currentProvider}|${currentModel}`);
-  updateLocalModelVisibility();
-
-  if (currentProvider === "webllm" && !window.webllmEngine) {
-    await initWebLLM(currentModel);
-  }
-
   console.log("Model selection changed:", {
     currentProvider,
-    currentModel,
-    LOCAL_MODE
+    currentModel
   });
-}
-
-modelSelector.addEventListener("change", async (e) => {
-  const { provider, model } = parseModelSelection(e.target.value);
-  await applyModelSelection(provider, model);
+  syncActiveModel(e.target.value);
 });
-  
+
 // ==========================
 // THEME - LIGHT/DARK TOGGLE BUTTON
 // ==========================
@@ -1829,67 +1558,41 @@ function openModelSheet() {
     }, 220);
     }
     
- function syncActiveModel(currentVal) {
+    function syncActiveModel(currentVal) {
     modelSheetOptions.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.model === currentVal);
+    btn.classList.toggle('active', btn.dataset.model === currentVal);
     });
-  }
-
-  modelSelector.addEventListener('mousedown', (e) => {
-    if (window.innerWidth <= 768) {
-      e.preventDefault();
-      openModelSheet();
     }
-  });
-
-  closeModelSheetBtn?.addEventListener('click', closeModelSheet);
-  modelSheetBackdrop?.addEventListener('click', closeModelSheet);
-
-  modelSheetOptions.forEach(btn => {
+    
+   modelSelector.addEventListener('mousedown', (e) => {
+  if (window.innerWidth <= 768) {
+    e.preventDefault();
+    openModelSheet();
+  }
+});
+    closeModelSheetBtn?.addEventListener('click', closeModelSheet);
+    modelSheetBackdrop?.addEventListener('click', closeModelSheet);
+    
+    modelSheetOptions.forEach(btn => {
     btn.addEventListener('click', () => {
-      const value  = btn.dataset.model;
-      const parts  = value.split('|');
-      const provider = parts[0];
-      const model    = parts[1];
-
-      if (provider === "ollama") {
-        // Switch to Ollama (PC local)
-        LOCAL_MODE      = "ollama";
-        currentProvider = "ollama";
-        currentModel    = model;
-        updateModeIndicator();
-        updateLocalModelVisibility();
-
-      } else if (provider === "webllm") {
-        // Switch WebLLM model - re-init if different model
-        LOCAL_MODE      = "webllm";
-        currentProvider = "webllm";
-        currentModel    = model;
-        initWebLLM(model); // reload with chosen model
-        updateModeIndicator();
-        updateLocalModelVisibility();
-
-      } else {
-        // Cloud model (openai | anthropic | gemini)
-        // Back to cloud if they were on local before
-        LOCAL_MODE      = "worker";
-        currentProvider = provider || "openai";
-        currentModel    = model    || value;
-        updateModeIndicator();
-        updateLocalModelVisibility();
-      }
-
-      localStorage.setItem('chat_provider', currentProvider);
-      localStorage.setItem('chat_model',    currentModel);
-
-      modelSelector.value = value;
-      modelSheetOptions.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      console.log('Model selected:', { LOCAL_MODE, currentProvider, currentModel });
-      setTimeout(closeModelSheet, 180);
+    const value = btn.dataset.model;
+    const parts = value.split('|');
+    if (parts.length === 2) {
+    currentProvider = parts[0];
+    currentModel = parts[1];
+    } else {
+    currentProvider = 'openai';
+    currentModel = value;
+    }
+    localStorage.setItem('chat_provider', currentProvider);
+    localStorage.setItem('chat_model', currentModel);
+    modelSelector.value = value;
+    modelSheetOptions.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    console.log('Mobile model selected:', { currentProvider, currentModel });
+    setTimeout(closeModelSheet, 180);
     });
-  });
+    });
 
 // ==========================
 // KEYBOARD SHORTCUTS
@@ -1897,60 +1600,54 @@ function openModelSheet() {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && paletteSheet.classList.contains("show")) {
     closePaletteSheet();
-  }
-  if (modelSheet && !modelSheet.classList.contains("hidden")) {
-    closeModelSheet();
+  if (modelSheet && !modelSheet.classList.contains("hidden")) closeModelSheet();
   }
 });
 
-(async () => {
-  applyTheme();
-  syncActiveModel(`${currentProvider}|${currentModel}`);
+  (async () => {
+    applyTheme();
+    syncActiveModel(`${currentProvider}|${currentModel}`);
+    
+   // NEW — show login modal if not authenticated
+    const authed = await initAuth();
+    if (!authed) return;
 
-  LOCAL_MODE = await detectBackend();
-  if (LOCAL_MODE === "ollama") {
-    await populateOllamaModels();
-  }
-  updateLocalModelVisibility();
-
-  const authed = await initAuth();
-  if (!authed) return;
-
-  await new Promise(r => setTimeout(r, 150));
-
-  let gotFromWorker = false;
-  try {
-    const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
-      headers: { "Authorization": `Bearer ${authToken}` }
-    });
-
-    if (res.status === 401) { await handleUnauthorized(); return; }
-    if (res.ok) {
-      const workerChats = await res.json();
-      if (Array.isArray(workerChats) && workerChats.length) {
-        chats = workerChats;
-        const savedIndex = Number(localStorage.getItem("secure_chat_index"));
-        if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < chats.length) {
-          const [activeChat] = chats.splice(savedIndex, 1);
-          chats.unshift(activeChat);
-          currentIndex = 0;
-        } else {
-          currentIndex = 0;
+    await new Promise(r => setTimeout(r, 150)); // ← small breathing room
+    
+    let gotFromWorker = false;
+    try {
+      const res = await fetch(`${WORKER_URL}/load?userId=${encodeURIComponent(userId)}`, {
+        headers: {
+          "Authorization": `Bearer ${authToken}`
         }
-        saveChats();
-        gotFromWorker = true;
+      });
+      
+      if (res.status === 401) { await handleUnauthorized(); return; }
+      if (res.ok) {
+        const workerChats = await res.json();
+        if (Array.isArray(workerChats) && workerChats.length) {
+          chats = workerChats;
+          const savedIndex = Number(localStorage.getItem("secure_chat_index"));
+          if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < chats.length) {
+            const [activeChat] = chats.splice(savedIndex, 1);
+            chats.unshift(activeChat);
+            currentIndex = 0;
+          } else {
+            currentIndex = 0;
+          }
+          saveChats();
+          gotFromWorker = true;
+        }
       }
+    } catch (e) {
+      console.warn("Could not load from worker:", e);
     }
-  } catch (e) {
-    console.warn("Could not load from worker:", e);
-  }
 
-  if (!gotFromWorker) {
-    await loadChats();
-  }
+    if (!gotFromWorker) {
+      await loadChats();
+    }
 
-  renderChatList();
-  renderMessages();
-})(); // closes IIFE
-
-});   // ✅ closes document.addEventListener("DOMContentLoaded", async () => { ... })
+    renderChatList();
+    renderMessages();
+  })();
+});
