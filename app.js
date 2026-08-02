@@ -634,13 +634,13 @@ function renderMessageContent(content) {
 // ==========================
   const palettes = {
     Green: {
-      "--color-1": "#94e8b4",
-      "--color-2": "#72bda3",
-      "--color-3": "#5e8c61",
-      "--color-4": "#4e6151",
-      "--color-5": "#3b322c",
-      "--color-6": "#800000",
-      "--color-7": "#f30000"
+      "--color-1": "#94e8b4", //message user colour
+      "--color-2": "#72bda3", //message assistant colour
+      "--color-3": "#5e8c61", //Banner
+      "--color-4": "#4e6151", //I think this is the gradient to message user
+      "--color-5": "#3b322c", //I think this is the gradient to message assistant
+      "--color-6": "#800000", //Button colour
+      "--color-7": "#f30000" //hover over button colour
     },
     Blue: {
       "--color-1": "#6da5f8",
