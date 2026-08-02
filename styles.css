@@ -1800,6 +1800,13 @@ body.dark-mode .message p {
 /* Base button/icon color follows theme text */
 .footer-btn,
 #logoutBtn {
-  color: var(--alttext);
+  color: ~fff;
   background: var(--color-6);   /* ✅ added */
+}
+
+.footer-btn:hover,
+#logoutBtn:hover {
+  background: var(--color-7);   /* ✅ changed from var(--action) */
+  color: #fff;
+  transform: translateY(-2px);
 }
