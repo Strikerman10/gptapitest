@@ -1800,6 +1800,6 @@ body.dark-mode .message p {
 /* Base button/icon color follows theme text */
 .footer-btn,
 #logoutBtn {
-  color: var(--text);
+  color: var(--alttext);
   background: var(--color-6);   /* ✅ added */
 }
