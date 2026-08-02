@@ -31,7 +31,7 @@
 <br>`Line 584` | [Render Chat List](./app.js#L584)
 <br>`Line 651` | [Render Messages](./app.js#L651)
 <br>`Line 742` | [Reload Button](./app.js#L742)
-<br>`Line 1175` | [Copy Code Button](./app.js#L810)
+<br>`Line 1175` | [Copy Code Button](./app.js#L1175)
 <br>`Line 827` | [Send Message](./app.js#L827)
 <br>`Line 868` | [Sync Active Model](./app.js#L868)
 <br>`Line 874` | [Model Selector Mousedown](./app.js#L874)
