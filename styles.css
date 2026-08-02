@@ -1711,7 +1711,7 @@ body.dark-mode .message p {
   margin-top:auto;
   border-top:1px solid var(--border);
   padding:1.25rem 1rem;
-  background:var(--surface-2);
+  background:var(--ring);
 
   display:flex;
   align-items:center;
