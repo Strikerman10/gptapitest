@@ -421,13 +421,6 @@ modalConfirm.addEventListener("click", async () => {
   backdropEl.className = "sidebar-backdrop";
   document.body.appendChild(backdropEl);
 
-  const paletteBtn     = document.getElementById("themeBtn");
-  const paletteSheet   = document.getElementById("paletteSheet");
-  const sheetBackdrop  = document.getElementById("sheetBackdrop");
-  const closeSheetBtn  = document.getElementById("closeSheetBtn");
-  const paletteOptions = document.querySelectorAll(".sheet-option");
-  console.log("buttons found:", paletteOptions.length);
-
   const scrollTopBtn = document.getElementById("scrollTopBtn");
   const scrollBottomBtn = document.getElementById("scrollBottomBtn");
   const inputArea    = document.querySelector(".input-area");
@@ -1524,15 +1517,11 @@ function closePaletteSheet() {
   }, 220);
 }
 
-paletteBtn.addEventListener("click", openPaletteSheet);
-closeSheetBtn.addEventListener("click", closePaletteSheet);
-sheetBackdrop.addEventListener("click", closePaletteSheet);
-
-paletteOptions.forEach(btn => {
+// Sidebar footer palette buttons
+document.querySelectorAll(".palette-option").forEach(btn => {
   btn.addEventListener("click", () => {
-    currentPalette = btn.dataset.theme; // Green/Blue/Purple/Red/Teal
+    currentPalette = btn.dataset.palette; // Blue/Purple/Green/etc
     applyTheme();
-    closePaletteSheet();
   });
 });
 
@@ -1599,9 +1588,8 @@ function openModelSheet() {
 // KEYBOARD SHORTCUTS
 // ==========================
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && paletteSheet.classList.contains("show")) {
-    closePaletteSheet();
-  if (modelSheet && !modelSheet.classList.contains("hidden")) closeModelSheet();
+  if (e.key === "Escape") {
+    if (modelSheet && !modelSheet.classList.contains("hidden")) closeModelSheet();
   }
 });
 
