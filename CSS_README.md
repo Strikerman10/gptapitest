@@ -1,5 +1,5 @@
 OVERVIEW
-<br>`Line 1 ` | [Reset & Base](./style.css#L1)
+<br>`Line 1 ` | [Reset & Base](./styles.css#L1)
 <br>`Line 16 ` | [Theme Variables & Palette definitions](./style.css#L16)
 <br>`Line 51 ` | [Dark Mode Variable overrides](./style.css#L51)
 <br>`Line 87 ` | [Layout & Flex Containers](./style.css#L87)
