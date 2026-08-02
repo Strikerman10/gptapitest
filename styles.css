@@ -1787,6 +1787,8 @@ body.dark-mode .message p {
   height: 20px;
   stroke: currentColor;
   fill: currentColor;          /* safe for filled icons */
+  color: var(--text);
+  background: var(--color-6);   /* ✅ added */
 }
 
 /* Hover */
