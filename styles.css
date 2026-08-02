@@ -1777,7 +1777,7 @@ body.dark-mode .message p {
 /* Base button/icon color follows theme text */
 .footer-btn,
 #logoutBtn {
-  color: var(--alttext);          /* dark in light mode, light in dark mode */
+  color: #fff; 
 }
 
 /* Ensure SVG uses button color */
