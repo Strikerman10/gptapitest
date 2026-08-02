@@ -603,7 +603,7 @@ body.dark-mode {
   gap: 8px;
   padding: 12px;
   border-top: 1px solid var(--border);
-  background: var(--surface-1);
+  background: var(--ring);
 }
 
 /* The row holding attach + textarea + send */
