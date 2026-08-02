@@ -1777,7 +1777,7 @@ body.dark-mode .message p {
 /* Base button/icon color follows theme text */
 .footer-btn,
 #logoutBtn {
-  color: var(--text);          /* dark in light mode, light in dark mode */
+  color: var(--alttext);          /* dark in light mode, light in dark mode */
 }
 
 /* Ensure SVG uses button color */
@@ -1787,8 +1787,6 @@ body.dark-mode .message p {
   height: 20px;
   stroke: currentColor;
   fill: currentColor;          /* safe for filled icons */
-  color: var(--text);
-  background: var(--color-6);   /* ✅ added */
 }
 
 /* Hover */
@@ -1797,4 +1795,11 @@ body.dark-mode .message p {
   background: var(--action); /* or var(--action) if defined */
   color: #fff;  
   transform: translateY(-2px);
+}
+
+/* Base button/icon color follows theme text */
+.footer-btn,
+#logoutBtn {
+  color: var(--text);
+  background: var(--color-6);   /* ✅ added */
 }
