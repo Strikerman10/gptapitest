@@ -1747,12 +1747,12 @@ body.dark-mode .message p {
   border-color: var(--text);
 }
 
-.palette-option[data-palette="blue"]    { background: #2c4f80; }
-.palette-option[data-palette="purple"]  { background: #9467bd; }
-.palette-option[data-palette="green"]   { background: #5e8c61; }
-.palette-option[data-palette="orange"]  { background: #F28C28; }
-.palette-option[data-palette="teal"]    { background: #006d65; }
-.palette-option[data-palette="red"]     { background: #8b0000; }
+.palette-option[data-palette="Blue"]    { background: #2c4f80; }
+.palette-option[data-palette="Purple"]  { background: #9467bd; }
+.palette-option[data-palette="Green"]   { background: #5e8c61; }
+.palette-option[data-palette="Orange"]  { background: #F28C28; }
+.palette-option[data-palette="Teal"]    { background: #006d65; }
+.palette-option[data-palette="Red"]     { background: #8b0000; }
 
 .footer-actions {
   display: flex;
