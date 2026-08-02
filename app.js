@@ -426,6 +426,7 @@ modalConfirm.addEventListener("click", async () => {
   const sheetBackdrop  = document.getElementById("sheetBackdrop");
   const closeSheetBtn  = document.getElementById("closeSheetBtn");
   const paletteOptions = document.querySelectorAll(".sheet-option");
+  console.log("buttons found:", paletteOptions.length);
 
   const scrollTopBtn = document.getElementById("scrollTopBtn");
   const scrollBottomBtn = document.getElementById("scrollBottomBtn");
