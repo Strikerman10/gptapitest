@@ -43,7 +43,7 @@
 <br>`Line 1345` | [Sync Active Model](./app.js#L1345)
 <br>`Line 1445` | [Model Selector Desktop](./app.js#L1445)
 <br>`Line 1483` | [Theme - Light/Dark Toggle](./app.js#L1483)
-<br>`Line 1498` | [Theme - Palette Sheet Bottom](./app.js#L198)
+<br>`Line 1498` | [Theme - Palette Sheet Bottom](./app.js#L1498)
 <br>`Line 1528` | [Model Selector - Mobile](./app.js#L1538)
 <br>`Line 1567` | [Model Selector - mousedown](./app.js#L1567)
 <br>`Line 1573` | [Close Model Sheet Buttons](./app.js#L1573)
