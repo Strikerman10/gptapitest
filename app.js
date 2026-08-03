@@ -1261,17 +1261,23 @@ async function sendMessage() {
 }
   chat.messages.push({ role: "assistant", content: "__TYPING__", time: formatDateTime() });
   renderMessages();
+  
   inputEl.value = "";
-
+  
   // Clear attachments now that they're attached to the message
   pendingAttachments.forEach(a => { if (a.previewUrl) URL.revokeObjectURL(a.previewUrl); });
   pendingAttachments = [];
   renderChips();
-
+  
   autoResize();
+  
+  requestAnimationFrame(() => {
+    updateScrollBtnPosition();
+  });
+  
   saveChats();
   saveChatsToWorker();
-
+  
   try {
     const cleanMessages = chat.messages
       .filter(m => m.content !== "__TYPING__")
