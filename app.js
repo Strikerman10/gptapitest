@@ -774,6 +774,10 @@ function renderMessageContent(content) {
     document.body.classList.toggle("dark-mode", currentMode === "dark" || currentPalette === "Amoled");
     document.body.classList.toggle("amoled-mode", currentPalette === "Amoled");
 
+    document.querySelectorAll(".palette-option").forEach(el => {
+    el.classList.toggle("active", el.dataset.palette === currentPalette);
+  });
+	  
     localStorage.setItem("palette", currentPalette);
     localStorage.setItem("mode", currentMode);
   }
