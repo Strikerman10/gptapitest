@@ -1025,7 +1025,7 @@ function renderChatList() {
 
 function renderMessages() {
   messagesEl.innerHTML = "";
-  chatTitleEl.textContent = "Messages";
+  chatTitleEl.textContent = "Orion AI Messages";
 
   if (currentIndex === null || !chats[currentIndex]) {
     messagesEl.innerHTML = `<p class="placeholder">No chats yet. Start a new one!</p>`;
