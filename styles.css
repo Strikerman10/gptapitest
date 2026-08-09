@@ -584,6 +584,11 @@ body.amoled-mode .sidebar-header {
   overflow-wrap: normal;
 }
 
+html[data-palette="Amoled"] .code-block-wrapper code,
+body.amoled-mode .code-block-wrapper code {
+  color: var(--primary-text);
+}
+
 .message p {
   margin: 0;
 }
