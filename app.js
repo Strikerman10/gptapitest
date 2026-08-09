@@ -718,6 +718,15 @@ function renderMessageContent(content) {
       "--color-6": "#800000",
       "--color-7": "#F30000"
     },
+    	Amoled: {
+	  "--color-1": "#1a1a1a",
+	  "--color-2": "#2a2a2a",
+	  "--color-3": "#3a3a3a",
+	  "--color-4": "#111111",
+	  "--color-5": "#000000",
+	  "--color-6": "#362239",
+	  "--color-7": "#266D69" 
+	  },
   };
 
 // ==========================
