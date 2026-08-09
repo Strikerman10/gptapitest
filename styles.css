@@ -128,7 +128,7 @@ body.dark-mode {
 }
 
 html[data-palette="Amoled"] .sidebar-header,
-body.amoled-mode .topbar {
+body.amoled-mode .sidebar-header {
   background: var(--color-6) !important;
   background-image: none !important;
 }
@@ -1766,7 +1766,7 @@ body.dark-mode .message p {
 .palette-option[data-palette="Orange"]  { background: #F28C28; }
 .palette-option[data-palette="Teal"]    { background: #006d65; }
 .palette-option[data-palette="Red"]     { background: #8b0000; }
-.palette-option[data-palette="amoled"]  { background: #1a1a1a; }
+.palette-option[data-palette="amoled"]  { background: #3a3a3a; }
 
 .footer-actions {
   display: flex;
