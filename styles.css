@@ -1829,3 +1829,14 @@ body.dark-mode .message p {
   color: #fff;
   transform: translateY(-2px);
 }
+
+body.amoled-mode .code-block-wrapper pre,
+body.amoled-mode .code-block-wrapper code,
+body.amoled-mode .code-block-wrapper code * {
+  color: #fff !important;
+}
+
+body.amoled-mode .code-block-wrapper pre {
+  background: #000;
+  border-color: #222;
+}
