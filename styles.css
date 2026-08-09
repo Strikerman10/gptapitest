@@ -1833,10 +1833,10 @@ body.dark-mode .message p {
 body.amoled-mode .code-block-wrapper pre,
 body.amoled-mode .code-block-wrapper code,
 body.amoled-mode .code-block-wrapper code * {
-  color: #fff !important;
+  color: #ffd500 !important;
 }
 
 body.amoled-mode .code-block-wrapper pre {
-  background: #FFD500;
+  background: #fff;
   border-color: #222;
 }
