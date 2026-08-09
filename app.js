@@ -380,7 +380,7 @@ modalConfirm.addEventListener("click", async () => {
 
   document.getElementById("messages").innerHTML    = "";
   document.getElementById("chatList").innerHTML    = "";
-  document.getElementById("chatTitle").textContent = "Messages";
+  document.getElementById("chatTitle").textContent = "Orion AI Messages";
 
   document.getElementById("authModalTitle").textContent    = "Welcome Back";
   document.getElementById("authModalSubtitle").textContent = "Sign in to access your chats";
