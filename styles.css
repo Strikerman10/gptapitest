@@ -1430,6 +1430,7 @@ body.dark-mode .message p {
   background-color: var(--surface-hover);
 }
 
+
 /* Pin button */
 .pin-btn {
   background: none;
@@ -1438,13 +1439,9 @@ body.dark-mode .message p {
   color: var(--color-6);
   padding: 4px;
   border-radius: 4px;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.2s, color 0.2s;
   flex-shrink: 0;
-}
-
-.chat-item:hover .pin-btn {
-  opacity: 1;
 }
 
 /* Always show pin button when active/pinned */
@@ -1456,6 +1453,11 @@ body.dark-mode .message p {
 .pin-btn:hover {
   color: var(--primary-contrast);
   background: var(--color-6);
+}
+
+.pin-btn.active {
+  opacity: 1;
+  color: var(--colour-7);
 }
 
 /* ===================== */
