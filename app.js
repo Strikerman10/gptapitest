@@ -955,24 +955,22 @@ function renderChatList() {
       <div class="chat-subtitle">${subtitle}</div>
     `;
 
-   // Pin button
+    // Pin button
     const pinBtn = document.createElement("button");
-    pinBtn.className = "pin-btn" + (chat.pinned ? " active" : "");
+    pinBtn.className = `chat-action pin-btn ${chat.pinned ? "active" : ""}`;
     pinBtn.setAttribute("aria-label", chat.pinned ? "Unpin chat" : "Pin chat");
     pinBtn.title = chat.pinned ? "Unpin" : "Pin to top";
     
-    // Set dynamic colors based on pin status
+    // Set dynamic colors
     pinBtn.style.color = chat.pinned ? "var(--color-7)" : "var(--color-6)";
 
     pinBtn.innerHTML = `
       <svg viewBox="0 0 24 24" width="14" height="14"
-           fill="${chat.pinned ? 'currentColor' : 'none'}"
+           fill="${chat.pinned ? "currentColor" : "none"}"
            stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="17" x2="12" y2="22"/>
-        <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15
-                 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2
-                 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="12" y1="17" x2="12" y2="22"></line>
+        <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
       </svg>
     `;
     pinBtn.addEventListener("click", (e) => {
