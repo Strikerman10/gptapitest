@@ -950,19 +950,16 @@ function renderChatList() {
       ? truncate(chat.messages[chat.messages.length - 1].content, subtitleLimit)
       : "";
 
-        // 1. Set the main text content
-    preview.innerHTML = `
+        preview.innerHTML = `
       <button class="chat-item-main" title="${title || "New Chat"}">
         <span class="chat-item-title">${title}</span>
         <span class="chat-item-subtitle">${subtitle}</span>
       </button>
     `;
 
-    // 2. Create the actions wrapper container
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "chat-item-actions";
 
-    // 3. Create and configure the Pin button
     const pinBtn = document.createElement("button");
     pinBtn.className = `chat-action pin-btn ${chat.pinned ? "active" : ""}`;
     pinBtn.setAttribute("aria-label", chat.pinned ? "Unpin chat" : "Pin chat");
@@ -982,20 +979,14 @@ function renderChatList() {
       togglePin(i);
     });
 
-    // 4. Create the Delete button (to match offline app)
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "chat-action delete-btn";
     deleteBtn.title = "Delete";
     deleteBtn.textContent = "×";
     deleteBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      deleteChat(i); // Or your online delete function
+      if (typeof deleteChat === "function") deleteChat(i); 
     });
-
-    // 5. Append everything to the preview element
-    actionsDiv.appendChild(pinBtn);
-    actionsDiv.appendChild(deleteBtn);
-    preview.appendChild(actionsDiv);
 
       // Keep pinned chats pinned at top, don't move them
       if (!clicked.pinned) {
