@@ -1,7 +1,8 @@
 // ==========================
 // CONFIG & GLOBAL STATE
 // ==========================
-const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
+const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev"
+";
 
 // AUTH STATE
 // We no longer use a plain prompt() for userId.
@@ -1010,11 +1011,16 @@ function renderChatList() {
       renderMessages();
       if (window.innerWidth <= 768) closeSidebar();
     });
-
-    item.appendChild(preview);
-    item.appendChild(pinBtn);
-    item.appendChild(delBtn);
-    chatListEl.appendChild(item);
+	  
+	const actionsDiv = document.createElement("div");
+	actionsDiv.className = "chat-item-actions";
+	
+	actionsDiv.appendChild(pinBtn);
+	actionsDiv.appendChild(delBtn);
+	
+	item.appendChild(preview);
+	item.appendChild(actionsDiv);
+	chatListEl.appendChild(item);
   }
 
   // Render pinned section
