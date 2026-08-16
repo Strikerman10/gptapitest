@@ -951,51 +951,43 @@ function renderChatList() {
       : "";
 
 preview.innerHTML = `
-  <button class="chat-item-main" title="${title || "New Chat"}">
-    <span class="chat-item-title">${title}</span>
-    <span class="chat-item-subtitle">${subtitle}</span>
-  </button>
-`;
+    <button class="chat-item-main" title="${title}">
+      <span class="chat-item-title">${title}</span>
+      <span class="chat-item-subtitle">${subtitle}</span>
+    </button>
+  `;
 
-const actionsDiv = document.createElement("div");
-actionsDiv.className = "chat-item-actions";
+  const actionsDiv = document.createElement("div");
+  actionsDiv.className = "chat-item-actions";
 
-const pinBtn = document.createElement("button");
-pinBtn.className = `chat-action pin-btn ${chat.pinned ? "active" : ""}`;
-pinBtn.setAttribute("aria-label", chat.pinned ? "Unpin chat" : "Pin chat");
-pinBtn.title = chat.pinned ? "Unpin" : "Pin to top";
+  const pinBtn = document.createElement("button");
+  pinBtn.className = `chat-action pin-btn ${chat.pinned ? "active" : ""}`;
+  pinBtn.title = chat.pinned ? "Unpin" : "Pin to top";
+  pinBtn.textContent = "📌";
 
-pinBtn.innerHTML = `
-  <svg viewBox="0 0 24 24" width="14" height="14"
-       fill="${chat.pinned ? "currentColor" : "none"}"
-       stroke="currentColor" stroke-width="2"
-       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <line x1="12" y1="17" x2="12" y2="22"></line>
-    <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
-  </svg>
-`;
+  pinBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    togglePin(i);
+  });
 
-pinBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  togglePin(i);
-});
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "chat-action delete-btn";
+  deleteBtn.title = "Delete";
+  deleteBtn.textContent = "×";
 
-const deleteBtn = document.createElement("button");
-deleteBtn.className = "chat-action delete-btn";
-deleteBtn.title = "Delete";
-deleteBtn.textContent = "×";
-deleteBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  if (typeof deleteChat === "function") deleteChat(i);
-});
+  deleteBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (typeof deleteChat === "function") deleteChat(i);
+  });
 
-actionsDiv.appendChild(pinBtn);
-actionsDiv.appendChild(deleteBtn);
+  actionsDiv.appendChild(pinBtn);
+  actionsDiv.appendChild(deleteBtn);
 
-item.appendChild(preview);
-item.appendChild(actionsDiv);
-chatListEl.appendChild(item);
-
+  item.appendChild(preview);
+  item.appendChild(actionsDiv);
+  chatListEl.appendChild(item);
+}
+	
   // Render pinned section
   if (pinned.length > 0) {
     const pinnedHeader = document.createElement("div");
