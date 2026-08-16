@@ -1,7 +1,7 @@
 // ==========================
 // CONFIG & GLOBAL STATE
 // ==========================
-const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
+const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
 // AUTH STATE
 // We no longer use a plain prompt() for userId.
@@ -950,44 +950,73 @@ function renderChatList() {
       ? truncate(chat.messages[chat.messages.length - 1].content, subtitleLimit)
       : "";
 
-preview.innerHTML = `
-    <button class="chat-item-main" title="${title}">
-      <span class="chat-item-title">${title}</span>
-      <span class="chat-item-subtitle">${subtitle}</span>
-    </button>
-  `;
+      preview.innerHTML = `
+      <div class="chat-title">${title}</div>
+      <div class="chat-subtitle">${subtitle}</div>
+    `;
 
-  const actionsDiv = document.createElement("div");
-  actionsDiv.className = "chat-item-actions";
+    // Pin button
+    const pinBtn = document.createElement("button");
+    pinBtn.className = "pin-btn" + (chat.pinned ? " active" : "");
+    pinBtn.setAttribute("aria-label", chat.pinned ? "Unpin chat" : "Pin chat");
+    pinBtn.title = chat.pinned ? "Unpin" : "Pin to top";
+    pinBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" width="14" height="14"
+           fill="${chat.pinned ? 'currentColor' : 'none'}"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="17" x2="12" y2="22"/>
+        <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15
+                 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2
+                 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+      </svg>
+    `;
+    pinBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      togglePin(i);
+    });
 
-  const pinBtn = document.createElement("button");
-  pinBtn.className = `chat-action pin-btn ${chat.pinned ? "active" : ""}`;
-  pinBtn.title = chat.pinned ? "Unpin" : "Pin to top";
-  pinBtn.textContent = "📌";
+    // Delete button
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-btn";
+    delBtn.setAttribute("aria-label", "Delete chat");
+    delBtn.textContent = "×";
+    delBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      deleteChat(i);
+    });
 
-  pinBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    togglePin(i);
-  });
+    item.addEventListener("click", () => {
+      const [clicked] = chats.splice(i, 1);
 
-  const deleteBtn = document.createElement("button");
-  deleteBtn.className = "chat-action delete-btn";
-  deleteBtn.title = "Delete";
-  deleteBtn.textContent = "×";
+      // Keep pinned chats pinned at top, don't move them
+      if (!clicked.pinned) {
+        // Insert after all pinned chats
+        const firstUnpinned = chats.findIndex(c => !c.pinned);
+        if (firstUnpinned === -1) {
+          chats.push(clicked);
+        } else {
+          chats.splice(firstUnpinned, 0, clicked);
+        }
+        currentIndex = chats.findIndex(c => c.id === clicked.id);
+      } else {
+        // Put pinned back at original spot (top of pinned)
+        chats.unshift(clicked);
+        currentIndex = 0;
+      }
 
-  deleteBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (typeof deleteChat === "function") deleteChat(i);
-  });
+      saveChats();
+      renderChatList();
+      renderMessages();
+      if (window.innerWidth <= 768) closeSidebar();
+    });
 
-  actionsDiv.appendChild(pinBtn);
-  actionsDiv.appendChild(deleteBtn);
+    item.appendChild(preview);
+    item.appendChild(pinBtn);
+    item.appendChild(delBtn);
+    chatListEl.appendChild(item);
+  }
 
-  item.appendChild(preview);
-  item.appendChild(actionsDiv);
-  chatListEl.appendChild(item);
-}
-	
   // Render pinned section
   if (pinned.length > 0) {
     const pinnedHeader = document.createElement("div");
