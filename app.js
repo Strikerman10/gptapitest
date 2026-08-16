@@ -2,7 +2,6 @@
 // CONFIG & GLOBAL STATE
 // ==========================
 const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
-";
 
 // AUTH STATE
 // We no longer use a plain prompt() for userId.
