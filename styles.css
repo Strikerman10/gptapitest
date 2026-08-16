@@ -1452,7 +1452,7 @@ body.dark-mode .message p {
 
 .pin-btn:hover {
   color: var(--primary-contrast);
-  background: var(--color-6);
+  background: var(--color-3);
 }
 
 .pin-btn.active {
