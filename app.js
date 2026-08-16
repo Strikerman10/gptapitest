@@ -950,20 +950,23 @@ function renderChatList() {
       ? truncate(chat.messages[chat.messages.length - 1].content, subtitleLimit)
       : "";
 
-      preview.innerHTML = `
-      <div class="chat-title">${title}</div>
-      <div class="chat-subtitle">${subtitle}</div>
+        // 1. Set the main text content
+    preview.innerHTML = `
+      <button class="chat-item-main" title="${title || "New Chat"}">
+        <span class="chat-item-title">${title}</span>
+        <span class="chat-item-subtitle">${subtitle}</span>
+      </button>
     `;
 
-    // Pin button
+    // 2. Create the actions wrapper container
+    const actionsDiv = document.createElement("div");
+    actionsDiv.className = "chat-item-actions";
+
+    // 3. Create and configure the Pin button
     const pinBtn = document.createElement("button");
     pinBtn.className = `chat-action pin-btn ${chat.pinned ? "active" : ""}`;
     pinBtn.setAttribute("aria-label", chat.pinned ? "Unpin chat" : "Pin chat");
     pinBtn.title = chat.pinned ? "Unpin" : "Pin to top";
-    
-    // Set dynamic colors
-    pinBtn.style.color = chat.pinned ? "var(--color-7)" : "var(--color-6)";
-
     pinBtn.innerHTML = `
       <svg viewBox="0 0 24 24" width="14" height="14"
            fill="${chat.pinned ? "currentColor" : "none"}"
@@ -973,23 +976,26 @@ function renderChatList() {
         <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
       </svg>
     `;
+    
     pinBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       togglePin(i);
     });
-	  
-    // Delete button
-    const delBtn = document.createElement("button");
-    delBtn.className = "delete-btn";
-    delBtn.setAttribute("aria-label", "Delete chat");
-    delBtn.textContent = "×";
-    delBtn.addEventListener("click", (e) => {
+
+    // 4. Create the Delete button (to match offline app)
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "chat-action delete-btn";
+    deleteBtn.title = "Delete";
+    deleteBtn.textContent = "×";
+    deleteBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      deleteChat(i);
+      deleteChat(i); // Or your online delete function
     });
 
-    item.addEventListener("click", () => {
-      const [clicked] = chats.splice(i, 1);
+    // 5. Append everything to the preview element
+    actionsDiv.appendChild(pinBtn);
+    actionsDiv.appendChild(deleteBtn);
+    preview.appendChild(actionsDiv);
 
       // Keep pinned chats pinned at top, don't move them
       if (!clicked.pinned) {
