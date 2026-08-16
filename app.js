@@ -955,11 +955,15 @@ function renderChatList() {
       <div class="chat-subtitle">${subtitle}</div>
     `;
 
-    // Pin button
+   // Pin button
     const pinBtn = document.createElement("button");
     pinBtn.className = "pin-btn" + (chat.pinned ? " active" : "");
     pinBtn.setAttribute("aria-label", chat.pinned ? "Unpin chat" : "Pin chat");
     pinBtn.title = chat.pinned ? "Unpin" : "Pin to top";
+    
+    // Set dynamic colors based on pin status
+    pinBtn.style.color = chat.pinned ? "var(--color-7)" : "var(--color-6)";
+
     pinBtn.innerHTML = `
       <svg viewBox="0 0 24 24" width="14" height="14"
            fill="${chat.pinned ? 'currentColor' : 'none'}"
@@ -975,7 +979,7 @@ function renderChatList() {
       e.stopPropagation();
       togglePin(i);
     });
-
+	  
     // Delete button
     const delBtn = document.createElement("button");
     delBtn.className = "delete-btn";
