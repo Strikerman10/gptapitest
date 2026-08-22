@@ -113,15 +113,15 @@ REUSABLE SVG ICON SYMBOLS (hidden)
         <button class="new-chat" id="newChatBtn">+ New Chat</button>
 
         <select id="modelSelector" class="model-selector" aria-label="Select model">
-          <option disabled>── OpenAI ──</option>
-          <option value="openai|gpt-5.5-2026-04-23">GPT 5.5</option>
+         <option disabled>── OpenAI ──</option> 
+          <option value="openai|gpt-5.6-terra">GPT 5.6 Terra</option>
+		  <option value="openai|gpt-5.5-2026-04-23">GPT 5.5</option>
           <option value="openai|gpt-5.4-2026-03-05">GPT 5.4</option>
           <option value="openai|gpt-5.3-codex">GPT 5.3 Codex</option>
-          <option value="openai|gpt-5.4-mini-2026-03-17">GPT 5.4 Mini</option>
         
           <option disabled>── Anthropic ──</option>
-          <option value="anthropic|claude-opus-4-8">Claude Opus 4.8</option>
-          <option value="anthropic|claude-sonnet-4-6">Claude Sonnet 4.6</option>
+          <option value="anthropic|claude-opus-5">Claude Opus 5</option>
+          <option value="anthropic|claude-sonnet-5">Claude Sonnet 5</option>
           <option value="anthropic|claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
         
           <option disabled>── Gemini ──</option>
@@ -299,7 +299,15 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
      ========================== -->
     <p class="model-group-label">OpenAI</p>
 
-    <button class="model-sheet-option" data-model="openai|gpt-5.5-2026-04-23">
+    <button class="model-sheet-option" data-model="openai|gpt-5.6-terra">
+      <svg width="24" height="24" aria-hidden="true"><use href="#chatgptIcon"/></svg>
+      <span class="model-info">
+        <span class="model-name">GPT-5.6 Terra</span>
+      </span>
+      <span class="model-check">✓</span>
+    </button>
+
+   <button class="model-sheet-option" data-model="openai|gpt-5.5-2026-04-23">
       <svg width="24" height="24" aria-hidden="true"><use href="#chatgptIcon"/></svg>
       <span class="model-info">
         <span class="model-name">GPT-5.5</span>
@@ -323,31 +331,23 @@ MODEL SELECTOR BOTTOM SHEET (MOBILE)
       <span class="model-check">✓</span>
     </button>
 
-    <button class="model-sheet-option" data-model="openai|gpt-5.4-mini-2026-03-17">
-      <svg width="24" height="24" aria-hidden="true"><use href="#chatgptIcon"/></svg>
-      <span class="model-info">
-        <span class="model-name">GPT-5.4 Mini</span>
-      </span>
-      <span class="model-check">✓</span>
-    </button>
-
     <!-- ==========================
      ANTHROPIC MODELS
      ========================== -->
     <p class="model-group-label">Anthropic</p>
 
-    <button class="model-sheet-option" data-model="anthropic|claude-opus-4-8">
+    <button class="model-sheet-option" data-model="anthropic|claude-opus-5">
       <svg width="24" height="24" aria-hidden="true"><use href="#claudeIcon"/></svg>
       <span class="model-info">
-        <span class="model-name">Claude Opus 4.8</span>
+        <span class="model-name">Claude Opus 5</span>
       </span>
       <span class="model-check">✓</span>
     </button>
 
-    <button class="model-sheet-option" data-model="anthropic|claude-sonnet-4-6">
+    <button class="model-sheet-option" data-model="anthropic|claude-sonnet-5">
       <svg width="24" height="24" aria-hidden="true"><use href="#claudeIcon"/></svg>
       <span class="model-info">
-        <span class="model-name">Claude Sonnet 4.6</span>
+        <span class="model-name">Claude Sonnet 5</span>
       </span>
       <span class="model-check">✓</span>
     </button>
