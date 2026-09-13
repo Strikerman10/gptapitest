@@ -1,7 +1,7 @@
 // ==========================
 // CONFIG & GLOBAL STATE
 // ==========================
-const WORKER_URL = "https://gpt-test.barney-willis2.workers.dev";
+const WORKER_URL = "https://gptapiv2.barney-willis2.workers.dev";
 
 // AUTH STATE
 // We no longer use a plain prompt() for userId.
@@ -13,6 +13,9 @@ let chats = [];
 let currentIndex = null;
 let currentProvider = localStorage.getItem("chat_provider") || "openai";
 let currentModel    = localStorage.getItem("chat_model")    || "gpt-5.5-2026-04-23";
+
+// Controls the in-flight request so the user can stop a hanging model
+let activeAbortController = null;
 
 // ==========================
 // DOM READY
@@ -32,10 +35,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const modelSelector    = document.getElementById("modelSelector");
   const logoutBtn     = document.getElementById("logoutBtn");
 
+// ==========================================
+// KEYBOARD ADAPTABILITY (MOBILE)
+// ==========================================
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    // Dynamically size the body to fit the screen above the keyboard
+    document.body.style.height = `${window.visualViewport.height}px`;
+    
+    // Smoothly scroll active input into view
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'INPUT')) {
+      activeEl.scrollIntoView({ block: 'nearest' });
+    }
+  });
+}
+	
 // ============================
 // FILE ATTACHMENTS
 // ============================
-
 const ALLOWED_TYPES = new Set([
   "image/png", "image/jpeg", "image/gif", "image/webp",
   "application/pdf", "text/plain", "text/markdown"
@@ -894,6 +912,24 @@ function renderMessageContent(content) {
     saveChatsToWorker();
   }
 
+  /**
+   * Stop the current generation (if any) so the user can continue using another model.
+   * Aborts the fetch request and clears the __TYPING__ placeholder.
+   */
+  function stopGenerating() {
+    if (activeAbortController) {
+      activeAbortController.abort();
+    }
+    // Remove any __TYPING__ message so the UI is unblocked
+    if (currentIndex !== null && chats[currentIndex]) {
+      const chat = chats[currentIndex];
+      chat.messages = chat.messages.filter(m => m.content !== "__TYPING__");
+      saveChats();
+      renderMessages();
+      renderChatList();
+    }
+  }
+
   function deleteChat(index) {
     if (index < 0 || index >= chats.length) return;
     chats.splice(index, 1);
@@ -1116,6 +1152,27 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
     div.appendChild(textDiv);
     wrapper.appendChild(div);
 
+    // Show Stop button while model is thinking (on __TYPING__ message)
+    if (msg.content === "__TYPING__") {
+      const stopRow = document.createElement("div");
+      stopRow.className = "reload-row";
+
+      const stopBtn = document.createElement("button");
+      stopBtn.type = "button";
+      stopBtn.className = "stop-pill";
+      stopBtn.title = "Stop generating";
+      stopBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" width="16" height="16"
+             fill="currentColor" stroke="none">
+          <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+        </svg>
+        <span>Stop</span>
+      `;
+      stopBtn.addEventListener("click", stopGenerating);
+      stopRow.appendChild(stopBtn);
+      wrapper.appendChild(stopRow);
+    }
+
     if (msg.role === "assistant" && msg.content !== "__TYPING__" && idx === lastAssistantIdx) {
       const reloadRow = document.createElement("div");
       reloadRow.className = "reload-row";
@@ -1145,6 +1202,9 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
   saveChats();
   saveChatsToWorker();
   renderMessages();
+
+  // Create the abort controller so the user can stop a hanging reload
+  activeAbortController = new AbortController();
 
   try {
     const cleanMessages = chat.messages
@@ -1179,6 +1239,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
             ...(m.attachments ? { attachments: m.attachments } : {})
           })),
         }),
+        signal: activeAbortController.signal,
       });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
@@ -1199,6 +1260,10 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
       model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
+    // If the user pressed Stop, abort the request and discard the error state
+    if (e.name === "AbortError") {
+      return;
+    }
     // Replace at the SAME idx position on error too
     chat.messages[idx] = {
       role: "assistant",
@@ -1208,6 +1273,7 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
     };
   }
 
+  activeAbortController = null;
   saveChats();
   saveChatsToWorker();
   renderMessages();
@@ -1239,6 +1305,11 @@ const lastAssistantIdx = chat.messages.reduce((last, msg, idx) => {
         alert("Could not copy code.");
       }
     });
+  });
+
+  // Stop button on the typing indicator
+  messagesEl.querySelectorAll(".stop-pill").forEach(btn => {
+    btn.addEventListener("click", stopGenerating);
   });
   
   messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -1311,6 +1382,9 @@ async function sendMessage() {
   saveChats();
   saveChatsToWorker();
   
+  // Create the abort controller before the fetch so the user can stop a hanging model
+  activeAbortController = new AbortController();
+
   try {
     const cleanMessages = chat.messages
       .filter(m => m.content !== "__TYPING__")
@@ -1324,7 +1398,7 @@ async function sendMessage() {
         }
         return acc;
       }, []);
-    
+
     // Final safety check - Anthropic requires last message to be user
     if (cleanMessages.length > 0 && cleanMessages[cleanMessages.length - 1].role !== "user") {
       cleanMessages.pop();
@@ -1347,10 +1421,11 @@ async function sendMessage() {
         model: currentModel,
         messages: cleanMessages,
       }),
+      signal: activeAbortController.signal,
     });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
-    
+
     console.log("HTTP status:", res.status);
 
     const rawText = await res.text();
@@ -1377,6 +1452,10 @@ async function sendMessage() {
       model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
+    // User pressed the Stop button — abort is expected, not an error
+    if (e.name === "AbortError") {
+      return;
+    }
     console.error("sendMessage failed:", e);
 
     chat.messages[chat.messages.length - 1] = {
@@ -1385,6 +1464,8 @@ async function sendMessage() {
       time: formatDateTime(),
       model: modelSelector.options[modelSelector.selectedIndex].text
     };
+  } finally {
+    activeAbortController = null;
   }
 
   saveChats();
@@ -1411,6 +1492,9 @@ async function sendMessageRetry() {
   renderMessages();
   saveChats();
   saveChatsToWorker();
+
+  // Create the abort controller so the user can stop a hanging retry
+  activeAbortController = new AbortController();
 
   try {
      const cleanMessages = chat.messages
@@ -1452,10 +1536,11 @@ async function sendMessageRetry() {
           ...(m.attachments ? { attachments: m.attachments } : {})
         })),
       }),
+      signal: activeAbortController.signal,
   });
 
     if (res.status === 401) { await handleUnauthorized(); return; }
-    
+
     console.log("Retry status:", res.status);
 
     const rawText = await res.text();
@@ -1481,6 +1566,10 @@ async function sendMessageRetry() {
       model: modelSelector.options[modelSelector.selectedIndex].text
     };
   } catch (e) {
+    // User pressed the Stop button — abort is expected, not an error
+    if (e.name === "AbortError") {
+      return;
+    }
     console.error("sendMessageRetry failed:", e);
 
     chat.messages[chat.messages.length - 1] = {
@@ -1489,6 +1578,8 @@ async function sendMessageRetry() {
       time: formatDateTime(),
       model: modelSelector.options[modelSelector.selectedIndex].text
     };
+  } finally {
+    activeAbortController = null;
   }
 
   saveChats();
